@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Dark" xml:space="preserve">
+    <value>تاریک 🌙</value>
+  </data>
+  <data name="Light" xml:space="preserve">
+    <value>روشن 🌞</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>تنظیمات</value>
+  </data>
+  <data name="ApplicationMode" xml:space="preserve">
+    <value>🎨 حالت اپلیکیشن</value>
+  </data>
+  <data name="CreateBackup" xml:space="preserve">
+    <value>ایجاد پشتیبان</value>
+  </data>
+  <data name="RestoreBackup" xml:space="preserve">
+    <value>بازیابی اطلاعات</value>
+  </data>
+  <data name="ClearData" xml:space="preserve">
+    <value>⚠️ پاک کردن داده‌ها</value>
+  </data>
+  <data name="BackupRestoreData" xml:space="preserve">
+    <value>💾 پشتیبان گیری و بازیابی اطلاعات</value>
+  </data>
+  <data name="SelectLanguage" xml:space="preserve">
+    <value>انتخاب زبان:</value>
+  </data>
+  <data name="Deleteallnotes" xml:space="preserve">
+    <value>حذف همه یادداشت ها</value>
+  </data>
+  <data name="AppName" xml:space="preserve">
+    <value>Task List | لیست تکالیف</value>
+  </data>
+  <data name="SearchNote" xml:space="preserve">
+    <value>جستجوی یادداشت ...</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>عنوان</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>دسته بندی</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>اولویت</value>
+  </data>
+  <data name="Reminder" xml:space="preserve">
+    <value>یادآوری</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>جزئیات</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>صفحه قبل</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>صفحه بعد</value>
+  </data>
+  <data name="UpdateList" xml:space="preserve">
+    <value>بروزرسانی لیست</value>
+  </data>
+  <data name="Develop" xml:space="preserve">
+    <value>توسعه داده شده با ❤️ برای همکاران گرامی</value>
+  </data>
+  <data name="Developer" xml:space="preserve">
+    <value>توسط حیدر محمدی نصیر</value>
+  </data>
+  <data name="PopupDescription" xml:space="preserve">
+    <value>توضیحات:</value>
+  </data>
+  <data name="PopupReminder" xml:space="preserve">
+    <value>⏰ تاریخ یادآوری:</value>
+  </data>
+  <data name="Dateofnoteregistration" xml:space="preserve">
+    <value>تاریخ ثبت یادداشت: </value>
+  </data>
+  <data name="ClosePopup" xml:space="preserve">
+    <value>بستن</value>
+  </data>
+  <data name="DeleteItem" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="BackToMainPage" xml:space="preserve">
+    <value>برگشت به صفحه اصلی</value>
+  </data>
+  <data name="AddNotePage" xml:space="preserve">
+    <value>صفحه اضافه کردن یادداشت</value>
+  </data>
+  <data name="AddNoteTitle" xml:space="preserve">
+    <value>عنوان:</value>
+  </data>
+  <data name="AddNoteDescription" xml:space="preserve">
+    <value>توضیحات:</value>
+  </data>
+  <data name="AddNoteCategory" xml:space="preserve">
+    <value>دسته بندی:</value>
+  </data>
+  <data name="AddNotePriority" xml:space="preserve">
+    <value>اولویت:</value>
+  </data>
+  <data name="IsReminderSet" xml:space="preserve">
+    <value>یادآوری شود؟</value>
+  </data>
+  <data name="SaveNote" xml:space="preserve">
+    <value>ثبت یادداشت</value>
+  </data>
+  <data name="TitlePlaceholder" xml:space="preserve">
+    <value>عنوان یادداشت ...</value>
+  </data>
+  <data name="DescriptionPlaceholder" xml:space="preserve">
+    <value>متن کامل یادداشت را وارد کنید ...</value>
+  </data>
+  <data name="SelectCategory" xml:space="preserve">
+    <value>انتخاب دسته بندی</value>
+  </data>
+  <data name="Personal" xml:space="preserve">
+    <value>شخصی</value>
+  </data>
+  <data name="Work" xml:space="preserve">
+    <value>کاری</value>
+  </data>
+  <data name="Educational" xml:space="preserve">
+    <value>تحصیلی</value>
+  </data>
+  <data name="Financial" xml:space="preserve">
+    <value>مالی</value>
+  </data>
+  <data name="Low" xml:space="preserve">
+    <value>کم</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>متوسط</value>
+  </data>
+  <data name="High" xml:space="preserve">
+    <value>زیاد</value>
+  </data>
+  <data name="DatePlaceholder" xml:space="preserve">
+    <value>تاریخ و ساعت یادآوری (مثال: 16:30 1404/05/20)</value>
+  </data>
+  <data name="SelectPriority" xml:space="preserve">
+    <value>انتخاب اولویت</value>
+  </data>
+  <data name="EnterDateAndTimeToast" xml:space="preserve">
+    <value>تاریخ و ساعت را وارد کنید!</value>
+  </data>
+  <data name="SuccessAddNoteToast" xml:space="preserve">
+    <value>یادداشت با موفقیت ذخیره شد</value>
+  </data>
+  <data name="AddNoteRequiredToast" xml:space="preserve">
+    <value>موارد ضروری را وارد کنید!</value>
+  </data>
+  <data name="DeleteNoteWarningAlert" xml:space="preserve">
+    <value>حذف یادداشت</value>
+  </data>
+  <data name="DeleteNoteAlertContent" xml:space="preserve">
+    <value>آیا میخواهید یادداشت مربوطه را حذف کنید؟</value>
+  </data>
+  <data name="DeleteNoteOK" xml:space="preserve">
+    <value>بله</value>
+  </data>
+  <data name="DeleteNoteCancel" xml:space="preserve">
+    <value>خیر</value>
+  </data>
+  <data name="ClearDataWarningTitle" xml:space="preserve">
+    <value>پاک کردن همه داده ها</value>
+  </data>
+  <data name="ClearDataWarningContent" xml:space="preserve">
+    <value>تایید حذف همه اطلاعات؟</value>
+  </data>
+  <data name="DeletingDataYes" xml:space="preserve">
+    <value>بله</value>
+  </data>
+  <data name="DeletingDataNo" xml:space="preserve">
+    <value>خیر</value>
+  </data>
+  <data name="DeletingDataSuccess" xml:space="preserve">
+    <value>حذف با موفقیت</value>
+  </data>
+  <data name="AllNotesDeleted" xml:space="preserve">
+    <value>همه اطلاعات حذف شد</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>باشه</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>خطا در انجام عملیات!</value>
+  </data>
+  <data name="BackupSaved" xml:space="preserve">
+    <value>پشتیبان‌گیری</value>
+  </data>
+  <data name="BackupSavedSuccess" xml:space="preserve">
+    <value>پشتیبان‌گیری با موفقیت ذخیره شد</value>
+  </data>
+  <data name="SelectBackupFile" xml:space="preserve">
+    <value>انتخاب فایل پشتیبان</value>
+  </data>
+  <data name="RestoreSuccessMessage" xml:space="preserve">
+    <value>فایل با موفقیت بازیابی شد</value>
+  </data>
+  <data name="RestoreSuccessTitle" xml:space="preserve">
+    <value>بازیابی اطلاعات</value>
+  </data>
+  <data name="EnterFullDateAndTimeErrorMessage" xml:space="preserve">
+    <value>"لطفاً هم تاریخ و هم ساعت را وارد کنید. (مثال: 1403/05/25 14:30)"</value>
+  </data>
+  <data name="EnterFullDateErrorMessage" xml:space="preserve">
+    <value>فرمت تاریخ باید به صورت yyyy/MM/dd باشد.</value>
+  </data>
+  <data name="HourFormatErrorMessage" xml:space="preserve">
+    <value>فرمت ساعت باید به صورت HH:mm باشد</value>
+  </data>
+  <data name="InvalidDateErrorMessage" xml:space="preserve">
+    <value>تاریخ وارد شده معتبر نیست!</value>
+  </data>
+  <data name="InvalidTimeErrorMessage" xml:space="preserve">
+    <value>ساعت یا دقیقه معتبر نیست!</value>
+  </data>
+  <data name="ValidDateAndTime" xml:space="preserve">
+    <value>ساعت باید بین 0 تا 23 و دقیقه بین 0 تا 59 باشد!</value>
+  </data>
+  <data name="EnterDateAndTime" xml:space="preserve">
+    <value>لطفاً تاریخ و ساعت را وارد کنید!</value>
+  </data>
+  <data name="unRecognizedErrorMessage" xml:space="preserve">
+    <value>خطای ناشناخته!</value>
+  </data>
+  <data name="ContactTheDeveloper" xml:space="preserve">
+    <value>ارتباط با توسعه دهنده:</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>ایمیل</value>
+  </data>
+  <data name="Telegram" xml:space="preserve">
+    <value>تلگرام</value>
+  </data>
+  <data name="Instagram" xml:space="preserve">
+    <value>اینستاگرام</value>
+  </data>
+  <data name="AppVersion" xml:space="preserve">
+    <value>نسخه اپلیکیشن: 1.0</value>
+  </data>
+</root>

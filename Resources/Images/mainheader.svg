@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+	<defs>
+		<!-- گرادیان عمودی: بالا شفاف، پایین سفید -->
+		<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0%"  stop-color="#FFFFFF" stop-opacity="0"/>
+			<stop offset="100%" stop-color="#FFFFFF" stop-opacity="1"/>
+		</linearGradient>
+	</defs>
+
+	<!-- مسیر موج در نیمه‌ی بالا؛ بقیه‌ی شکل تا پایین پر می‌شود تا محو نرم ایجاد شود -->
+	<path fill="url(#fade)"
+		  d="M0,50
+           C180,70 300,30 480,48
+           C720,80 900,28 1140,58
+           C1260,72 1350,66 1440,62
+           L1440,120 L0,120 Z"/>
+</svg>
