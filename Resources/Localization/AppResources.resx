@@ -150,8 +150,8 @@
   <data name="AppName" xml:space="preserve">
     <value>Task List | لیست تکالیف</value>
   </data>
-  <data name="SearchNote" xml:space="preserve">
-    <value>جستجوی یادداشت ...</value>
+  <data name="SearchLawyer" xml:space="preserve">
+    <value>جستجوی وکیل ...</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>عنوان</value>
@@ -228,17 +228,17 @@
   <data name="DescriptionPlaceholder" xml:space="preserve">
     <value>متن کامل یادداشت را وارد کنید ...</value>
   </data>
-  <data name="SelectCategory" xml:space="preserve">
-    <value>انتخاب دسته بندی</value>
+  <data name="SelectCity" xml:space="preserve">
+    <value>انتخاب شهر</value>
   </data>
-  <data name="Personal" xml:space="preserve">
-    <value>شخصی</value>
+  <data name="Khorramshahr" xml:space="preserve">
+    <value>خرمشهر</value>
   </data>
-  <data name="Work" xml:space="preserve">
-    <value>کاری</value>
+  <data name="Abadan" xml:space="preserve">
+    <value>آبادان</value>
   </data>
-  <data name="Educational" xml:space="preserve">
-    <value>تحصیلی</value>
+  <data name="Ahwaz" xml:space="preserve">
+    <value>اهواز</value>
   </data>
   <data name="Financial" xml:space="preserve">
     <value>مالی</value>
@@ -356,5 +356,17 @@
   </data>
   <data name="AppVersion" xml:space="preserve">
     <value>نسخه اپلیکیشن: 1.0</value>
+  </data>
+  <data name="LawyerFullname" xml:space="preserve">
+    <value>نام و نام خانوادگی</value>
+  </data>
+  <data name="LawyerPhonenumber" xml:space="preserve">
+    <value>تلفن همراه</value>
+  </data>
+  <data name="LawyerDetails" xml:space="preserve">
+    <value>جزئیات</value>
+  </data>
+  <data name="LawyerCity" xml:space="preserve">
+    <value>شهر</value>
   </data>
 </root>

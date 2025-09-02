@@ -1,4 +1,4 @@
-﻿using Vakilaw.Entities;
+﻿using Vakilaw.Models;
 
 namespace Vakilaw.Services;
 

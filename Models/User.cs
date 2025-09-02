@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Vakilaw.Entities
+namespace Vakilaw.Models
 {
     public class User
     {

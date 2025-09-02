@@ -28,7 +28,7 @@ public static class MauiProgram
                 fonts.AddFont("IRANSansWeb Persian.ttf", "IRANSansWeb");
                 fonts.AddFont("Sahel.ttf", "Sahel");
             });
-
+            
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
@@ -41,9 +41,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<UserService>();
         builder.Services.AddTransient<MainPageVM>();
         builder.Services.AddTransient<MainPage>();
-        builder.Services.AddTransient<LawyerSubmitPopup>();      
+        builder.Services.AddTransient<LawyerSubmitPopup>();
         builder.Services.AddSingleton<App>();
-
 
         return builder.Build();
     }
