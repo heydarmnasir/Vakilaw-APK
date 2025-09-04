@@ -1,4 +1,5 @@
 ﻿using Vakilaw.Models;
+using Microsoft.Data.Sqlite;
 
 namespace Vakilaw.Services;
 
@@ -11,21 +12,11 @@ public class UserService
         _db = db;
     }
 
-    /// <summary>
-    /// ثبت‌نام کاربر جدید
-    /// </summary>
-    /// <param name="fullName">نام کامل</param>
-    /// <param name="phone">شماره موبایل</param>
-    /// <param name="role">نقش: "Lawyer" یا "Client"</param>
-    /// <param name="licenseNumber">شماره پروانه وکالت (فقط برای وکیل)</param>
-    /// <returns>User ثبت‌شده</returns>
-    /// <exception cref="Exception">اگر شماره موبایل تکراری باشد</exception>
     public async Task<User> RegisterUserAsync(string fullName, string phone, string role, string? licenseNumber)
     {
         using var conn = _db.GetConnection();
         await conn.OpenAsync();
 
-        // بررسی اینکه شماره موبایل قبلاً ثبت نشده باشد
         var checkCmd = conn.CreateCommand();
         checkCmd.CommandText = "SELECT COUNT(*) FROM Users WHERE PhoneNumber = $phone";
         checkCmd.Parameters.AddWithValue("$phone", phone);
@@ -34,7 +25,6 @@ public class UserService
         if (count > 0)
             throw new Exception("این شماره موبایل قبلاً ثبت‌نام شده است.");
 
-        // ثبت کاربر جدید
         var insertCmd = conn.CreateCommand();
         insertCmd.CommandText = @"
             INSERT INTO Users (FullName, PhoneNumber, Role, LicenseNumber)
@@ -56,5 +46,85 @@ public class UserService
             Role = role,
             LicenseNumber = licenseNumber
         };
+    }
+
+    public async Task<User?> GetUserByPhoneAsync(string phone)
+    {
+        using var conn = _db.GetConnection();
+        await conn.OpenAsync();
+
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT Id, FullName, PhoneNumber, Role, LicenseNumber FROM Users WHERE PhoneNumber = $phone";
+        cmd.Parameters.AddWithValue("$phone", phone);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            return new User
+            {
+                Id = reader.GetInt32(0),
+                FullName = reader.GetString(1),
+                PhoneNumber = reader.GetString(2),
+                Role = reader.GetString(3),
+                LicenseNumber = reader.GetString(4)
+            };
+        }
+
+        return null;
+    }
+
+    public async Task<int> UpdateUserAsync(User user)
+    {
+        using var conn = _db.GetConnection();
+        await conn.OpenAsync();
+
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            UPDATE Users
+            SET FullName = $name, Role = $role, LicenseNumber = $license
+            WHERE PhoneNumber = $phone";
+        cmd.Parameters.AddWithValue("$name", user.FullName);
+        cmd.Parameters.AddWithValue("$role", user.Role);
+        cmd.Parameters.AddWithValue("$license", user.LicenseNumber ?? "");
+        cmd.Parameters.AddWithValue("$phone", user.PhoneNumber);
+
+        return await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task<int> DeleteUserAsync(User user)
+    {
+        using var conn = _db.GetConnection();
+        await conn.OpenAsync();
+
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = "DELETE FROM Users WHERE Id = $id";
+        cmd.Parameters.AddWithValue("$id", user.Id);
+
+        return await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        var list = new List<User>();
+        using var conn = _db.GetConnection();
+        await conn.OpenAsync();
+
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT Id, FullName, PhoneNumber, Role, LicenseNumber FROM Users";
+
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            list.Add(new User
+            {
+                Id = reader.GetInt32(0),
+                FullName = reader.GetString(1),
+                PhoneNumber = reader.GetString(2),
+                Role = reader.GetString(3),
+                LicenseNumber = reader.GetString(4)
+            });
+        }
+
+        return list;
     }
 }

@@ -117,5 +117,10 @@ namespace Vakilaw.Views
         {
             await Launcher.OpenAsync(new Uri("https://search-hamivakil.ir/"));
         }
+
+        private async void LawBank_Tapped(object sender, TappedEventArgs e)
+        {
+            await Shell.Current.GoToAsync("LawBankPage");
+        }
     }
 }

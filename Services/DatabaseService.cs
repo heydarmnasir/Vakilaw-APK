@@ -4,18 +4,22 @@ namespace Vakilaw.Services;
 
 public class DatabaseService
 {
-    private readonly string _connectionString;
     private readonly string _dbPath;
+    private readonly string _connectionString;
+
+    public string DbPath => _dbPath;
 
     public DatabaseService(string dbPath)
     {
         _dbPath = dbPath;
+
         if (!File.Exists(_dbPath))
         {
             using var fs = File.Create(_dbPath);
         }
-        // اضافه کردن Mode=ReadWriteCreate باعث میشه اگر فایل نبود خودش بسازه
+
         _connectionString = $"Data Source={_dbPath};Mode=ReadWriteCreate;Cache=Shared";
+
         InitializeDatabase();
     }
 
@@ -32,6 +36,16 @@ public class DatabaseService
                 PhoneNumber TEXT NOT NULL UNIQUE,
                 Role TEXT NOT NULL,
                 LicenseNumber TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS Laws (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ArticleNumber INTEGER,
+                LawType TEXT,
+                Title TEXT,
+                Content TEXT,
+                IsBookmarked INTEGER,
+                IsExpanded INTEGER
             );
         ";
         cmd.ExecuteNonQuery();

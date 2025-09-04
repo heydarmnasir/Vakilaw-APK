@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Vakilaw.Views.LawBankPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Vakilaw.ViewModels"
+    xmlns:models="clr-namespace:Vakilaw.Models"
+    xmlns:conv="clr-namespace:Vakilaw.Converters"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"    
+    FlowDirection="RightToLeft"
+    BackgroundColor="#FAFAFA"
+    Title="بانک قوانین">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:BoolToStarConverter x:Key="BoolToStarConverter" />
+            <Style x:Key="CardFrameStyle" TargetType="Frame">
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="Margin" Value="6,8"/>
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="HasShadow" Value="False"/>
+            </Style>
+            <Color x:Key="Accent">#4E9B8F</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="12">
+        <!-- Header: Picker + Search -->
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
+            <Grid ColumnDefinitions="*,Auto">
+                <Picker Grid.Column="0"
+                        Title="انتخاب نوع قانون"
+                        TextColor="Black"
+                        ItemsSource="{Binding LawTypes}"
+                        SelectedItem="{Binding SelectedLawType, Mode=TwoWay}"
+                        HorizontalOptions="Fill"/>
+            </Grid>
+
+            <SearchBar x:Name="PageSearchBar"
+                       Placeholder="جستجو بر اساس متن یا شماره ماده..."
+                       Text="{Binding SearchText, Mode=TwoWay}"
+                       SearchCommand="{Binding ApplyFilterCommand}"
+                       SearchCommandParameter="{Binding Text, Source={x:Reference PageSearchBar}}"/>
+        </VerticalStackLayout>
+
+        <!-- CollectionView + ActivityIndicator -->
+        <Grid Grid.Row="1">
+            <CollectionView ItemsSource="{Binding Laws}"
+                            SelectionMode="None"
+                            Margin="0,6,0,6"
+                            x:Name="ArticlesCollection">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:LawItem">
+                        <Frame Style="{StaticResource CardFrameStyle}">
+                            <toolkit:Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                                <toolkit:Expander.Header>
+                                    <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                                        <Label Text="{Binding Title}"
+                                               FontSize="16"
+                                               TextColor="Black"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center"
+                                               LineBreakMode="TailTruncation"/>
+                                        <ImageButton Source="{Binding IsBookmarked, Converter={StaticResource BoolToStarConverter}}"
+                                                     Command="{Binding BindingContext.ToggleBookmarkCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                     CommandParameter="{Binding .}"
+                                                     BackgroundColor="Transparent"
+                                                     WidthRequest="34"
+                                                     HeightRequest="34"
+                                                     Grid.Column="1"
+                                                     HorizontalOptions="End"
+                                                     VerticalOptions="Center"/>
+                                    </Grid>
+                                </toolkit:Expander.Header>
+
+                                <toolkit:Expander.Content>
+                                    <VerticalStackLayout Padding="0,8,0,0" Spacing="6">
+                                        <Label Text="{Binding Content}"
+                                               FontSize="14"
+                                               TextColor="#333"
+                                               LineBreakMode="WordWrap"/>
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
+                                            <Button Text="مشاهده جزئیات"
+                                                    Command="{Binding BindingContext.OpenArticleCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="Transparent"
+                                                    TextColor="{StaticResource Accent}"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </toolkit:Expander.Content>
+                            </toolkit:Expander>
+
+                            <Frame.Triggers>
+                                <DataTrigger TargetType="Frame" Binding="{Binding IsExpanded}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="#FFF5E5"/>
+                                    <Setter Property="HasShadow" Value="True"/>
+                                </DataTrigger>
+                            </Frame.Triggers>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Loading overlay -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                               IsVisible="{Binding IsLoading}"
+                               Color="{StaticResource Accent}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+        </Grid>
+
+        <BoxView Grid.Row="2" HeightRequest="8" Color="Transparent"/>
+    </Grid>
+</ContentPage>

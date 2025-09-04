@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Mopups.Hosting;
 using Plugin.LocalNotification;
-using System.Runtime.InteropServices;
 using Vakilaw.Services;
 using Vakilaw.ViewModels;
 using Vakilaw.Views;
@@ -28,43 +27,30 @@ public static class MauiProgram
                 fonts.AddFont("IRANSansWeb Persian.ttf", "IRANSansWeb");
                 fonts.AddFont("Sahel.ttf", "Sahel");
             });
-            
+
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
 
         // مسیر دیتابیس
-        string dbPath = GetDatabasePath();
+        string dbPath = Path.Combine(FileSystem.AppDataDirectory, "vakilaw.db");
 
         // ثبت سرویس‌ها
-        builder.Services.AddSingleton(new DatabaseService(dbPath));
+        builder.Services.AddSingleton(s => new DatabaseService(dbPath));
+        builder.Services.AddSingleton<LawDatabase>();
+        builder.Services.AddSingleton<LawImporter>();
         builder.Services.AddSingleton<UserService>();
-        builder.Services.AddTransient<MainPageVM>();
+
+        // ویومدل‌ها
+        builder.Services.AddSingleton<MainPageVM>();
+        builder.Services.AddSingleton<LawBankVM>();
+
+        // صفحات
         builder.Services.AddTransient<MainPage>();
-        builder.Services.AddTransient<LawyerSubmitPopup>();
+        builder.Services.AddSingleton<LawBankPage>();
+
         builder.Services.AddSingleton<App>();
 
         return builder.Build();
-    }
-
-    private static string GetDatabasePath()
-    {
-        string dbFileName = "vakilaw.db";
-        string folder;
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        else
-        {
-#if ANDROID
-            folder = FileSystem.AppDataDirectory;
-#elif IOS
-            folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-#else
-            folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-#endif
-        }
-
-        return Path.Combine(folder, dbFileName);
     }
 }

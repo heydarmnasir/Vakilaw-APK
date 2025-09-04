@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.Maui.Storage;
 using Mopups.Services;
 using System.Collections.ObjectModel;
 using Vakilaw.Services;
@@ -22,7 +21,7 @@ public partial class MainPageVM : ObservableObject
     [ObservableProperty] private bool lawyerLicensevisibility = false;
     [ObservableProperty] private string lawyerFullName;
     [ObservableProperty] private string lawyerLicense;
-  
+
     [ObservableProperty] private ObservableCollection<string> cities;
     [ObservableProperty] private string selectedCity;
 
@@ -66,6 +65,12 @@ public partial class MainPageVM : ObservableObject
         });
 
         Task.Run(async () => await LoadNotes());
+    }
+
+    [RelayCommand]
+    private async Task LawBankPage()
+    {
+        await Shell.Current.GoToAsync("LawBankPage");
     }
 
     [ObservableProperty]
@@ -317,7 +322,7 @@ public partial class MainPageVM : ObservableObject
                 // سپس جستجو روی کل لیست فیلتر شده
                 filtered = filtered.Where(l =>
                     (!string.IsNullOrEmpty(l.FullName) && l.FullName.Contains(q, StringComparison.OrdinalIgnoreCase)) ||
-                    (!string.IsNullOrEmpty(l.PhoneNumber) && l.PhoneNumber.Contains(q))                               
+                    (!string.IsNullOrEmpty(l.PhoneNumber) && l.PhoneNumber.Contains(q))
                 );
 
                 return filtered.ToList();
