@@ -16,5 +16,22 @@ namespace Vakilaw.Views
             ViewModel = new LawBankVM(importer, database);
             BindingContext = ViewModel;
         }
+
+        private async void OnSearchIconClicked(object sender, EventArgs e)
+        {
+            if (!PageSearchBar.IsVisible)
+            {
+                PageSearchBar.Opacity = 0;
+                PageSearchBar.IsVisible = true;
+                await PageSearchBar.FadeTo(1, 250);
+                PageSearchBar.Focus();
+            }
+            else
+            {
+                await PageSearchBar.FadeTo(0, 250);
+                PageSearchBar.IsVisible = false;
+            }
+        }
+
     }
 }

@@ -43,7 +43,7 @@ public class DatabaseService
                 ArticleNumber INTEGER,
                 LawType TEXT,
                 Title TEXT,
-                Content TEXT,
+                Text TEXT,
                 IsBookmarked INTEGER,
                 IsExpanded INTEGER
             );

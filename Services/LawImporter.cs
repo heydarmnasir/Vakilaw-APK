@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 using Vakilaw.Models;
 
 namespace Vakilaw.Services;
@@ -12,46 +13,71 @@ public class LawImporter
         _database = database;
     }
 
-    public async IAsyncEnumerable<LawItem> ImportIfEmptyWithProgressAsync()
+    public async IAsyncEnumerable<LawItem> ImportIfEmptyWithProgressAsync(string fileName, string lawType)
     {
-        var existing = await _database.GetLawsAsync();
-        if (existing.Count > 0) yield break;
+        if (string.IsNullOrWhiteSpace(fileName))
+            yield break;
 
-        using var stream = await FileSystem.OpenAppPackageFileAsync("Sea_Law.json");
+        // اگر قبلاً این نوع داده وجود داره، ایمپورت نکن
+        var existingOfType = await _database.GetLawsByTypeAsync(lawType);
+        if (existingOfType.Count > 0)
+            yield break;
+
+        using var stream = await FileSystem.OpenAppPackageFileAsync(fileName);
         using var reader = new StreamReader(stream);
-        var json = await reader.ReadToEndAsync();
 
-        var rawItems = JsonSerializer.Deserialize<List<RawLawItem>>(json);
-        if (rawItems == null) yield break;
+        string json = await reader.ReadToEndAsync();
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            AllowTrailingCommas = true,
+            ReadCommentHandling = JsonCommentHandling.Skip
+        };
+
+        List<RawLawItem>? rawItems;
+        try
+        {
+            rawItems = JsonSerializer.Deserialize<List<RawLawItem>>(json, options);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[LawImporter] JSON deserializing failed for '{fileName}': {ex.Message}");
+            yield break;
+        }
+
+        if (rawItems == null || rawItems.Count == 0)
+            yield break;
 
         int counter = 1;
         foreach (var raw in rawItems)
         {
             var law = new LawItem
             {
-                Id = raw.Id,
-                Title = raw.Title,
-                Content = raw.Content,
+                Title = raw.Title ?? string.Empty,
+                Text = raw.Text ?? string.Empty, // ✅ اینو درست کن
                 ArticleNumber = counter++,
-                LawType = "قانون دریایی",
+                LawType = lawType,
                 IsBookmarked = false,
                 IsExpanded = false
             };
 
-            await _database.InsertLawAsync(law);
+            try
+            {
+                await _database.InsertLawAsync(law);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[LawImporter] Insert failed: {ex.Message}");
+            }
+
             yield return law;
         }
     }
 
-    public async Task<List<LawItem>> GetAllAsync()
-    {
-        return await _database.GetLawsAsync();
-    }
-
     private class RawLawItem
     {
-        public int Id { get; set; }
-        public string Title { get; set; } = "";
-        public string Content { get; set; } = "";
+        public string? Title { get; set; }
+        public string? Text { get; set; } // ✅ به جای Text
     }
 }

@@ -8,8 +8,17 @@
     xmlns:conv="clr-namespace:Vakilaw.Converters"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"    
     FlowDirection="RightToLeft"
-    BackgroundColor="#FAFAFA"
-    Title="بانک قوانین">
+    BackgroundImageSource="bg_mainpage.jpg">
+    
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*,1.5*" Padding="10" >
+            <Label Text="بانک قوانین حقوقی" Margin="-10,0,0,0" TextColor="White" FontFamily="IRANSansWeb" FontSize="16" FontAttributes="Bold"/>
+            <Picker Grid.Column="1" HorizontalTextAlignment="End" Margin="0,-10,0,0"
+            Title="انتخاب نوع قانون" FontAttributes="Bold" FontSize="12"                
+            ItemsSource="{Binding LawTypes}"
+            SelectedItem="{Binding SelectedLawType, Mode=TwoWay}"/>                                    
+        </Grid>
+    </Shell.TitleView>
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -26,23 +35,13 @@
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*,Auto" Padding="12">
-        <!-- Header: Picker + Search -->
-        <VerticalStackLayout Grid.Row="0" Spacing="10">
-            <Grid ColumnDefinitions="*,Auto">
-                <Picker Grid.Column="0"
-                        Title="انتخاب نوع قانون"
-                        TextColor="Black"
-                        ItemsSource="{Binding LawTypes}"
-                        SelectedItem="{Binding SelectedLawType, Mode=TwoWay}"
-                        HorizontalOptions="Fill"/>
-            </Grid>
+        <!-- SearchBar مخفی -->
+        <SearchBar x:Name="PageSearchBar"
+           Grid.Column="1"
+           Placeholder="جستجو متن یا شماره ماده..."
+           PlaceholderColor="Gray"
+           Text="{Binding SearchText, Mode=TwoWay}" />
 
-            <SearchBar x:Name="PageSearchBar"
-                       Placeholder="جستجو بر اساس متن یا شماره ماده..."
-                       Text="{Binding SearchText, Mode=TwoWay}"
-                       SearchCommand="{Binding ApplyFilterCommand}"
-                       SearchCommandParameter="{Binding Text, Source={x:Reference PageSearchBar}}"/>
-        </VerticalStackLayout>
 
         <!-- CollectionView + ActivityIndicator -->
         <Grid Grid.Row="1">
@@ -76,7 +75,7 @@
 
                                 <toolkit:Expander.Content>
                                     <VerticalStackLayout Padding="0,8,0,0" Spacing="6">
-                                        <Label Text="{Binding Content}"
+                                        <Label Text="{Binding Text}"
                                                FontSize="14"
                                                TextColor="#333"
                                                LineBreakMode="WordWrap"/>
@@ -93,7 +92,7 @@
 
                             <Frame.Triggers>
                                 <DataTrigger TargetType="Frame" Binding="{Binding IsExpanded}" Value="True">
-                                    <Setter Property="BackgroundColor" Value="#FFF5E5"/>
+                                    <Setter Property="BackgroundColor" Value="GhostWhite"/>
                                     <Setter Property="HasShadow" Value="True"/>
                                 </DataTrigger>
                             </Frame.Triggers>

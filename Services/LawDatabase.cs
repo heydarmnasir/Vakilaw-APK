@@ -25,7 +25,7 @@ public class LawDatabase
                 ArticleNumber INTEGER,
                 LawType TEXT,
                 Title TEXT,
-                Content TEXT,
+                Text TEXT,
                 IsBookmarked INTEGER,
                 IsExpanded INTEGER
             );
@@ -33,20 +33,23 @@ public class LawDatabase
         cmd.ExecuteNonQuery();
     }
 
-    public async Task<List<LawItem>> GetLawsAsync()
+    public async Task<List<LawItem>> GetLawsByTypeAsync(string lawType)
     {
         var items = new List<LawItem>();
+
         using var conn = new SqliteConnection($"Data Source={_dbPath}");
         await conn.OpenAsync();
 
         var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT * FROM Laws ORDER BY ArticleNumber ASC";
+        cmd.CommandText = "SELECT * FROM Laws WHERE LawType = @type ORDER BY ArticleNumber ASC";
+        cmd.Parameters.AddWithValue("@type", lawType);
 
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
             items.Add(MapReaderToLaw(reader));
         }
+
         return items;
     }
 
@@ -57,12 +60,12 @@ public class LawDatabase
 
         var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO Laws (ArticleNumber, LawType, Title, Content, IsBookmarked, IsExpanded)
-            VALUES (@ArticleNumber, @LawType, @Title, @Content, @IsBookmarked, @IsExpanded)";
+            INSERT INTO Laws (ArticleNumber, LawType, Title, Text, IsBookmarked, IsExpanded)
+            VALUES (@ArticleNumber, @LawType, @Title, @Text, @IsBookmarked, @IsExpanded)";
         cmd.Parameters.AddWithValue("@ArticleNumber", law.ArticleNumber);
         cmd.Parameters.AddWithValue("@LawType", law.LawType ?? "");
         cmd.Parameters.AddWithValue("@Title", law.Title ?? "");
-        cmd.Parameters.AddWithValue("@Content", law.Content ?? "");
+        cmd.Parameters.AddWithValue("@Text", law.Text ?? "");
         cmd.Parameters.AddWithValue("@IsBookmarked", law.IsBookmarked ? 1 : 0);
         cmd.Parameters.AddWithValue("@IsExpanded", law.IsExpanded ? 1 : 0);
 
@@ -77,13 +80,13 @@ public class LawDatabase
         var cmd = conn.CreateCommand();
         cmd.CommandText = @"
             UPDATE Laws
-            SET ArticleNumber=@ArticleNumber, LawType=@LawType, Title=@Title, Content=@Content,
+            SET ArticleNumber=@ArticleNumber, LawType=@LawType, Title=@Title, Text=@Text,
                 IsBookmarked=@IsBookmarked, IsExpanded=@IsExpanded
             WHERE Id=@Id";
         cmd.Parameters.AddWithValue("@ArticleNumber", law.ArticleNumber);
         cmd.Parameters.AddWithValue("@LawType", law.LawType ?? "");
         cmd.Parameters.AddWithValue("@Title", law.Title ?? "");
-        cmd.Parameters.AddWithValue("@Content", law.Content ?? "");
+        cmd.Parameters.AddWithValue("@Text", law.Text ?? "");
         cmd.Parameters.AddWithValue("@IsBookmarked", law.IsBookmarked ? 1 : 0);
         cmd.Parameters.AddWithValue("@IsExpanded", law.IsExpanded ? 1 : 0);
         cmd.Parameters.AddWithValue("@Id", law.Id);
@@ -99,7 +102,7 @@ public class LawDatabase
             ArticleNumber = reader.IsDBNull(1) ? 0 : reader.GetInt32(1),
             LawType = reader.IsDBNull(2) ? "" : reader.GetString(2),
             Title = reader.IsDBNull(3) ? "" : reader.GetString(3),
-            Content = reader.IsDBNull(4) ? "" : reader.GetString(4),
+            Text = reader.IsDBNull(4) ? "" : reader.GetString(4),
             IsBookmarked = !reader.IsDBNull(5) && reader.GetInt32(5) == 1,
             IsExpanded = !reader.IsDBNull(6) && reader.GetInt32(6) == 1
         };

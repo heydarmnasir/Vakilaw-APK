@@ -17,7 +17,7 @@ namespace Vakilaw.Models
         private string title;
 
         [ObservableProperty]
-        private string content;
+        private string text;
 
         [ObservableProperty]
         private bool isBookmarked;
