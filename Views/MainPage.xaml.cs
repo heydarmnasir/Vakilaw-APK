@@ -112,7 +112,22 @@ namespace Vakilaw.Views
                 LawyersListPanel.IsVisible = false;
             }
         }
-        
+
+        private async void Bookmark_Tapped(object sender, EventArgs e)
+        {
+            if (BookmarkPanel.IsVisible == false)
+            {
+                BookmarkPanel.TranslationX = this.Width;
+                BookmarkPanel.IsVisible = true;
+                await BookmarkPanel.TranslateTo(0, 0, 400, Easing.CubicOut);
+            }
+            else
+            {
+                await BookmarkPanel.TranslateTo(this.Width, 0, 400, Easing.CubicIn);
+                BookmarkPanel.IsVisible = false;
+            }
+        }
+
         private async void OpenHamiVakilSite_Clicked(object sender, EventArgs e)
         {
             await Launcher.OpenAsync(new Uri("https://search-hamivakil.ir/"));
@@ -121,6 +136,6 @@ namespace Vakilaw.Views
         private async void LawBank_Tapped(object sender, TappedEventArgs e)
         {
             await Shell.Current.GoToAsync("LawBankPage");
-        }
-    }
+        }     
+    }  
 }

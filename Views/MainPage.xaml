@@ -11,7 +11,7 @@
             <Grid Padding="10" ColumnDefinitions="auto,auto">
                 <Label Text="⚖️ Vakilaw" Grid.Column="0" Margin="0,0,0,0" TextColor="White" FontFamily="OpenSansSemibold" FontSize="18" FontAttributes="Bold"/>
                 <ImageButton Source="account.png" IsEnabled="{Binding CanRegisterLawyer}" Command="{Binding OpenLawyerPopupCommand}" Grid.Column="1" HeightRequest="1" WidthRequest="0" HorizontalOptions="End"  Margin="225,0,0,0"/>
-                <Label Text="ثبت نام وکیل" IsVisible="{Binding ShowRegisterLabel}" FontFamily="IRANSansWeb" TextColor="Gold" FontAttributes="Bold" Grid.Column="1" HorizontalOptions="End" Margin="0,10,55,0"/>
+                <Label Text="وکیل هستید؟" IsVisible="{Binding ShowRegisterLabel}" FontFamily="IRANSansWeb" TextColor="Gold" FontAttributes="Bold" Grid.Column="1" HorizontalOptions="End" Margin="0,10,55,0"/>
             </Grid>
         </VerticalStackLayout>
     </Shell.TitleView>
@@ -78,6 +78,27 @@
                     </Grid>
                 </Frame>
 
+                <Frame CornerRadius="12"
+                HasShadow="True"
+                Padding="15"
+                BackgroundColor="#003049">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="LawBank_Tapped"/>
+                    </Frame.GestureRecognizers>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Image Source="lawbank.png"
+                        WidthRequest="28"
+                        HeightRequest="28"
+                        VerticalOptions="Center"/>
+                        <Label Text="بانک قوانین حقوقی"
+                        FontSize="16"
+                        VerticalOptions="Center"
+                        Grid.Column="1"
+                        Margin="10,0,0,0"/>
+                    </Grid>
+                </Frame>
+
+
                 <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}"
                     HasShadow="True"
                     Padding="15"
@@ -111,27 +132,7 @@
                         Margin="10,0,0,0"/>
                     </Grid>
                 </Frame>
-
-                <Frame CornerRadius="12"
-                     HasShadow="True"
-                     Padding="15"
-                     BackgroundColor="#003049">
-                    <Frame.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="LawBank_Tapped"/>
-                    </Frame.GestureRecognizers>
-                    <Grid ColumnDefinitions="Auto,*">
-                        <Image Source="lawbank.png"
-                   WidthRequest="28"
-                   HeightRequest="28"
-                   VerticalOptions="Center"/>
-                        <Label Text="بانک قوانین حقوقی"
-                   FontSize="16"
-                   VerticalOptions="Center"
-                   Grid.Column="1"
-                   Margin="10,0,0,0"/>
-                    </Grid>
-                </Frame>
-
+               
                 <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}"
                 HasShadow="True"
                 Padding="15"
@@ -226,6 +227,9 @@
 
             <!-- نشان ها -->
             <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="Bookmark_Tapped" />
+                </VerticalStackLayout.GestureRecognizers>
                 <Image Source="bookmark.png" WidthRequest="26"/>
                 <Label Text="نشان ها" FontSize="12" Margin="2,0,0,0" TextColor="White"/>
             </VerticalStackLayout>
@@ -364,6 +368,21 @@
                     <Button Text="صفحه بعد" Command="{Binding LoadNextPageCommand}"/>
                 </HorizontalStackLayout>
             </Grid>
+        </Grid>
+
+        <Grid x:Name="BookmarkPanel"
+        BackgroundColor="WhiteSmoke"
+        IsVisible="False"
+        Padding="20">
+            <CollectionView ItemsSource="{Binding BookmarkedLaws}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="5" Padding="10" BorderColor="LightGray">
+                            <Label Text="{Binding Title}" FontSize="16" />
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </Grid>
     </Grid>
 </ContentPage>

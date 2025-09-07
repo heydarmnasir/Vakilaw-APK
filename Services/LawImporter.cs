@@ -52,10 +52,13 @@ public class LawImporter
         int counter = 1;
         foreach (var raw in rawItems)
         {
+            var notesList = ParseNotes(raw.Notes);
+
             var law = new LawItem
             {
                 Title = raw.Title ?? string.Empty,
                 Text = raw.Text ?? string.Empty, // ✅ اینو درست کن
+                Notes = notesList, // الان List<string> هست — با مدل هماهنگه
                 ArticleNumber = counter++,
                 LawType = lawType,
                 IsBookmarked = false,
@@ -75,9 +78,43 @@ public class LawImporter
         }
     }
 
+    private static List<string> ParseNotes(JsonElement element)
+    {
+        var list = new List<string>();
+
+        if (element.ValueKind == JsonValueKind.Null)
+            return list;
+
+        // حالت 1: Notes یک رشته ساده است
+        if (element.ValueKind == JsonValueKind.String)
+        {
+            var s = element.GetString();
+            if (!string.IsNullOrWhiteSpace(s))
+                list.Add(s.Trim());
+            return list;
+        }
+
+        // حالت 2: Notes یک آرایه از رشته‌هاست
+        if (element.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var item in element.EnumerateArray())
+            {
+                if (item.ValueKind == JsonValueKind.String)
+                {
+                    var s = item.GetString();
+                    if (!string.IsNullOrWhiteSpace(s))
+                        list.Add(s.Trim());
+                }
+            }
+        }
+
+        return list;
+    }
+
     private class RawLawItem
     {
         public string? Title { get; set; }
-        public string? Text { get; set; } // ✅ به جای Text
+        public string? Text { get; set; }
+        public JsonElement Notes { get; set; } // مقاوم به رشته یا آرایه
     }
 }

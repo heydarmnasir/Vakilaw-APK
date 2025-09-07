@@ -1,11 +1,14 @@
 ﻿using AsyncAwaitBestPractices;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Maui.Dispatching;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Vakilaw.Models;
 using Vakilaw.Services;
+using Vakilaw.Views;
 
 namespace Vakilaw.ViewModels;
 
@@ -268,12 +271,25 @@ public partial class LawBankVM : ObservableObject
         if (law == null) return;
         law.IsBookmarked = !law.IsBookmarked;
         await _database.UpdateLawAsync(law);
+
+        // اطلاع به بقیه ViewModel ها
+        WeakReferenceMessenger.Default.Send(new BookmarkChangedMessage(law));
+    }
+
+    public class BookmarkChangedMessage
+    {
+        public LawItem Law { get; }
+
+        public BookmarkChangedMessage(LawItem law)
+        {
+            Law = law;
+        }
     }
 
     [RelayCommand]
     private async Task OpenArticleAsync(LawItem law)
     {
         if (law == null) return;
-        await App.Current.MainPage.DisplayAlert($"ماده {law.ArticleNumber}", law.Text, "باشه");
+        await App.Current.MainPage.DisplayAlert($"تبصره: {law.Title}", law.NotesText, "برگشت", FlowDirection.RightToLeft);
     } 
 }

@@ -4,14 +4,21 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Mopups.Services;
 using System.Collections.ObjectModel;
+using Vakilaw.Models;
 using Vakilaw.Services;
 using Vakilaw.Views;
 using static Vakilaw.Views.LawyerSubmitPopup;
+using static Vakilaw.ViewModels.LawBankVM;
 
 namespace Vakilaw.ViewModels;
 
 public partial class MainPageVM : ObservableObject
 {
+    private readonly DatabaseService _database;
+
+    [ObservableProperty]
+    private ObservableCollection<LawItem> bookmarkedLaws;
+
     private readonly UserService _userService;
 
     [ObservableProperty] private bool isLawyer;
@@ -34,8 +41,28 @@ public partial class MainPageVM : ObservableObject
     [ObservableProperty]
     private bool hasMorePages = true;
 
-    public MainPageVM(UserService userService)
+    public MainPageVM(UserService userService, DatabaseService database)
     {
+        _database = database;
+        LoadBookmarks();
+
+        // گوش دادن به تغییرات
+        WeakReferenceMessenger.Default.Register<BookmarkChangedMessage>(this, (r, m) =>
+        {
+            if (m.Law.IsBookmarked)
+            {
+                if (!BookmarkedLaws.Any(x => x.Id == m.Law.Id))
+                    BookmarkedLaws.Add(m.Law);
+            }
+            else
+            {
+                var item = BookmarkedLaws.FirstOrDefault(x => x.Id == m.Law.Id);
+                if (item != null)
+                    BookmarkedLaws.Remove(item);
+            }
+        });
+
+
         _userService = userService;
 
         // شهرها رو از کل لیست وکلا استخراج کن (AllLawyers)
@@ -65,6 +92,12 @@ public partial class MainPageVM : ObservableObject
         });
 
         Task.Run(async () => await LoadNotes());
+    }
+
+    private async void LoadBookmarks()
+    {
+        var items = await _database.GetBookmarkedLawsAsync();
+        BookmarkedLaws = new ObservableCollection<LawItem>(items);
     }
 
     [RelayCommand]
