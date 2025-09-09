@@ -5,18 +5,17 @@ using CommunityToolkit.Mvvm.Messaging;
 using Mopups.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Vakilaw.Models;
 using Vakilaw.Services;
 using Vakilaw.Views;
-using static Vakilaw.Views.LawyerSubmitPopup;
-
+using Vakilaw.Models.Messages;
 
 namespace Vakilaw.ViewModels;
 
 public partial class MainPageVM : ObservableObject
 {
     private readonly UserService _userService;
+    private readonly OtpService _otpService;
     private readonly LawService _lawService;
     private readonly LawyerService _lawyerService;
 
@@ -81,9 +80,10 @@ public partial class MainPageVM : ObservableObject
         }
     }
 
-    public MainPageVM(UserService userService, LawService lawService, LawyerService lawyerService)
+    public MainPageVM(UserService userService, OtpService otpService, LawService lawService, LawyerService lawyerService)
     {
         _userService = userService;
+        _otpService = otpService;
         _lawService = lawService;
         _lawyerService = lawyerService;
 
@@ -430,7 +430,7 @@ public partial class MainPageVM : ObservableObject
     [RelayCommand]
     public async Task OpenLawyerPopupAsync()
     {
-        var popup = new LawyerSubmitPopup(_userService);
+        var popup = new LawyerSubmitPopup(_userService, _otpService); // ← اینجا هر دو سرویس
         await MopupService.Instance.PushAsync(popup);
     }
 

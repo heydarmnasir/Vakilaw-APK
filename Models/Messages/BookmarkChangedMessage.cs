@@ -1,4 +1,4 @@
-﻿namespace Vakilaw.Models;
+﻿namespace Vakilaw.Models.Messages;
 public class BookmarkChangedMessage
 {
     public int LawId { get; }

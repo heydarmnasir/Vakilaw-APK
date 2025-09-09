@@ -40,6 +40,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<LawService>(s => new LawService(s.GetRequiredService<DatabaseService>()));
         builder.Services.AddSingleton<LawImporter>(s => new LawImporter(s.GetRequiredService<LawService>()));
         builder.Services.AddSingleton<UserService>();
+        builder.Services.AddSingleton<OtpService>();
         builder.Services.AddSingleton<LawyerService>();
 
         // ویومدل‌ها

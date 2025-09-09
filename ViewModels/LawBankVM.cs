@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Vakilaw.Models;
+using Vakilaw.Models.Messages;
 using Vakilaw.Services;
 
 namespace Vakilaw.ViewModels;

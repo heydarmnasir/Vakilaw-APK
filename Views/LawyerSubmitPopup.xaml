@@ -5,48 +5,50 @@
                   BackgroundColor="Transparent" FlowDirection="RightToLeft">
 
     <Grid>
-        <!-- لایه تار پس زمینه -->
-        <BoxView BackgroundColor="Black" Opacity="0.7">
-            <BoxView.Effects>
-                
-            </BoxView.Effects>
-        </BoxView>
-
-        <!-- محتوای پاپ‌آپ -->
+        <BoxView BackgroundColor="Black" Opacity="0.7"/>
         <Frame HasShadow="True" CornerRadius="20" Padding="25" BackgroundColor="White"
                VerticalOptions="Center" HorizontalOptions="Center"
-               WidthRequest="320" HeightRequest="390">
-            <VerticalStackLayout Spacing="20">
+               WidthRequest="320" HeightRequest="460">
+            <VerticalStackLayout Spacing="15">
 
-                <Label Text="ثبت اطلاعات وکیل"
-                       FontAttributes="Bold"
-                       FontSize="20"
-                       HorizontalOptions="Center"
+                <Label Text="ثبت اطلاعات وکیل" FontAttributes="Bold"
+                       FontSize="20" HorizontalOptions="Center"
                        TextColor="#2C3E50"/>
 
+                <!-- فیلد نام -->
                 <Frame CornerRadius="15" Padding="5" BackgroundColor="#F5F6FA" HasShadow="False" BorderColor="#3498DB">
                     <Entry Placeholder="نام و نام خانوادگی" Text="{Binding FullName}"
                            PlaceholderColor="#95A5A6" TextColor="#2C3E50" FontSize="16"/>
                 </Frame>
 
+                <!-- فیلد شماره موبایل -->
                 <Frame CornerRadius="15" Padding="5" BackgroundColor="#F5F6FA" HasShadow="False" BorderColor="#27AE60">
                     <Entry Placeholder="شماره موبایل" Keyboard="Telephone" Text="{Binding PhoneNumber}"
                            PlaceholderColor="#95A5A6" TextColor="#2C3E50" FontSize="16"/>
                 </Frame>
 
+                <!-- فیلد شماره پروانه وکالت -->
                 <Frame CornerRadius="15" Padding="5" BackgroundColor="#F5F6FA" HasShadow="False" BorderColor="#E67E22">
                     <Entry Placeholder="شماره پروانه وکالت" Keyboard="Numeric" Text="{Binding LicenseNumber}"
                            PlaceholderColor="#95A5A6" TextColor="#2C3E50" FontSize="16"/>
                 </Frame>
 
-                <Button Text="ثبت اطلاعات"
-                        TextColor="White"
-                        FontSize="18" FontAttributes="Bold"
-                        CornerRadius="25"
-                        Padding="15,10"
-                        BackgroundColor="#3498DB"
-                        Clicked="OnSubmitClicked"
-                        />
+                <!-- دکمه ارسال OTP -->
+                <Button Text="ارسال کد تایید" TextColor="White" FontSize="18" FontAttributes="Bold"
+                        CornerRadius="25" Padding="15,10" BackgroundColor="#3498DB"
+                        Command="{Binding SendOtpCommand}"/>
+
+                <!-- فیلد OTP (نمایش بعد از ارسال) -->
+                <Frame CornerRadius="15" Padding="5" BackgroundColor="#F5F6FA" HasShadow="False" BorderColor="#8E44AD"
+                       IsVisible="{Binding IsOtpSent}">
+                    <Entry Placeholder="کد تایید" Keyboard="Numeric" Text="{Binding EnteredOtp}"
+                           PlaceholderColor="#95A5A6" TextColor="#2C3E50" FontSize="16"/>
+                </Frame>
+
+                <Button Text="تایید کد" TextColor="White" FontSize="18" FontAttributes="Bold"
+                        CornerRadius="25" Padding="15,10" BackgroundColor="#8E44AD"
+                        IsVisible="{Binding IsOtpSent}" Command="{Binding VerifyOtpCommand}"/>
+
             </VerticalStackLayout>
         </Frame>
     </Grid>
