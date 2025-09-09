@@ -4,12 +4,13 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Mopups.Services;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Vakilaw.Models;
 using Vakilaw.Services;
 using Vakilaw.Views;
-using static Vakilaw.ViewModels.LawBankVM;
 using static Vakilaw.Views.LawyerSubmitPopup;
+
 
 namespace Vakilaw.ViewModels;
 
@@ -91,41 +92,27 @@ public partial class MainPageVM : ObservableObject
         AllLawyers = new ObservableCollection<Lawyer>();
         Cities = new ObservableCollection<string>();
 
-        Task.Run(async () => await InitializeLawyersAsync());
-        Task.Run(async () => await LoadBookmarksAsync());
+        LoadUserState();
 
-        WeakReferenceMessenger.Default.Register<BookmarkChangedMessage>(this, (r, m) =>
+        WeakReferenceMessenger.Default.Register<BookmarkChangedMessage>(this, async (r, m) =>
         {
+            var law = await _lawService.GetLawByIdAsync(m.LawId);
+
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                if (m.Law.IsBookmarked)
+                if (m.IsBookmarked)
                 {
-                    if (!BookmarkedLaws.Any(x => x.Id == m.Law.Id))
-                    {
-                        // اضافه کردن نسخه مستقل از LawItem
-                        BookmarkedLaws.Add(new LawItem
-                        {
-                            Id = m.Law.Id,
-                            ArticleNumber = m.Law.ArticleNumber,
-                            LawType = m.Law.LawType,
-                            Title = m.Law.Title,
-                            Text = m.Law.Text,
-                            Notes = m.Law.Notes.ToList(),
-                            IsBookmarked = true,
-                            IsExpanded = false
-                        });
-                    }
+                    if (law != null && !BookmarkedLaws.Any(x => x.Id == m.LawId))
+                        BookmarkedLaws.Add(law);
                 }
                 else
                 {
-                    var item = BookmarkedLaws.FirstOrDefault(x => x.Id == m.Law.Id);
+                    var item = BookmarkedLaws.FirstOrDefault(x => x.Id == m.LawId);
                     if (item != null)
                         BookmarkedLaws.Remove(item);
                 }
             });
         });
-
-        LoadUserState();
 
         WeakReferenceMessenger.Default.Register<LawyerRegisteredMessage>(this, async (r, m) =>
         {
@@ -140,8 +127,13 @@ public partial class MainPageVM : ObservableObject
             Lawyers.Clear();
             await LoadNotesAsync();
         });
+    }
 
-        Task.Run(async () => await LoadNotesAsync());
+    public async Task InitializeAsync()
+    {
+        await InitializeLawyersAsync();
+        await LoadBookmarksAsync();
+        await LoadNotesAsync();
     }
 
     #region Initialize Lawyers
@@ -194,23 +186,14 @@ public partial class MainPageVM : ObservableObject
                 BookmarkedLaws.Clear();
                 foreach (var law in items)
                 {
-                    BookmarkedLaws.Add(new LawItem
-                    {
-                        Id = law.Id,
-                        ArticleNumber = law.ArticleNumber,
-                        LawType = law.LawType,
-                        Title = law.Title,
-                        Text = law.Text,
-                        Notes = law.Notes.ToList(),
-                        IsBookmarked = law.IsBookmarked,
-                        IsExpanded = false
-                    });
+                    // اگر MapReaderToLaw حالا cache درست دارد، 'law' همان آبجکت اصلی خواهد بود
+                    BookmarkedLaws.Add(law);
                 }
             });
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"LoadBookmarksAsync Error: {ex.Message}");
+            Debug.WriteLine($"LoadBookmarksAsync Error: {ex.Message}");
         }
     }
 
@@ -226,20 +209,23 @@ public partial class MainPageVM : ObservableObject
     {
         if (law == null) return;
 
-        // تغییر وضعیت
         law.IsBookmarked = !law.IsBookmarked;
 
-        // حذف از پنل بوکمارک‌ها در صورت آنبوکمارک
-        if (!law.IsBookmarked)
+        MainThread.BeginInvokeOnMainThread(() =>
         {
-            var item = BookmarkedLaws.FirstOrDefault(x => x.Id == law.Id);
-            if (item != null)
-                BookmarkedLaws.Remove(item);
-        }
+            // حذف از پنل بوکمارک‌ها در صورت آنبوکمارک
+            if (!law.IsBookmarked)
+            {
+                var item = BookmarkedLaws.FirstOrDefault(x => x.Id == law.Id);
+                if (item != null)
+                    BookmarkedLaws.Remove(item);
+            }
+        });
 
-        // پیام به سایر ViewModel ها که این آیتم تغییر کرده
-        WeakReferenceMessenger.Default.Send(new BookmarkChangedMessage(law));
+        // پیام به سایر ViewModel ها
+        WeakReferenceMessenger.Default.Send(new BookmarkChangedMessage(law.Id, law.IsBookmarked));
     }
+
     #endregion
 
     #region Notes & Lazy Loading

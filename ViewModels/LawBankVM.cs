@@ -86,16 +86,19 @@ public partial class LawBankVM : ObservableObject
         LawTypes = new ObservableCollection<string>(_fileMap.Keys);
         SelectedLawType = "قانون اساسی"; // پیش‌فرض
 
-        // ثبت Messenger برای بروزرسانی بوکمارک‌ها
+        // ثبت پیام
         WeakReferenceMessenger.Default.Register<BookmarkChangedMessage>(this, (r, m) =>
         {
-            // پیدا کردن آیتم در CollectionView اصلی Laws
-            var lawItem = Laws.FirstOrDefault(x => x.Id == m.Law.Id);
-            if (lawItem != null)
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                lawItem.IsBookmarked = m.Law.IsBookmarked;
-            }
+                var lawItem = Laws.FirstOrDefault(x => x.Id == m.LawId);
+                if (lawItem != null)
+                {
+                    lawItem.IsBookmarked = m.IsBookmarked;
+                }
+            });
         });
+
     }
 
     partial void OnSelectedLawTypeChanged(string value)
@@ -130,20 +133,16 @@ public partial class LawBankVM : ObservableObject
 
             Debug.WriteLine($"[VM] Loading file '{fileName}' for type '{SelectedLawType}'");
 
-            // ایمپورت داده‌ها اگر دیتابیس خالی باشد
-            await foreach (var law in _importer.ImportIfEmptyWithProgressAsync(fileName, SelectedLawType))
+            // فقط اگه دیتابیس خالی باشه ایمپورت می‌کنیم
+            await foreach (var _ in _importer.ImportIfEmptyWithProgressAsync(fileName, SelectedLawType))
             {
-                _allLaws.Add(law);
+                // اینجا چیزی اضافه نکن
             }
 
-            // اگر ایمپورت انجام نشده، از DB بخوان
-            if (_allLaws.Count == 0)
-            {
-                var existing = await _database.GetLawsByTypeAsync(SelectedLawType);
-                _allLaws = existing.ToList();
-            }
+            // بعد از ایمپورت (یا اگر قبلاً ایمپورت شده) از DB بخون
+            var existing = await _database.GetLawsByTypeAsync(SelectedLawType);
+            _allLaws = existing.ToList();
 
-            // نمایش همه ماده‌ها در ابتدا
             await ApplyFilterAsync(string.Empty);
         }
         catch (Exception ex)
@@ -231,7 +230,7 @@ public partial class LawBankVM : ObservableObject
         law.IsBookmarked = !law.IsBookmarked;
         await _database.UpdateLawAsync(law);
 
-        WeakReferenceMessenger.Default.Send(new BookmarkChangedMessage(law));
+        WeakReferenceMessenger.Default.Send(new BookmarkChangedMessage(law.Id, law.IsBookmarked));
     }
 
     [RelayCommand]
@@ -254,11 +253,5 @@ public partial class LawBankVM : ObservableObject
             .Replace('٦', '6').Replace('٧', '7').Replace('٨', '8').Replace('٩', '9');
 
         return input;
-    }
-
-    public class BookmarkChangedMessage
-    {
-        public LawItem Law { get; }
-        public BookmarkChangedMessage(LawItem law) => Law = law;
-    }
+    }  
 }
