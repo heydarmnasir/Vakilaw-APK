@@ -1,16 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"            
              xmlns:local="clr-namespace:Vakilaw.MarkupExtensions"
+             xmlns:vm="clr-namespace:Vakilaw.ViewModels"
+             xmlns:models="clr-namespace:Vakilaw.Models"
+             xmlns:conv="clr-namespace:Vakilaw.Converters"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"    
              x:Class="Vakilaw.Views.MainPage"
              BackgroundImageSource="bg_main.jpg" FlowDirection="RightToLeft">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:BoolToStarConverter x:Key="BoolToStarConverter" />
+            <Style x:Key="CardFrameStyle" TargetType="Frame">
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="Margin" Value="6,8"/>
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="HasShadow" Value="False"/>
+            </Style>
+            <Color x:Key="Accent">#ffffff</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Shell.TitleView>
         <VerticalStackLayout>
             <Grid Padding="10" ColumnDefinitions="auto,auto">
                 <Label Text="⚖️ Vakilaw" Grid.Column="0" Margin="0,0,0,0" TextColor="White" FontFamily="OpenSansSemibold" FontSize="18" FontAttributes="Bold"/>
-                <ImageButton Source="account.png" IsEnabled="{Binding CanRegisterLawyer}" Command="{Binding OpenLawyerPopupCommand}" Grid.Column="1" HeightRequest="1" WidthRequest="0" HorizontalOptions="End"  Margin="225,0,0,0"/>
+                <ImageButton Source="account.png"
+                             Grid.Column="1"
+                             HeightRequest="28" WidthRequest="28"
+                             HorizontalOptions="End"
+                             Margin="225,0,0,0"
+                             IsEnabled="{Binding CanRegisterLawyer}"
+                             Command="{Binding OpenLawyerPopupCommand}"/>
                 <Label Text="وکیل هستید؟" IsVisible="{Binding ShowRegisterLabel}" FontFamily="IRANSansWeb" TextColor="Gold" FontAttributes="Bold" Grid.Column="1" HorizontalOptions="End" Margin="0,10,55,0"/>
             </Grid>
         </VerticalStackLayout>
@@ -18,371 +41,511 @@
 
     <Grid RowDefinitions="*,Auto">
         <Grid x:Name="ContentArea" Grid.Row="0">
-            <Grid HeightRequest="90"
-             VerticalOptions="Start">
-
-                <!-- گرادیان آبی -->
+            <Grid HeightRequest="90" VerticalOptions="Start">
                 <Grid.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Color="#003049" Offset="0.0"/>
                         <GradientStop Color="#003049" Offset="0.7"/>
-                        
-                        <!-- محو شدن به سفید -->
                     </LinearGradientBrush>
                 </Grid.Background>
 
-                <!--موج سفید (تصویر PNG نیم‌شفاف)-->
-                <Image Source="mainheader.png"
-                Aspect="Fill"
-                VerticalOptions="End"
-                
-                />
-           
-                <StackLayout         
-                        Padding="20,0,0,0" FlowDirection="RightToLeft">
-                    <Label Text="{Binding LawyerFullName}" FlowDirection="RightToLeft"
-                             FontFamily="Sahel" FontSize="16"
-                             FontAttributes="Bold"
-                             TextColor="White"
-                             />
+                <Image Source="mainheader.png" Aspect="Fill" VerticalOptions="End"/>
+
+                <StackLayout Padding="20,0,0,0" FlowDirection="RightToLeft">
+                    <Label Text="{Binding LawyerFullName}" FlowDirection="RightToLeft" FontFamily="Sahel" FontSize="16" FontAttributes="Bold" TextColor="White"/>
                     <HorizontalStackLayout>
-                        <Label Text="وکیل پایه یک دادگستری - شماره پروانه: " IsVisible="{Binding LawyerLicensevisibility}" FontFamily="IRANSansWeb" FontSize="11" TextColor="White" Opacity="0.8"/>
+                        <Label Text="وکیل پایه یک دادگستری - شماره پروانه: " IsVisible="{Binding LawyerLicenseVisibility}" FontFamily="IRANSansWeb" FontSize="11" TextColor="White" Opacity="0.8"/>
                         <Label Text="{Binding LawyerLicense}" FontFamily="IRANSansWeb" FontSize="11" TextColor="White" Opacity="0.8"/>
                     </HorizontalStackLayout>
                 </StackLayout>
             </Grid>
 
-            <!-- محتوای اصلی -->
-            <StackLayout Grid.Row="1"
-             Padding="20,10"
-             Spacing="15" Margin="0,125">
+            <!-- کارت‌ها -->
+            <StackLayout Grid.Row="1" Padding="20,10" Spacing="15" Margin="0,125">
 
-                <!-- کارت‌ها -->
-                <Frame CornerRadius="12"
-                    HasShadow="True"
-                    Padding="15"
-                    BackgroundColor="#003049">
-                    <Frame.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="LawyersList_Tapped"/>
-                    </Frame.GestureRecognizers>
-                    <Grid ColumnDefinitions="Auto,*">
-                        <Image Source="consult.png"
-                        WidthRequest="28"
-                        HeightRequest="28"
-                        VerticalOptions="Center"/>
-                        <Label Text="لیست وکلای پایه یک دادگستری"
-                         FontSize="16"
-                         VerticalOptions="Center"
-                         Grid.Column="1"
-                         Margin="10,0,0,0"/>
+                <!-- لیست وکلا -->
+                <Frame CornerRadius="12" HasShadow="True" Padding="0" BackgroundColor="#003049">
+                    <Grid ColumnDefinitions="Auto,*" Padding="15">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ToggleLawyersListCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <Image Source="consult.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
+                        <Label Text="لیست وکلای پایه یک دادگستری" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
                     </Grid>
                 </Frame>
 
-                <Frame CornerRadius="12"
-                HasShadow="True"
-                Padding="15"
-                BackgroundColor="#003049">
-                    <Frame.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="LawBank_Tapped"/>
-                    </Frame.GestureRecognizers>
-                    <Grid ColumnDefinitions="Auto,*">
-                        <Image Source="lawbank.png"
-                        WidthRequest="28"
-                        HeightRequest="28"
-                        VerticalOptions="Center"/>
-                        <Label Text="بانک قوانین حقوقی"
-                        FontSize="16"
-                        VerticalOptions="Center"
-                        Grid.Column="1"
-                        Margin="10,0,0,0"/>
+                <!-- بانک قوانین -->
+                <Frame CornerRadius="12" HasShadow="True" Padding="0" BackgroundColor="#003049">
+                    <Grid ColumnDefinitions="Auto,*" Padding="15">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding LawBankPageCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <Image Source="lawbank.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
+                        <Label Text="بانک قوانین حقوقی" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
                     </Grid>
                 </Frame>
 
-
-                <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}"
-                    HasShadow="True"
-                    Padding="15"
-                    BackgroundColor="#003049">
+                <!-- مدیریت موکل‌ها -->
+                <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}" HasShadow="True" Padding="15" BackgroundColor="#003049">
                     <Grid ColumnDefinitions="Auto,*">
-                        <Image Source="clients.png"
-                        WidthRequest="28"
-                        HeightRequest="28"
-                        VerticalOptions="Center"/>
-                        <Label Text="مدیریت موکل‌ ها و پرونده ها"
-                        FontSize="16"
-                        VerticalOptions="Center"
-                        Grid.Column="1"
-                        Margin="10,0,0,0"/>
+                        <Image Source="clients.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
+                        <Label Text="مدیریت موکل‌ ها و پرونده ها" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
                     </Grid>
                 </Frame>
 
-                <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}"
-                    HasShadow="True"
-                    Padding="15"
-                    BackgroundColor="#003049">
+                <!-- مدیریت قراردادها -->
+                <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}" HasShadow="True" Padding="15" BackgroundColor="#003049">
                     <Grid ColumnDefinitions="Auto,*">
-                        <Image Source="contracts.png"
-                         WidthRequest="28"
-                         HeightRequest="28"
-                         VerticalOptions="Center"/>
-                        <Label Text="مدیریت قراردادها، لوایح و دادخواست ها"
-                        FontSize="16"
-                        VerticalOptions="Center"
-                        Grid.Column="1"
-                        Margin="10,0,0,0"/>
-                    </Grid>
-                </Frame>
-               
-                <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}"
-                HasShadow="True"
-                Padding="15"
-                BackgroundColor="#003049">
-                    <Grid ColumnDefinitions="Auto,*">
-                        <Image Source="sms.png"
-                         WidthRequest="28"
-                         HeightRequest="28"
-                         VerticalOptions="Center"/>
-                        <Label Text="ارسال پیامک تکی و گروهی"
-                         FontSize="16"
-                         VerticalOptions="Center"
-                         Grid.Column="1"
-                         Margin="10,0,0,0"/>
+                        <Image Source="contracts.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
+                        <Label Text="مدیریت قراردادها، لوایح و دادخواست ها" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
                     </Grid>
                 </Frame>
 
-                <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}"
-                HasShadow="True"
-                Padding="15"
-                BackgroundColor="#003049">
+                <!-- پیامک -->
+                <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}" HasShadow="True" Padding="15" BackgroundColor="#003049">
                     <Grid ColumnDefinitions="Auto,*">
-                        <Image Source="financial_management.png"
-                         WidthRequest="28"
-                         HeightRequest="28"
-                         VerticalOptions="Center"/>
-                        <Label Text="مدیریت مالی و حسابداری"
-                         FontSize="16"
-                         VerticalOptions="Center"
-                         Grid.Column="1"
-                         Margin="10,0,0,0"/>
+                        <Image Source="sms.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
+                        <Label Text="ارسال پیامک تکی و گروهی" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
                     </Grid>
                 </Frame>
 
-                <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}"
-                HasShadow="True"
-                Padding="15"
-                BackgroundColor="#003049">
+                <!-- مدیریت مالی -->
+                <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}" HasShadow="True" Padding="15" BackgroundColor="#003049">
                     <Grid ColumnDefinitions="Auto,*">
-                        <Image Source="reports.png"
-                        WidthRequest="28"
-                        HeightRequest="28"
-                        VerticalOptions="Center"/>
-                        <Label Text="گزارش ها"
-                         FontSize="16"
-                         VerticalOptions="Center"
-                         Grid.Column="1"
-                         Margin="10,0,0,0"/>
+                        <Image Source="financial_management.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
+                        <Label Text="مدیریت مالی و حسابداری" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
+                    </Grid>
+                </Frame>
+
+                <!-- گزارش‌ها -->
+                <Frame CornerRadius="12" IsEnabled="{Binding IsLawyer}" HasShadow="True" Padding="15" BackgroundColor="#003049">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Image Source="reports.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
+                        <Label Text="گزارش ها" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
                     </Grid>
                 </Frame>
             </StackLayout>
         </Grid>
-        
+
         <!-- نوار پایین -->
         <Grid Grid.Row="1"
-              BackgroundColor="#1c1c1c"
-              HeightRequest="70"
-              ColumnDefinitions="*,*,*,*,*">
+      BackgroundColor="#1c1c1c"
+      HeightRequest="70"
+      ColumnDefinitions="*,*,*,*,*">
 
-            <!-- خانه -->
-            <VerticalStackLayout Grid.Column="4" HorizontalOptions="Center" VerticalOptions="Center">
-                <VerticalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="Home_Tapped" />
-                </VerticalStackLayout.GestureRecognizers>
-                <Image Source="home.png" WidthRequest="26"/>
-                <Label Text="خانه" FontSize="12" Margin="10,0" TextColor="White"/>
+            <!-- تنظیمات (Col 0) -->
+            <VerticalStackLayout Grid.Column="0"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center"
+                         Spacing="2">
+                <Frame Padding="6"
+               CornerRadius="20"
+               BackgroundColor="Transparent"
+               HasShadow="False">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectTabCommand}"
+                        CommandParameter="Settings" />
+                    </Frame.GestureRecognizers>
+                    <Frame.Style>
+                        <Style TargetType="Frame">
+                            <Setter Property="BackgroundColor" Value="Transparent" />
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Frame"
+                                     Binding="{Binding SelectedTab}"
+                                     Value="Settings">
+                                    <Setter Property="BackgroundColor" Value="#22FF0000"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Frame.Style>
+
+                    <Image Source="settings.png"
+                   WidthRequest="26"
+                   HeightRequest="26">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Opacity" Value="0.8" />
+                                <Setter Property="Scale" Value="1" />
+                                <Style.Triggers>
+                                    <DataTrigger TargetType="Image"
+                                         Binding="{Binding SelectedTab}"
+                                         Value="Settings">
+                                        <Setter Property="Opacity" Value="1" />
+                                        <Setter Property="Scale" Value="1.1" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                </Frame>
+
+                <Label Text="تنظیمات"
+               FontSize="12">
+                    <Label.Style>
+                        <Style TargetType="Label">
+                            <Setter Property="TextColor" Value="White" />
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Label"
+                                     Binding="{Binding SelectedTab}"
+                                     Value="Settings">
+                                    <Setter Property="TextColor" Value="Red" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
             </VerticalStackLayout>
 
-            <!-- سایت عدل ایران -->
-            <VerticalStackLayout x:Name="adliran_bg" Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
-                <VerticalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="AdlIran_Tapped" />
-                </VerticalStackLayout.GestureRecognizers>
-                <Image Source="adliran.png" WidthRequest="26"/>
-                <Label Text="عدل ایران" FontSize="12" TextColor="White"/>
+            <!-- عدل ایران (Col 1) -->
+            <VerticalStackLayout Grid.Column="1"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center"
+                         Spacing="2">
+                <Frame Padding="6"
+               CornerRadius="20"
+               BackgroundColor="Transparent"
+               HasShadow="False">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectTabCommand}"
+                        CommandParameter="AdlIran" />
+                    </Frame.GestureRecognizers>
+                    <Frame.Style>
+                        <Style TargetType="Frame">
+                            <Setter Property="BackgroundColor" Value="Transparent" />
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Frame"
+                                     Binding="{Binding SelectedTab}"
+                                     Value="AdlIran">
+                                    <Setter Property="BackgroundColor" Value="#22FF0000"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Frame.Style>
+
+                    <Image Source="adliran.png"
+                   WidthRequest="26"
+                   HeightRequest="26">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Opacity" Value="0.8" />
+                                <Setter Property="Scale" Value="1" />
+                                <Style.Triggers>
+                                    <DataTrigger TargetType="Image"
+                                         Binding="{Binding SelectedTab}"
+                                         Value="AdlIran">
+                                        <Setter Property="Opacity" Value="1" />
+                                        <Setter Property="Scale" Value="1.1" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                </Frame>
+
+                <Label Text="عدل ایران"
+               FontSize="12">
+                    <Label.Style>
+                        <Style TargetType="Label">
+                            <Setter Property="TextColor" Value="White" />
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Label"
+                                     Binding="{Binding SelectedTab}"
+                                     Value="AdlIran">
+                                    <Setter Property="TextColor" Value="Red" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
             </VerticalStackLayout>
 
-            <!-- افزودن (وسط و بزرگتر) -->
-            <Grid Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center">
-                <Frame WidthRequest="65" HeightRequest="65"
-                       CornerRadius="32"
-                       BackgroundColor="#343a40"
-                       HasShadow="True"
-                       TranslationY="-15"
-                       Padding="0">
+            <!-- افزودن (Col 2) - دکمه وسط -->
+            <Grid Grid.Column="2"
+          HorizontalOptions="Center"
+          VerticalOptions="Center">
+                <Frame WidthRequest="65"
+               HeightRequest="65"
+               CornerRadius="32"
+               BackgroundColor="#343a40"
+               HasShadow="True"
+               TranslationY="-15"
+               Padding="0">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectTabCommand}"
+                        CommandParameter="Add" />
+                    </Frame.GestureRecognizers>
                     <Image Source="add.png"
-                           WidthRequest="30" HeightRequest="30"
-                           VerticalOptions="Center"
-                           HorizontalOptions="Center"/>
+                   WidthRequest="30"
+                   HeightRequest="30"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Opacity" Value="0.9" />
+                                <Style.Triggers>
+                                    <DataTrigger TargetType="Image"
+                                         Binding="{Binding SelectedTab}"
+                                         Value="Add">
+                                        <Setter Property="Scale" Value="1.05" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
                 </Frame>
             </Grid>
 
-            <!-- نشان ها -->
-            <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center">
-                <VerticalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="Bookmark_Tapped" />
-                </VerticalStackLayout.GestureRecognizers>
-                <Image Source="bookmark.png" WidthRequest="26"/>
-                <Label Text="نشان ها" FontSize="12" Margin="2,0,0,0" TextColor="White"/>
+            <!-- نشان‌ها (Col 3) -->
+            <VerticalStackLayout Grid.Column="3"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center"
+                         Spacing="2">
+                <Frame Padding="6"
+               CornerRadius="20"
+               BackgroundColor="Transparent"
+               HasShadow="False">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectTabCommand}"
+                              CommandParameter="Bookmarks" />
+                    </Frame.GestureRecognizers>
+                    <Frame.Style>
+                        <Style TargetType="Frame">
+                            <Setter Property="BackgroundColor" Value="Transparent" />
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Frame"
+                                     Binding="{Binding SelectedTab}"
+                                     Value="Bookmarks">
+                                    <Setter Property="BackgroundColor" Value="#22FF0000"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Frame.Style>
+
+                    <Image Source="bookmark.png"
+                   WidthRequest="26"
+                   HeightRequest="26" InputTransparent="True">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Opacity" Value="0.8" />
+                                <Setter Property="Scale" Value="1" />
+                                <Style.Triggers>
+                                    <DataTrigger TargetType="Image"
+                                         Binding="{Binding SelectedTab}"
+                                         Value="Bookmarks">
+                                        <Setter Property="Opacity" Value="1" />
+                                        <Setter Property="Scale" Value="1.1" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                </Frame>
+
+                <Label Text="نشان‌ها"
+               FontSize="12"
+               Margin="2,0,0,0">
+                    <Label.Style>
+                        <Style TargetType="Label">
+                            <Setter Property="TextColor" Value="White" />
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Label"
+                                     Binding="{Binding SelectedTab}"
+                                     Value="Bookmarks">
+                                    <Setter Property="TextColor" Value="Red" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
             </VerticalStackLayout>
 
-            <!-- تنظیمات -->
-            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center">
-                <VerticalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="Settings_Tapped" />
-                </VerticalStackLayout.GestureRecognizers>
-                <Image Source="settings.png" WidthRequest="26"/>
-                <Label Text="تنظیمات" FontSize="12" TextColor="White"/>
+            <!-- خانه (Col 4) -->
+            <VerticalStackLayout Grid.Column="4"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center"
+                         Spacing="2">
+                <Frame Padding="6"
+               CornerRadius="20"
+               BackgroundColor="Transparent"
+               HasShadow="False">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectTabCommand}"
+                        CommandParameter="Home" />
+                    </Frame.GestureRecognizers>
+                    <Frame.Style>
+                        <Style TargetType="Frame">
+                            <Setter Property="BackgroundColor" Value="Transparent" />
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Frame"
+                                     Binding="{Binding SelectedTab}"
+                                     Value="Home">
+                                    <Setter Property="BackgroundColor" Value="#22FF0000"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Frame.Style>
+
+                    <Image Source="home.png"
+                   WidthRequest="26"
+                   HeightRequest="26">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Opacity" Value="0.8" />
+                                <Setter Property="Scale" Value="1" />
+                                <Style.Triggers>
+                                    <DataTrigger TargetType="Image"
+                                         Binding="{Binding SelectedTab}"
+                                         Value="Home">
+                                        <Setter Property="Opacity" Value="1" />
+                                        <Setter Property="Scale" Value="1.1" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                </Frame>
+
+                <Label Text="خانه"
+               FontSize="12"
+               Margin="10,0">
+                    <Label.Style>
+                        <Style TargetType="Label">
+                            <Setter Property="TextColor" Value="White" />
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Label"
+                                     Binding="{Binding SelectedTab}"
+                                     Value="Home">
+                                    <Setter Property="TextColor" Value="Red" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
             </VerticalStackLayout>
         </Grid>
 
-        <!-- پنل تنظیمات (اول مخفی) -->
-        <Grid x:Name="SettingsPanel"
-              BackgroundColor="WhiteSmoke"
-              IsVisible="False"
-              Padding="20">
-            <StackLayout>
-                <Label Text="تنظیمات" FontSize="20" />
-                <Button Text="بستن"/>
-            </StackLayout>
+        <!-- پنل لیست وکلا -->
+        <Grid x:Name="LawyersListPanel" Background="#003049" Padding="5" IsVisible="{Binding IsLawyersListVisible}">
+            <ScrollView>
+                <VerticalStackLayout Padding="10" Spacing="15">
+                   
+                    <Grid ColumnDefinitions="2*,1.5*" RowDefinitions="2*,1*">
+                        <Image Source="search3.png" HeightRequest="20" WidthRequest="20" HorizontalOptions="Start"/>
+                        <Entry Grid.Column="0" HorizontalTextAlignment="Center" Placeholder="جستجوی وکیل..." PlaceholderColor="DarkGray" Text="{Binding SearchQuery}" HorizontalOptions="Fill"/>
+                        <Picker Grid.Column="1" ItemsSource="{Binding Cities}" SelectedIndex="1" SelectedItem="{Binding SelectedCity}" Title="انتخاب شهر"/>
+                        <HorizontalStackLayout Grid.Column="1" Grid.Row="1" Margin="-175,15,0,0">
+                            <Label Text="شهر شما موجود نیست؟"/>
+                            <Button Text="جستجو در سامانه جامع وکلا" Margin="0,-12,0,0" Command="{Binding HamiVakilCommand}" BackgroundColor="Transparent" FontAttributes="Bold" TextColor="Gold"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <CollectionView ItemsSource="{Binding Lawyers}" RemainingItemsThreshold="1" RemainingItemsThresholdReachedCommand="{Binding LoadNextPageCommand}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="8" Margin="2" CornerRadius="10" BackgroundColor="#F9F9F9" HasShadow="True">
+                                    <Grid ColumnDefinitions="2*,1.5*,1*,Auto">
+                                        <Label Grid.Column="0" Text="{Binding FullName}" TextColor="Black" FontFamily="Sahel" FontSize="13" FontAttributes="Bold"/>
+                                        <Label Grid.Column="1" Text="{Binding PhoneNumber}" TextColor="Black" FontFamily="IRANSansWeb" FontAttributes="Bold" FontSize="12"/>
+                                        <Label Grid.Column="2" Text="{Binding City}" TextColor="Black" FontSize="13" FontAttributes="Bold"/>
+                                        <ImageButton Grid.Column="3" Source="showdetails.png"
+                                                     Command="{Binding BindingContext.ShowDetailsCommand, Source={x:Reference Name=LawyersListPanel}}"
+                                                     CommandParameter="{Binding .}" WidthRequest="30" HeightRequest="30"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </ScrollView>
         </Grid>
 
-        <Grid x:Name="LawyersListPanel" Background="#003049" HeightRequest="681" Padding="5" IsVisible="False">
-            <!-- عکس بک‌گراند -->
-            <Image Source="bg_lawyerslist6.jpg"
-           Aspect="AspectFill" HeightRequest="600" Margin="0,80,0,0"
-           Opacity="0.9"/>
-            <!-- می‌تونی شفافیت هم بدی -->
-
-            <Grid RowDefinitions="*, Auto">
-                <ScrollView>
-                    <VerticalStackLayout Padding="10" Spacing="15" MaximumHeightRequest="705">
-
-                        <!-- فیلد جستجو و آیکون + -->
-                        <Grid ColumnSpacing="10" FlowDirection="LeftToRight">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*" />
-                                <ColumnDefinition Width="1*" />
-                            </Grid.ColumnDefinitions>
-
-                            <!-- آیکون جستجو -->
-                            <Image Grid.Column="0"
-                            Source="search3.png"
-                            WidthRequest="20"
-                            HeightRequest="20"
-                            Margin="150,-40,0,0"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Center" />
-
-                            <Entry Grid.Column="0" Margin="0,-20,0,20"                           
-                            HorizontalTextAlignment="Center"            
-                            Placeholder="{local:Loc SearchLawyer}" PlaceholderColor="White"
-                            Text="{Binding SearchQuery, Mode=TwoWay}"
-                            
-                            FontSize="14"
-                            BackgroundColor="Transparent"
-                            HeightRequest="44"                          
-                            Visual="Default" 
-                            HorizontalOptions="Fill" />
-
-
-                            <Picker Grid.Column="1" FlowDirection="RightToLeft" ItemsSource="{Binding Cities}"
-                            SelectedItem="{Binding SelectedCity}"
-                            Title="{local:Loc SelectCity}" TitleColor="GhostWhite" FontFamily="Sahel" FontAttributes="Bold"
-                            Margin="0,-40,0,0"
-                            BackgroundColor="Transparent"
-                            HeightRequest="44"
-                            FontSize="13"/>
-                            <HorizontalStackLayout>
-                                <Button Grid.Column="1" Margin="57,0,-10,-25" BackgroundColor="Transparent" VerticalOptions="End" Text="جستجو در سامانه جامع وکلا" TextColor="Gold" FontAttributes="Bold" Clicked="OpenHamiVakilSite_Clicked"/>
-                                <Label Grid.Column="1" Margin="5,0,0,-15" VerticalOptions="End" Text="شهر شما موجود نیست؟" FontSize="14" FontAttributes="Bold"/>
-                            </HorizontalStackLayout>
-                        </Grid>
-
-                        <Border Stroke="#ddd"
-                         StrokeThickness="1"
-                         BackgroundColor="#2f3e46"
-                         Padding="3"
-                         Margin="0,10,0,0" 
-                         StrokeShape="RoundRectangle 10"
-                         >
-                            <!-- هدر ستون‌ها -->
-                            <Grid x:Name="HeaderGrid" BackgroundColor="{DynamicResource PageBackgroundColor}"
-                            ColumnDefinitions="2*,1.5*,0.9*,0.5*"
-                            Padding="10"                   
-                            HeightRequest="40"
-                            TranslationY="0"
-                            ZIndex="1">
-                                <Label Text="{local:Loc LawyerFullname}" TextColor="{DynamicResource TextColor}" Grid.Column="0" FontSize="12" FontAttributes="Bold"/>
-                                <Label Text="{local:Loc LawyerPhonenumber}" TextColor="{DynamicResource TextColor}" Grid.Column="1" FontSize="12" Margin="-5,0,0,0"  FontAttributes="Bold"/>
-                                <Label Text="{local:Loc LawyerCity}" TextColor="{DynamicResource TextColor}" Grid.Column="2" FontSize="12" Margin="-5,0,0,0"  FontAttributes="Bold"/>
-                                <Label Text="{local:Loc LawyerDetails}" TextColor="{DynamicResource TextColor}" Grid.Column="3" FontSize="12" FontAttributes="Bold"/>
-                            </Grid>
-                        </Border>
-
-                        
-                            <!--لیست وکلا-->
-                        <CollectionView x:Name="LawyersPage" ItemsSource="{Binding Lawyers}" VerticalOptions="Fill" RemainingItemsThreshold="1"  Scrolled="LawyersList_Scrolled"     
-                        ItemsUpdatingScrollMode="KeepScrollOffset"
-                        SelectionMode="None" MaximumHeightRequest="600" WidthRequest="390"    
-                        Margin="0,-15,0,0" VerticalScrollBarVisibility="Always">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Frame Padding="3" Margin="5,5,5,0" CornerRadius="15" BackgroundColor="#F9F9F9" HasShadow="True">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="1.2*"/>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="0.8*" />
-                                                <ColumnDefinition Width="0.4*" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <Label Grid.Column="0" Text="{Binding FullName}" TextColor="Black" FontFamily="Sahel" FontSize="13" FontAttributes="Bold" Padding="10" VerticalOptions="End"/>
-                                            <Label Grid.Column="1" Text="{Binding PhoneNumber}" TextColor="Black" FontFamily="IRANSansWeb" FontAttributes="Bold" Padding="10" FontSize="12" VerticalOptions="End"/>
-                                            <Label Grid.Column="2" Text="{Binding City}" TextColor="Black" FontFamily="IRANSansWeb" FontAttributes="Bold" Padding="10" FontSize="12" VerticalOptions="End"/>
-                                            <!--آیکون جزئیات-->
-                                            <ImageButton Grid.Column="3" Source="showdetails.png"
-                                                Command="{Binding BindingContext.ShowDetailsCommand, Source={x:Reference Name=LawyersPage}}"
-                                                CommandParameter="{Binding .}"
-                                                WidthRequest="30" HeightRequest="30"/>
-                                        </Grid>
-                                    </Frame>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </VerticalStackLayout>
-                </ScrollView>
-
-                <!-- کنترل‌های صفحه‌بندی -->
-                <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" Spacing="20" Margin="10">
-                    <Button Text="صفحه قبل" Command="{Binding LoadPreviousPageCommand}"/>
-                    <Label Text="{Binding CurrentPage}" VerticalOptions="Center"/>
-                    <Button Text="صفحه بعد" Command="{Binding LoadNextPageCommand}"/>
-                </HorizontalStackLayout>
-            </Grid>
-        </Grid>
-
+        <!-- پنل بوکمارک -->
         <Grid x:Name="BookmarkPanel"
         BackgroundColor="WhiteSmoke"
-        IsVisible="False"
-        Padding="20">
-            <CollectionView ItemsSource="{Binding BookmarkedLaws}">
+        Padding="20"
+        IsVisible="{Binding IsBookmarkVisible}">
+
+            <CollectionView ItemsSource="{Binding BookmarkedLaws}"
+                    SelectionMode="None">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame Margin="5" Padding="10" BorderColor="LightGray">
-                            <Label Text="{Binding Title}" FontSize="16" />
+                    <DataTemplate x:DataType="models:LawItem">
+                        <Frame Margin="5"
+                       Padding="10"
+                       BorderColor="LightGray"
+                       Style="{StaticResource CardFrameStyle}">
+
+                            <!-- Expander -->
+                            <toolkit:Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+
+                                <!-- Header -->
+                                <toolkit:Expander.Header>
+                                    <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                                        <Label Text="{Binding Title}"
+                                       FontSize="16"
+                                       TextColor="Black"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center"
+                                       LineBreakMode="TailTruncation"/>
+
+                                        <!-- Bookmark Star -->
+                                        <ImageButton Source="{Binding IsBookmarked, Converter={StaticResource BoolToStarConverter}}"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleBookmarkCommand}"
+                                             CommandParameter="{Binding .}"
+                                             BackgroundColor="Transparent"
+                                             WidthRequest="34"
+                                             HeightRequest="34"
+                                             Grid.Column="1"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="Center"/>
+                                    </Grid>
+                                </toolkit:Expander.Header>
+
+                                <!-- Content -->
+                                <toolkit:Expander.Content>
+                                    <VerticalStackLayout Padding="0,8,0,0" Spacing="6">
+
+                                        <!-- متن ماده -->
+                                        <Label Text="{Binding Text}"
+                                       FontSize="14"
+                                       TextColor="#333"
+                                       LineBreakMode="WordWrap"/>
+                            
+                                        <!-- دکمه مشاهده جزئیات -->
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
+                                            <Button Text="مشاهده جزئیات"                                                 
+                                            FlowDirection="RightToLeft"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenArticleCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#003049"
+                                            TextColor="{StaticResource Accent}"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </toolkit:Expander.Content>
+                            </toolkit:Expander>
+
+                            <!-- تغییر ظاهر Frame هنگام Expand -->
+                            <Frame.Triggers>
+                                <DataTrigger TargetType="Frame" Binding="{Binding IsExpanded}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="GhostWhite"/>
+                                    <Setter Property="HasShadow" Value="True"/>
+                                </DataTrigger>
+                            </Frame.Triggers>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
+            <!-- Loading overlay -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                       IsVisible="{Binding IsLoading}"
+                       Color="{StaticResource Accent}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+        </Grid>
+
+        <!-- پنل تنظیمات -->
+        <Grid x:Name="SettingsPanel" BackgroundColor="WhiteSmoke" Padding="20" IsVisible="{Binding IsSettingsVisible}">
+            <Label Text="در حال توسعه"/>
         </Grid>
     </Grid>
 </ContentPage>

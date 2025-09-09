@@ -37,18 +37,20 @@ public static class MauiProgram
 
         // ثبت سرویس‌ها
         builder.Services.AddSingleton(s => new DatabaseService(dbPath));
-        builder.Services.AddSingleton<LawDatabase>();
-        builder.Services.AddSingleton<LawImporter>();
+        builder.Services.AddSingleton<LawService>(s => new LawService(s.GetRequiredService<DatabaseService>()));
+        builder.Services.AddSingleton<LawImporter>(s => new LawImporter(s.GetRequiredService<LawService>()));
         builder.Services.AddSingleton<UserService>();
+        builder.Services.AddSingleton<LawyerService>();
 
         // ویومدل‌ها
-        builder.Services.AddSingleton<MainPageVM>();
+        builder.Services.AddSingleton<MainPageVM>();  // Singleton تا داده‌ها حفظ شود
         builder.Services.AddSingleton<LawBankVM>();
 
         // صفحات
         builder.Services.AddTransient<MainPage>();
-        builder.Services.AddSingleton<LawBankPage>();
+        builder.Services.AddTransient<LawBankPage>();
 
+        // خود App
         builder.Services.AddSingleton<App>();
 
         return builder.Build();

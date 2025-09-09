@@ -1,16 +1,12 @@
 ﻿using Vakilaw.Models;
-using Microsoft.Data.Sqlite;
+using Vakilaw.Services;
 
 namespace Vakilaw.Services;
-
 public class UserService
 {
     private readonly DatabaseService _db;
 
-    public UserService(DatabaseService db)
-    {
-        _db = db;
-    }
+    public UserService(DatabaseService db) => _db = db;
 
     public async Task<User> RegisterUserAsync(string fullName, string phone, string role, string? licenseNumber)
     {
@@ -22,8 +18,7 @@ public class UserService
         checkCmd.Parameters.AddWithValue("$phone", phone);
 
         var count = (long)await checkCmd.ExecuteScalarAsync();
-        if (count > 0)
-            throw new Exception("این شماره موبایل قبلاً ثبت‌نام شده است.");
+        if (count > 0) throw new Exception("این شماره موبایل قبلاً ثبت‌نام شده است.");
 
         var insertCmd = conn.CreateCommand();
         insertCmd.CommandText = @"

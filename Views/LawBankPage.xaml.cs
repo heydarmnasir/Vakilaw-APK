@@ -7,31 +7,10 @@ namespace Vakilaw.Views
     {
         public LawBankVM ViewModel { get; }
 
-        public LawBankPage()
+        public LawBankPage(LawBankVM viewModel)
         {
             InitializeComponent();
-
-            var database = new LawDatabase();
-            var importer = new LawImporter(database);
-            ViewModel = new LawBankVM(importer, database);
-            BindingContext = ViewModel;
-        }
-
-        private async void OnSearchIconClicked(object sender, EventArgs e)
-        {
-            if (!PageSearchBar.IsVisible)
-            {
-                PageSearchBar.Opacity = 0;
-                PageSearchBar.IsVisible = true;
-                await PageSearchBar.FadeTo(1, 250);
-                PageSearchBar.Focus();
-            }
-            else
-            {
-                await PageSearchBar.FadeTo(0, 250);
-                PageSearchBar.IsVisible = false;
-            }
-        }
-
+            BindingContext = viewModel; // ViewModel از DI تزریق شده
+        }    
     }
 }

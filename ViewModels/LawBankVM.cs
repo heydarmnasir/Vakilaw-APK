@@ -1,21 +1,18 @@
 ﻿using AsyncAwaitBestPractices;
-using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.Maui.Dispatching;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Vakilaw.Models;
 using Vakilaw.Services;
-using Vakilaw.Views;
 
 namespace Vakilaw.ViewModels;
 
 public partial class LawBankVM : ObservableObject
 {
     private readonly LawImporter _importer;
-    private readonly LawDatabase _database;
+    private readonly LawService _database;
     private readonly Dictionary<string, string> _fileMap;
 
     [ObservableProperty] private bool isLoading;
@@ -29,13 +26,17 @@ public partial class LawBankVM : ObservableObject
     public ObservableCollection<string> LawTypes { get; }
 
     [ObservableProperty] private string selectedLawType;
-  
-    public LawBankVM(LawImporter importer, LawDatabase database)
+
+    [ObservableProperty] private string searchText = string.Empty;
+
+    private CancellationTokenSource? _searchCts;
+
+    public LawBankVM(LawImporter importer, LawService database)
     {
         _importer = importer;
         _database = database;
 
-        // فایل مپ را اینجا یک‌بار مشخص کن (دقیقاً نام فایل‌ها را قرار بده)
+        // نقشه فایل‌ها
         _fileMap = new Dictionary<string, string>
         {
             ["قانون اساسی"] = "Asasi_Law.json",
@@ -79,34 +80,45 @@ public partial class LawBankVM : ObservableObject
             ["قانون مجازات استفاده غیر مجاز از آب و برق"] = "MojazatEstefadeGheyrmojazAAbBargh_Law.json",
             ["قانون تملک آپارتمان"] = "TamalokAparteman_Law.json",
             ["قانون تصدیق انحصار وراثت"] = "TasdighEnhesarVerasat_Law.json",
-            ["قانون ورود و اقامت اتباع خارجه"] = "Vorod&EghamatAtbaKhareje_Law.json"         
+            ["قانون ورود و اقامت اتباع خارجه"] = "Vorod&EghamatAtbaKhareje_Law.json"
         };
 
         LawTypes = new ObservableCollection<string>(_fileMap.Keys);
-        // پیش‌فرض قانون اساسی
-        SelectedLawType = "قانون اساسی";
+        SelectedLawType = "قانون اساسی"; // پیش‌فرض
+
+        // ثبت Messenger برای بروزرسانی بوکمارک‌ها
+        WeakReferenceMessenger.Default.Register<BookmarkChangedMessage>(this, (r, m) =>
+        {
+            // پیدا کردن آیتم در CollectionView اصلی Laws
+            var lawItem = Laws.FirstOrDefault(x => x.Id == m.Law.Id);
+            if (lawItem != null)
+            {
+                lawItem.IsBookmarked = m.Law.IsBookmarked;
+            }
+        });
     }
 
     partial void OnSelectedLawTypeChanged(string value)
     {
         if (!string.IsNullOrEmpty(value))
-        {
-            // وقتی کاربر selection را تغییر داد، فایل مرتبط را لود کن
             _ = LoadSelectedLawAsync();
-        }
     }
 
-    [ObservableProperty]
-    private string searchText = string.Empty;
+    partial void OnSearchTextChanged(string value)
+    {
+        // وقتی متن سرچ تغییر کرد، سرچ را با debounce اجرا کن
+        SearchAsync().SafeFireAndForget();
+    }
+
     [RelayCommand]
     private async Task LoadSelectedLawAsync()
     {
         if (string.IsNullOrWhiteSpace(SelectedLawType))
             return;
 
-        Laws.Clear();
-        _allLaws.Clear(); // همه قوانین رو صفر کن
         IsLoading = true;
+        Laws.Clear();
+        _allLaws.Clear();
 
         try
         {
@@ -118,20 +130,20 @@ public partial class LawBankVM : ObservableObject
 
             Debug.WriteLine($"[VM] Loading file '{fileName}' for type '{SelectedLawType}'");
 
-            // ایمپورت فقط اگر DB خالی باشد
+            // ایمپورت داده‌ها اگر دیتابیس خالی باشد
             await foreach (var law in _importer.ImportIfEmptyWithProgressAsync(fileName, SelectedLawType))
             {
                 _allLaws.Add(law);
             }
 
-            // اگر ایمپورت انجام نشده یا DB قبلاً پر بوده، از DB بخوان
+            // اگر ایمپورت انجام نشده، از DB بخوان
             if (_allLaws.Count == 0)
             {
                 var existing = await _database.GetLawsByTypeAsync(SelectedLawType);
                 _allLaws = existing.ToList();
             }
 
-            // در ابتدا همه ماده‌ها نمایش داده شوند
+            // نمایش همه ماده‌ها در ابتدا
             await ApplyFilterAsync(string.Empty);
         }
         catch (Exception ex)
@@ -142,15 +154,6 @@ public partial class LawBankVM : ObservableObject
         {
             IsLoading = false;
         }
-    }
-
-
-    private CancellationTokenSource? _searchCts;
-
-    partial void OnSearchTextChanged(string value)
-    {
-        // وقتی متن سرچ تغییر کرد، سرچ را با تاخیر اجرا کن
-        SearchAsync().SafeFireAndForget();
     }
 
     [RelayCommand]
@@ -164,17 +167,14 @@ public partial class LawBankVM : ObservableObject
         {
             var query = NormalizeNumbers(SearchText?.Trim() ?? string.Empty);
 
-            // اگر سرچ خالی است، همه ماده‌ها را دوباره لود کن
             if (string.IsNullOrEmpty(query))
             {
-                await LoadSelectedLawAsync(); // یا ApplyFilterAsync(string.Empty) اگر میخوای بدون ایمپورت دوباره فقط فیلتر پاک شود
+                await ApplyFilterAsync(string.Empty);
                 return;
             }
 
-            // debounce کوتاه (150ms) برای جلوگیری از سرچ مداوم هنگام تایپ سریع
-            await Task.Delay(150, ct);
+            await Task.Delay(150, ct); // debounce
 
-            // فیلتر کردن روی داده‌های موجود
             var filtered = _allLaws.Where(l =>
             {
                 var title = NormalizeNumbers(l.Title ?? string.Empty);
@@ -192,66 +192,25 @@ public partial class LawBankVM : ObservableObject
                     Laws.Add(law);
             });
         }
-        catch (OperationCanceledException)
-        {
-            // سرچ قبلی کنسل شد، نادیده بگیر
-        }
+        catch (OperationCanceledException) { }
         catch (Exception ex)
         {
             Debug.WriteLine($"[VM] SearchAsync exception: {ex.Message}");
         }
     }
 
-    private string NormalizeNumbers(string input)
-    {
-        if (string.IsNullOrEmpty(input))
-            return string.Empty;
-
-        // تبدیل اعداد فارسی به انگلیسی
-        input = input
-            .Replace('۰', '0')
-            .Replace('۱', '1')
-            .Replace('۲', '2')
-            .Replace('۳', '3')
-            .Replace('۴', '4')
-            .Replace('۵', '5')
-            .Replace('۶', '6')
-            .Replace('۷', '7')
-            .Replace('۸', '8')
-            .Replace('۹', '9');
-
-        // تبدیل اعداد عربی (١ - ٩) به انگلیسی
-        input = input
-            .Replace('٠', '0')
-            .Replace('١', '1')
-            .Replace('٢', '2')
-            .Replace('٣', '3')
-            .Replace('٤', '4')
-            .Replace('٥', '5')
-            .Replace('٦', '6')
-            .Replace('٧', '7')
-            .Replace('٨', '8')
-            .Replace('٩', '9');
-
-        return input;
-    }
-
     [RelayCommand]
     private async Task ApplyFilterAsync(string query)
     {
-        if (_allLaws == null || _allLaws.Count == 0)
-            return;
+        if (_allLaws == null || _allLaws.Count == 0) return;
 
         Laws.Clear();
 
-        query = NormalizeNumbers(query ?? string.Empty).Trim();
+        query = NormalizeNumbers(query?.Trim() ?? string.Empty);
 
-        IEnumerable<LawItem> filtered;
-
-        if (string.IsNullOrWhiteSpace(query))
-            filtered = _allLaws; // همه ماده‌ها نمایش داده شوند
-        else
-            filtered = _allLaws.Where(l =>
+        var filtered = string.IsNullOrWhiteSpace(query)
+            ? _allLaws
+            : _allLaws.Where(l =>
             {
                 var title = NormalizeNumbers(l.Title ?? string.Empty);
                 var text = NormalizeNumbers(l.Text ?? string.Empty);
@@ -272,18 +231,7 @@ public partial class LawBankVM : ObservableObject
         law.IsBookmarked = !law.IsBookmarked;
         await _database.UpdateLawAsync(law);
 
-        // اطلاع به بقیه ViewModel ها
         WeakReferenceMessenger.Default.Send(new BookmarkChangedMessage(law));
-    }
-
-    public class BookmarkChangedMessage
-    {
-        public LawItem Law { get; }
-
-        public BookmarkChangedMessage(LawItem law)
-        {
-            Law = law;
-        }
     }
 
     [RelayCommand]
@@ -291,5 +239,26 @@ public partial class LawBankVM : ObservableObject
     {
         if (law == null) return;
         await App.Current.MainPage.DisplayAlert($"تبصره: {law.Title}", law.NotesText, "برگشت", FlowDirection.RightToLeft);
-    } 
+    }
+
+    private string NormalizeNumbers(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return string.Empty;
+
+        input = input
+            .Replace('۰', '0').Replace('۱', '1').Replace('۲', '2')
+            .Replace('۳', '3').Replace('۴', '4').Replace('۵', '5')
+            .Replace('۶', '6').Replace('۷', '7').Replace('۸', '8').Replace('۹', '9')
+            .Replace('٠', '0').Replace('١', '1').Replace('٢', '2')
+            .Replace('٣', '3').Replace('٤', '4').Replace('٥', '5')
+            .Replace('٦', '6').Replace('٧', '7').Replace('٨', '8').Replace('٩', '9');
+
+        return input;
+    }
+
+    public class BookmarkChangedMessage
+    {
+        public LawItem Law { get; }
+        public BookmarkChangedMessage(LawItem law) => Law = law;
+    }
 }

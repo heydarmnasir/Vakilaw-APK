@@ -9,16 +9,6 @@
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"    
     FlowDirection="RightToLeft"
     BackgroundImageSource="bg_mainpage.jpg">
-    
-    <Shell.TitleView>
-        <Grid ColumnDefinitions="*,1.5*" Padding="10" >
-            <Label Text="بانک قوانین حقوقی" Margin="-10,0,0,0" TextColor="White" FontFamily="IRANSansWeb" FontSize="16" FontAttributes="Bold"/>
-            <Picker Grid.Column="1" Margin="0,-10,0,0"
-            Title="انتخاب نوع قانون" FontAttributes="Bold" FontSize="12" FlowDirection="RightToLeft"              
-            ItemsSource="{Binding LawTypes}"
-            SelectedItem="{Binding SelectedLawType, Mode=TwoWay}"/>                                    
-        </Grid>
-    </Shell.TitleView>
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -34,20 +24,34 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,*,Auto" Padding="12">
-        <!-- SearchBar مخفی -->
-        <SearchBar x:Name="PageSearchBar"
-           Grid.Column="1" HorizontalTextAlignment="End"
-           Placeholder="جستجو متن یا شماره ماده..."
-           PlaceholderColor="Gray"
-           Text="{Binding SearchText, Mode=TwoWay}" />
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*,Auto" Padding="10">
+            <Label Text="بانک قوانین حقوقی"
+                   Margin="-10,0,0,0"
+                   TextColor="White"
+                   FontFamily="IRANSansWeb"
+                   FontSize="16"
+                   FontAttributes="Bold"/>
+            <Picker Grid.Column="1"
+                    Title="انتخاب نوع قانون"
+                    FontAttributes="Bold"
+                    FontSize="12"
+                    FlowDirection="RightToLeft"
+                    ItemsSource="{Binding LawTypes}"
+                    SelectedItem="{Binding SelectedLawType, Mode=TwoWay}"/>
+        </Grid>
+    </Shell.TitleView>
 
+    <Grid RowDefinitions="Auto,*,Auto" Padding="12">
+        <Image Source="search3.png" HeightRequest="20" WidthRequest="20" HorizontalOptions="Start"/>
+        <Entry Grid.Column="0" HorizontalTextAlignment="Center" Placeholder="جستجوی ماده ..." PlaceholderColor="DarkGray" Text="{Binding SearchText, Mode=TwoWay}" HorizontalOptions="Fill"/>
+ 
         <!-- CollectionView + ActivityIndicator -->
         <Grid Grid.Row="1">
             <CollectionView ItemsSource="{Binding Laws}"
                             SelectionMode="None"
-                            Margin="0,6,0,6"
-                            x:Name="ArticlesCollection">
+                            Margin="0,6,0,6">
+                           
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:LawItem">
                         <Frame Style="{StaticResource CardFrameStyle}">
@@ -61,7 +65,7 @@
                                                VerticalOptions="Center"
                                                LineBreakMode="TailTruncation"/>
                                         <ImageButton Source="{Binding IsBookmarked, Converter={StaticResource BoolToStarConverter}}"
-                                                     Command="{Binding BindingContext.ToggleBookmarkCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleBookmarkCommand}"
                                                      CommandParameter="{Binding .}"
                                                      BackgroundColor="Transparent"
                                                      WidthRequest="34"
@@ -79,8 +83,9 @@
                                                TextColor="#333"
                                                LineBreakMode="WordWrap"/>
                                         <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
-                                            <Button Text="مشاهده جزئیات" FlowDirection="RightToLeft"
-                                                    Command="{Binding BindingContext.OpenArticleCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                            <Button Text="مشاهده جزئیات"
+                                                    FlowDirection="RightToLeft"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenArticleCommand}"
                                                     CommandParameter="{Binding .}"
                                                     BackgroundColor="#003049"
                                                     TextColor="{StaticResource Accent}"/>
@@ -100,7 +105,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <!-- Loading overlay -->
+             <!--Loading overlay--> 
             <ActivityIndicator IsRunning="{Binding IsLoading}"
                                IsVisible="{Binding IsLoading}"
                                Color="{StaticResource Accent}"

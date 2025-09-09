@@ -3,14 +3,13 @@ using System.Text.Json;
 using Vakilaw.Models;
 
 namespace Vakilaw.Services;
-
 public class LawImporter
 {
-    private readonly LawDatabase _database;
+    private readonly LawService _lawService;
 
-    public LawImporter(LawDatabase database)
+    public LawImporter(LawService lawService)
     {
-        _database = database;
+        _lawService = lawService;
     }
 
     public async IAsyncEnumerable<LawItem> ImportIfEmptyWithProgressAsync(string fileName, string lawType)
@@ -18,9 +17,8 @@ public class LawImporter
         if (string.IsNullOrWhiteSpace(fileName))
             yield break;
 
-        // اگر قبلاً این نوع داده وجود داره، ایمپورت نکن
-        var existingOfType = await _database.GetLawsByTypeAsync(lawType);
-        if (existingOfType.Count > 0)
+        var existing = await _lawService.GetLawsByTypeAsync(lawType);
+        if (existing.Count > 0)
             yield break;
 
         using var stream = await FileSystem.OpenAppPackageFileAsync(fileName);
@@ -42,7 +40,7 @@ public class LawImporter
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[LawImporter] JSON deserializing failed for '{fileName}': {ex.Message}");
+            Debug.WriteLine($"[LawImporter] JSON deserializing failed: {ex.Message}");
             yield break;
         }
 
@@ -52,13 +50,11 @@ public class LawImporter
         int counter = 1;
         foreach (var raw in rawItems)
         {
-            var notesList = ParseNotes(raw.Notes);
-
             var law = new LawItem
             {
                 Title = raw.Title ?? string.Empty,
-                Text = raw.Text ?? string.Empty, // ✅ اینو درست کن
-                Notes = notesList, // الان List<string> هست — با مدل هماهنگه
+                Text = raw.Text ?? string.Empty,
+                Notes = ParseNotes(raw.Notes),
                 ArticleNumber = counter++,
                 LawType = lawType,
                 IsBookmarked = false,
@@ -67,7 +63,7 @@ public class LawImporter
 
             try
             {
-                await _database.InsertLawAsync(law);
+                await _lawService.InsertLawAsync(law);
             }
             catch (Exception ex)
             {
@@ -81,11 +77,8 @@ public class LawImporter
     private static List<string> ParseNotes(JsonElement element)
     {
         var list = new List<string>();
+        if (element.ValueKind == JsonValueKind.Null) return list;
 
-        if (element.ValueKind == JsonValueKind.Null)
-            return list;
-
-        // حالت 1: Notes یک رشته ساده است
         if (element.ValueKind == JsonValueKind.String)
         {
             var s = element.GetString();
@@ -94,18 +87,15 @@ public class LawImporter
             return list;
         }
 
-        // حالت 2: Notes یک آرایه از رشته‌هاست
         if (element.ValueKind == JsonValueKind.Array)
         {
             foreach (var item in element.EnumerateArray())
-            {
                 if (item.ValueKind == JsonValueKind.String)
                 {
                     var s = item.GetString();
                     if (!string.IsNullOrWhiteSpace(s))
                         list.Add(s.Trim());
                 }
-            }
         }
 
         return list;
@@ -115,6 +105,6 @@ public class LawImporter
     {
         public string? Title { get; set; }
         public string? Text { get; set; }
-        public JsonElement Notes { get; set; } // مقاوم به رشته یا آرایه
+        public JsonElement Notes { get; set; }
     }
 }
