@@ -11,24 +11,6 @@ public class LawyerService
     public LawyerService(DatabaseService databaseService)
     {
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
-        InitializeDatabase();
-    }
-
-    private void InitializeDatabase()
-    {
-        using var conn = _databaseService.GetConnection();
-        conn.Open();
-
-        var tableCmd = conn.CreateCommand();
-        tableCmd.CommandText = @"
-            CREATE TABLE IF NOT EXISTS Lawyers (
-                Id INTEGER PRIMARY KEY,
-                FullName TEXT NOT NULL,
-                City TEXT,
-                PhoneNumber TEXT,
-                Address TEXT
-            );";
-        tableCmd.ExecuteNonQuery();
     }
 
     public async Task SeedDataFromJsonAsync(string jsonPath)
@@ -36,14 +18,17 @@ public class LawyerService
         if (!File.Exists(jsonPath)) return;
 
         var json = await File.ReadAllTextAsync(jsonPath);
-        var lawyers = JsonSerializer.Deserialize<List<Lawyer>>(json);
+        var lawyers = JsonSerializer.Deserialize<List<Lawyer>>(json) ?? new();
 
         using var conn = _databaseService.GetConnection();
         await conn.OpenAsync();
 
+        using var transaction = conn.BeginTransaction();
+
         foreach (var lawyer in lawyers)
         {
             var cmd = conn.CreateCommand();
+            cmd.Transaction = transaction;
             cmd.CommandText = @"
                 INSERT OR IGNORE INTO Lawyers (Id, FullName, City, PhoneNumber, Address)
                 VALUES ($id, $fullName, $city, $phoneNumber, $address);";
@@ -54,6 +39,8 @@ public class LawyerService
             cmd.Parameters.AddWithValue("$address", lawyer.Address ?? "");
             await cmd.ExecuteNonQueryAsync();
         }
+
+        transaction.Commit();
     }
 
     public async Task<List<Lawyer>> GetAllLawyersAsync()
@@ -73,9 +60,9 @@ public class LawyerService
             {
                 Id = reader.GetInt32(0),
                 FullName = reader.GetString(1),
-                City = reader.GetString(2),
-                PhoneNumber = reader.GetString(3),
-                Address = reader.GetString(4)
+                City = reader.IsDBNull(2) ? null : reader.GetString(2),
+                PhoneNumber = reader.IsDBNull(3) ? null : reader.GetString(3),
+                Address = reader.IsDBNull(4) ? null : reader.GetString(4)
             });
         }
 
@@ -98,9 +85,9 @@ public class LawyerService
             {
                 Id = reader.GetInt32(0),
                 FullName = reader.GetString(1),
-                City = reader.GetString(2),
-                PhoneNumber = reader.GetString(3),
-                Address = reader.GetString(4)
+                City = reader.IsDBNull(2) ? null : reader.GetString(2),
+                PhoneNumber = reader.IsDBNull(3) ? null : reader.GetString(3),
+                Address = reader.IsDBNull(4) ? null : reader.GetString(4)
             };
         }
         return null;

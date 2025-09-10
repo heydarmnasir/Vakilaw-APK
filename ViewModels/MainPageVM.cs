@@ -9,7 +9,6 @@ using Vakilaw.Models;
 using Vakilaw.Services;
 using Vakilaw.Views;
 using Vakilaw.Models.Messages;
-using Microsoft.Maui.Dispatching;
 
 namespace Vakilaw.ViewModels;
 
@@ -52,11 +51,6 @@ public partial class MainPageVM : ObservableObject
     [ObservableProperty] private bool isTrialActive;
     [ObservableProperty] private DateTime trialEndDate;
 
-    // مقادیر Ref باید در Code-behind تنظیم شود
-    public Grid LawyersListPanelRef { get; set; }
-    public Grid BookmarkPanelRef { get; set; }
-    public Grid SettingsPanelRef { get; set; }
-
     public MainPageVM(UserService userService, OtpService otpService, LawService lawService, LawyerService lawyerService, LicenseService licenseService)
     {
         _userService = userService;
@@ -70,7 +64,11 @@ public partial class MainPageVM : ObservableObject
         AllLawyers = new ObservableCollection<Lawyer>();
         Cities = new ObservableCollection<string>();
 
+        Task.Run(async () => await InitializeLawyersAsync());
+        Task.Run(async () => await LoadBookmarksAsync());
+
         LoadUserState();
+
 
         WeakReferenceMessenger.Default.Register<BookmarkChangedMessage>(this, async (r, m) =>
         {
@@ -163,7 +161,8 @@ public partial class MainPageVM : ObservableObject
     }
     #endregion
 
-    #region Tabs & Panels
+
+    #region Toggle Panels
     [RelayCommand]
     private async Task SelectTab(string tabName)
     {
@@ -180,37 +179,107 @@ public partial class MainPageVM : ObservableObject
 
     private async Task CloseAllPanelsAsync()
     {
-        if (IsLawyersListVisible) { await SlideOutPanel(LawyersListPanelRef); IsLawyersListVisible = false; }
-        if (IsBookmarkVisible) { await SlideOutPanel(BookmarkPanelRef); IsBookmarkVisible = false; }
-        if (IsSettingsVisible) { await SlideOutPanel(SettingsPanelRef); IsSettingsVisible = false; }
+        if (IsLawyersListVisible)
+        {
+            await SlideOutPanel(LawyersListPanelRef);
+            IsLawyersListVisible = false;
+        }
+        if (IsBookmarkVisible)
+        {
+            await SlideOutPanel(BookmarkPanelRef);
+            IsBookmarkVisible = false;
+        }
+        if (IsSettingsVisible)
+        {
+            await SlideOutPanel(SettingsPanelRef);
+            IsSettingsVisible = false;
+        }
+        // هر پنل دیگری هم اضافه شود
     }
 
-    [RelayCommand] public async Task ToggleHomeAsync() => await CloseAllPanelsAsync();
-    [RelayCommand] public async Task ToggleLawyersListAsync() { await SlidePanel(LawyersListPanelRef, IsLawyersListVisible, val => IsLawyersListVisible = val); }
-    [RelayCommand] public async Task ToggleBookmarkPanelAsync() { await SlidePanel(BookmarkPanelRef, IsBookmarkVisible, val => IsBookmarkVisible = val); }
-    [RelayCommand] public async Task ToggleSettingsPanelAsync() { await SlidePanel(SettingsPanelRef, IsSettingsVisible, val => IsSettingsVisible = val); }
-
-    private async Task SlidePanel(VisualElement panel, bool flag, Action<bool> setFlag)
+    [RelayCommand]
+    public async Task ToggleHomeAsync()
     {
-        if (panel == null) return;
-        if (flag) await SlideOutPanel(panel); else await SlideInPanel(panel);
-        setFlag(!flag);
+        await CloseAllPanelsAsync();
     }
+
+    [RelayCommand]
+    public async Task ToggleLawyersListAsync()
+    {
+        if (IsLawyersListVisible)
+            await SlideOutPanel(LawyersListPanelRef);
+        else
+            await SlideInPanel(LawyersListPanelRef);
+
+        IsLawyersListVisible = !IsLawyersListVisible;
+    }
+
+    [RelayCommand]
+    public async Task ToggleBookmarkPanelAsync()
+    {
+        if (IsBookmarkVisible)
+            await SlideOutPanel(BookmarkPanelRef);
+        else
+            await SlideInPanel(BookmarkPanelRef);
+        if (IsSettingsVisible)
+            await SlideOutPanel(SettingsPanelRef);
+
+        IsBookmarkVisible = !IsBookmarkVisible;
+    }
+
+    [RelayCommand]
+    public async Task ToggleSettingsPanelAsync()
+    {
+        if (IsSettingsVisible)
+            await SlideOutPanel(SettingsPanelRef);
+        else
+            await SlideInPanel(SettingsPanelRef);
+        if (IsBookmarkVisible)
+            await SlideOutPanel(BookmarkPanelRef);
+
+        IsSettingsVisible = !IsSettingsVisible;
+    }
+    #endregion
+
+    #region Animation Helpers
+    // مقادیر Ref باید در Code-behind تنظیم شود (با DI یا BindingContext)
+    public Grid LawyersListPanelRef { get; set; }
+    public Grid BookmarkPanelRef { get; set; }
+    public Grid SettingsPanelRef { get; set; }
 
     private async Task SlideInPanel(VisualElement panel)
     {
+        if (panel == null) return;
+
+        // مطمئن می‌شیم که پنل قابل مشاهده باشه
         panel.IsVisible = true;
-        var width = Application.Current.MainPage?.Width ?? panel.Width;
+
+        // مقدار اولیه TranslationX رو خارج از صفحه می‌بریم
+        var width = Application.Current.MainPage?.Width > 0
+                    ? Application.Current.MainPage.Width
+                    : panel.Width;
+
         panel.TranslationX = width;
+
+        // حالا انیمیشن ورود
         await panel.TranslateTo(0, 0, 400, Easing.CubicOut);
     }
 
     private async Task SlideOutPanel(VisualElement panel)
     {
-        var width = Application.Current.MainPage?.Width ?? panel.Width;
+        if (panel == null) return;
+
+        var width = Application.Current.MainPage?.Width > 0
+                    ? Application.Current.MainPage.Width
+                    : panel.Width;
+
+        // انیمیشن خروج
         await panel.TranslateTo(width, 0, 400, Easing.CubicIn);
+
+        // بعد از خروج، نامرئی کنیم
         panel.IsVisible = false;
     }
+
     #endregion
 
     #region Lawyers & Notes

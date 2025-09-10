@@ -114,12 +114,13 @@ public partial class LawyerSubmitVM : ObservableObject
         try
         {
             // ثبت نام کاربر
-            var user = await _userService.RegisterUserAsync(FullName, PhoneNumber, LicenseNumber);
+            var user = await _userService.RegisterUserAsync(FullName, PhoneNumber, "Lawyer" ,LicenseNumber);
 
-            // ذخیره وضعیت کاربر در Preferences            
+            // ذخیره وضعیت کاربر در Preferences           
             Preferences.Set("IsLawyerRegistered", true);
             Preferences.Set("LawyerFullName", FullName);
             Preferences.Set("LawyerLicense", LicenseNumber);
+            Preferences.Set("UserRole", "Lawyer");
             Preferences.Set("UserPhone", PhoneNumber);
 
             // ایجاد Trial 14 روزه

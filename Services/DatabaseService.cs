@@ -2,6 +2,7 @@
 using Microsoft.Data.Sqlite;
 
 namespace Vakilaw.Services;
+
 public class DatabaseService
 {
     private readonly string _dbPath;
@@ -19,7 +20,7 @@ public class DatabaseService
         InitializeDatabase().SafeFireAndForget();
     }
 
-    public async Task InitializeDatabase()
+    private async Task InitializeDatabase()
     {
         using var conn = new SqliteConnection(_connectionString);
         await conn.OpenAsync();
