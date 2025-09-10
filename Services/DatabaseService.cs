@@ -52,6 +52,16 @@ public class DatabaseService
                 IsBookmarked INTEGER,
                 IsExpanded INTEGER
             );
+
+            CREATE TABLE IF NOT EXISTS Subscriptions (
+                       Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       UserId INTEGER NOT NULL,
+                       StartDate TEXT NOT NULL,
+                       EndDate TEXT NOT NULL,
+                       Type TEXT NOT NULL,
+                       IsTrial INTEGER NOT NULL,
+                       PaymentTrackingCode TEXT
+            );          
         ";
         await cmd.ExecuteNonQueryAsync();
     }

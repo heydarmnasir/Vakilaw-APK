@@ -8,11 +8,12 @@ using Vakilaw.Models.Messages;
 using Vakilaw.Services;
 
 namespace Vakilaw.ViewModels;
-//string message = $"وکیل گرامی {fullName}، کد تایید شما: {code}\nاپلیکیشن حقوقی وکیلاو\nتوسعه دهنده: حیدر محمدی نصیر";
+
 public partial class LawyerSubmitVM : ObservableObject
 {
     private readonly UserService _userService;
     private readonly OtpService _otpService;
+    private readonly SubscriptionService _subscriptionService; // 🔹 اضافه شد
 
     [ObservableProperty] private string fullName;
     [ObservableProperty] private string phoneNumber;
@@ -22,10 +23,14 @@ public partial class LawyerSubmitVM : ObservableObject
 
     private string _currentOtp;
 
-    public LawyerSubmitVM(UserService userService, OtpService otpService)
+    public LawyerSubmitVM(
+        UserService userService,
+        OtpService otpService,
+        SubscriptionService subscriptionService) // 🔹 اضافه شد
     {
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         _otpService = otpService ?? throw new ArgumentNullException(nameof(otpService));
+        _subscriptionService = subscriptionService ?? throw new ArgumentNullException(nameof(subscriptionService));
     }
 
     [RelayCommand]
@@ -45,7 +50,6 @@ public partial class LawyerSubmitVM : ObservableObject
             return;
         }
 
-        // محافظت در برابر سرویس null
         if (_otpService == null)
         {
             await Toast.Make("سرویس ارسال پیامک مقداردهی نشده است.", ToastDuration.Short).Show();
@@ -60,7 +64,6 @@ public partial class LawyerSubmitVM : ObservableObject
             if (string.IsNullOrEmpty(_currentOtp))
             {
                 await Toast.Make("ارسال پیامک انجام شد اما کدی دریافت نشد.", ToastDuration.Short).Show();
-                System.Diagnostics.Debug.WriteLine("SendOtpAsync returned null/empty otp");
                 return;
             }
 
@@ -69,7 +72,6 @@ public partial class LawyerSubmitVM : ObservableObject
         }
         catch (Exception ex)
         {
-            // چاپ کامل استک‌ترِیس برای دیباگ
             System.Diagnostics.Debug.WriteLine("SendOtpAsync Exception: " + ex);
             await Toast.Make("خطا در ارسال کد: " + ex.Message, ToastDuration.Short).Show();
         }
@@ -86,15 +88,21 @@ public partial class LawyerSubmitVM : ObservableObject
 
         try
         {
+            // ثبت نام کاربر
             var user = await _userService.RegisterUserAsync(FullName, PhoneNumber, "Lawyer", LicenseNumber);
 
+            // 🔹 فعال‌سازی Trial بعد از ثبت نام موفق
+            _subscriptionService.StartTrial(user.Id);
+
+            // پیام به بخش‌های دیگر اپ
             WeakReferenceMessenger.Default.Send(new LawyerRegisteredMessage(FullName, LicenseNumber));
 
             await MopupService.Instance.PopAsync();
-            await Toast.Make("ثبت نام با موفقیت انجام شد", ToastDuration.Short).Show();
+            await Toast.Make("ثبت نام و فعال‌سازی Trial 14 روزه با موفقیت انجام شد ✅").Show();
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine("VerifyOtpAsync Exception: " + ex);
             await Toast.Make("خطا در ثبت نام", ToastDuration.Short).Show();
         }
     }
