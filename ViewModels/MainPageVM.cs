@@ -9,6 +9,7 @@ using Vakilaw.Models;
 using Vakilaw.Services;
 using Vakilaw.Views;
 using Vakilaw.Models.Messages;
+using Microsoft.Maui.Dispatching;
 
 namespace Vakilaw.ViewModels;
 
@@ -18,6 +19,7 @@ public partial class MainPageVM : ObservableObject
     private readonly OtpService _otpService;
     private readonly LawService _lawService;
     private readonly LawyerService _lawyerService;
+    private readonly LicenseService _licenseService;
 
     [ObservableProperty] private ObservableCollection<LawItem> bookmarkedLaws;
     [ObservableProperty] private ObservableCollection<Lawyer> lawyers;
@@ -45,47 +47,23 @@ public partial class MainPageVM : ObservableObject
 
     private CancellationTokenSource _searchCts;
 
+    [ObservableProperty] private string selectedTab = "Home";
+    [ObservableProperty] private bool isLawyerSubscriptionActive;
+    [ObservableProperty] private bool isTrialActive;
+    [ObservableProperty] private DateTime trialEndDate;
 
-    // مقدار پیش‌فرض: Home
-    [ObservableProperty]
-    private string selectedTab = "Home";
+    // مقادیر Ref باید در Code-behind تنظیم شود
+    public Grid LawyersListPanelRef { get; set; }
+    public Grid BookmarkPanelRef { get; set; }
+    public Grid SettingsPanelRef { get; set; }
 
-    // کامند انتخاب تب
-    [RelayCommand]
-    private async Task SelectTab(string tabName)
-    {
-        SelectedTab = tabName;
-
-        switch (tabName)
-        {
-            case "Home":
-                await ToggleHomeAsync();
-                break;
-
-            case "AdlIran":
-                await OpenAdlIranSiteAsync();
-                break;
-
-            case "Bookmarks":
-                await ToggleBookmarkPanelAsync();
-                break;
-
-            case "Settings":
-                await ToggleSettingsPanelAsync();
-                break;
-
-            default:
-                // برای تب‌های دیگه فقط تغییر SelectedTab کفایت می‌کنه
-                break;
-        }
-    }
-
-    public MainPageVM(UserService userService, OtpService otpService, LawService lawService, LawyerService lawyerService)
+    public MainPageVM(UserService userService, OtpService otpService, LawService lawService, LawyerService lawyerService, LicenseService licenseService)
     {
         _userService = userService;
         _otpService = otpService;
         _lawService = lawService;
         _lawyerService = lawyerService;
+        _licenseService = licenseService ?? throw new ArgumentNullException(nameof(licenseService));
 
         BookmarkedLaws = new ObservableCollection<LawItem>();
         Lawyers = new ObservableCollection<Lawyer>();
@@ -97,7 +75,6 @@ public partial class MainPageVM : ObservableObject
         WeakReferenceMessenger.Default.Register<BookmarkChangedMessage>(this, async (r, m) =>
         {
             var law = await _lawService.GetLawByIdAsync(m.LawId);
-
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 if (m.IsBookmarked)
@@ -127,20 +104,119 @@ public partial class MainPageVM : ObservableObject
             Lawyers.Clear();
             await LoadNotesAsync();
         });
+
+        WeakReferenceMessenger.Default.Register<LicenseActivatedMessage>(this, async (r, m) =>
+        {
+            if (m.IsActivated)
+                IsLawyerSubscriptionActive = true;
+        });
+
+        // بررسی وضعیت اشتراک هنگام لود شدن
+        Task.Run(async () => await CheckLicenseAsync());
     }
 
-    public async Task InitializeAsync()
+    #region License & Trial
+    private async Task CheckLicenseAsync()
     {
-        await InitializeLawyersAsync();
-        await LoadBookmarksAsync();
-        await LoadNotesAsync();
+        if (!IsLawyer) return;
+
+        var deviceId = DeviceHelper.GetDeviceId();
+        var license = await _licenseService.GetActiveLicenseAsync(deviceId);
+
+        IsLawyerSubscriptionActive = license != null && license.EndDate > DateTime.Now;
+
+        if (license != null && license.EndDate > DateTime.Now)
+        {
+            TrialEndDate = license.EndDate;
+            IsTrialActive = true;
+        }
+        else
+        {
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                await ShowSubscriptionPopupAsync();
+            });
+        }
     }
 
-    #region Initialize Lawyers
+    private async Task ShowSubscriptionPopupAsync()
+    {
+        var popup = new SubscriptionPopup(_licenseService);
+        await MopupService.Instance.PushAsync(popup);
+    }
+
+    [RelayCommand]
+    public async Task CheckTrialAndShowPopupAsync()
+    {
+        string deviceId = DeviceHelper.GetDeviceId();
+        var license = await _licenseService.GetActiveLicenseAsync(deviceId);
+
+        if (license == null || license.EndDate < DateTime.Now)
+        {
+            await ShowSubscriptionPopupAsync();
+        }
+        else
+        {
+            TrialEndDate = license.EndDate;
+            IsTrialActive = true;
+        }
+    }
+    #endregion
+
+    #region Tabs & Panels
+    [RelayCommand]
+    private async Task SelectTab(string tabName)
+    {
+        SelectedTab = tabName;
+
+        switch (tabName)
+        {
+            case "Home": await ToggleHomeAsync(); break;
+            case "AdlIran": await OpenAdlIranSiteAsync(); break;
+            case "Bookmarks": await ToggleBookmarkPanelAsync(); break;
+            case "Settings": await ToggleSettingsPanelAsync(); break;
+        }
+    }
+
+    private async Task CloseAllPanelsAsync()
+    {
+        if (IsLawyersListVisible) { await SlideOutPanel(LawyersListPanelRef); IsLawyersListVisible = false; }
+        if (IsBookmarkVisible) { await SlideOutPanel(BookmarkPanelRef); IsBookmarkVisible = false; }
+        if (IsSettingsVisible) { await SlideOutPanel(SettingsPanelRef); IsSettingsVisible = false; }
+    }
+
+    [RelayCommand] public async Task ToggleHomeAsync() => await CloseAllPanelsAsync();
+    [RelayCommand] public async Task ToggleLawyersListAsync() { await SlidePanel(LawyersListPanelRef, IsLawyersListVisible, val => IsLawyersListVisible = val); }
+    [RelayCommand] public async Task ToggleBookmarkPanelAsync() { await SlidePanel(BookmarkPanelRef, IsBookmarkVisible, val => IsBookmarkVisible = val); }
+    [RelayCommand] public async Task ToggleSettingsPanelAsync() { await SlidePanel(SettingsPanelRef, IsSettingsVisible, val => IsSettingsVisible = val); }
+
+    private async Task SlidePanel(VisualElement panel, bool flag, Action<bool> setFlag)
+    {
+        if (panel == null) return;
+        if (flag) await SlideOutPanel(panel); else await SlideInPanel(panel);
+        setFlag(!flag);
+    }
+
+    private async Task SlideInPanel(VisualElement panel)
+    {
+        panel.IsVisible = true;
+        var width = Application.Current.MainPage?.Width ?? panel.Width;
+        panel.TranslationX = width;
+        await panel.TranslateTo(0, 0, 400, Easing.CubicOut);
+    }
+
+    private async Task SlideOutPanel(VisualElement panel)
+    {
+        var width = Application.Current.MainPage?.Width ?? panel.Width;
+        await panel.TranslateTo(width, 0, 400, Easing.CubicIn);
+        panel.IsVisible = false;
+    }
+    #endregion
+
+    #region Lawyers & Notes
     private async Task InitializeLawyersAsync()
     {
         string jsonPath = Path.Combine(FileSystem.AppDataDirectory, "Lawyers.json");
-
         if (!File.Exists(jsonPath))
         {
             using var stream = await FileSystem.OpenAppPackageFileAsync("Lawyers.json");
@@ -149,14 +225,12 @@ public partial class MainPageVM : ObservableObject
         }
 
         await _lawyerService.SeedDataFromJsonAsync(jsonPath);
-
         var allLawyersList = await _lawyerService.GetAllLawyersAsync();
 
         MainThread.BeginInvokeOnMainThread(() =>
         {
             AllLawyers.Clear();
-            foreach (var l in allLawyersList)
-                AllLawyers.Add(l);
+            foreach (var l in allLawyersList) AllLawyers.Add(l);
 
             var cityList = allLawyersList
                 .Select(l => l.City)
@@ -167,74 +241,19 @@ public partial class MainPageVM : ObservableObject
             cityList.Insert(0, "همه");
 
             Cities.Clear();
-            foreach (var c in cityList)
-                Cities.Add(c);
+            foreach (var c in cityList) Cities.Add(c);
         });
 
         await LoadNotesAsync();
     }
-    #endregion
 
-    #region Load Bookmarks
-    private async Task LoadBookmarksAsync()
-    {
-        try
-        {
-            var items = await _lawService.GetBookmarkedLawsAsync();
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                BookmarkedLaws.Clear();
-                foreach (var law in items)
-                {
-                    // اگر MapReaderToLaw حالا cache درست دارد، 'law' همان آبجکت اصلی خواهد بود
-                    BookmarkedLaws.Add(law);
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"LoadBookmarksAsync Error: {ex.Message}");
-        }
-    }
-
-    [RelayCommand]
-    private async Task OpenArticleAsync(LawItem law)
-    {
-        if (law == null) return;
-        await App.Current.MainPage.DisplayAlert($"تبصره: {law.Title}", law.NotesText, "برگشت", FlowDirection.RightToLeft);
-    }
-
-    [RelayCommand]
-    private void ToggleBookmark(LawItem law)
-    {
-        if (law == null) return;
-
-        law.IsBookmarked = !law.IsBookmarked;
-
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            // حذف از پنل بوکمارک‌ها در صورت آنبوکمارک
-            if (!law.IsBookmarked)
-            {
-                var item = BookmarkedLaws.FirstOrDefault(x => x.Id == law.Id);
-                if (item != null)
-                    BookmarkedLaws.Remove(item);
-            }
-        });
-
-        // پیام به سایر ViewModel ها
-        WeakReferenceMessenger.Default.Send(new BookmarkChangedMessage(law.Id, law.IsBookmarked));
-    }
-
-    #endregion
-
-    #region Notes & Lazy Loading
     [RelayCommand]
     public async Task LoadNotesAsync()
     {
         if (IsBusy) return;
         IsBusy = true;
-        await Task.Yield();       
+        await Task.Yield();
+
         try
         {
             IEnumerable<Lawyer> filtered = AllLawyers;
@@ -243,45 +262,29 @@ public partial class MainPageVM : ObservableObject
                 filtered = filtered.Where(l => string.Equals(l.City, SelectedCity, StringComparison.OrdinalIgnoreCase));
 
             if (!string.IsNullOrWhiteSpace(SearchQuery))
-                filtered = filtered.Where(l =>
-                    (!string.IsNullOrEmpty(l.FullName) && l.FullName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)) ||
-                    (!string.IsNullOrEmpty(l.PhoneNumber) && l.PhoneNumber.Contains(SearchQuery))
-                );
+                filtered = filtered.Where(l => (!string.IsNullOrEmpty(l.FullName) && l.FullName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)) ||
+                                              (!string.IsNullOrEmpty(l.PhoneNumber) && l.PhoneNumber.Contains(SearchQuery)));
 
             var filteredList = filtered.ToList();
-
-            var pagedLawyers = filteredList
-                .Skip((CurrentPage - 1) * PageSize)
-                .Take(PageSize)
-                .ToList();
+            var pagedLawyers = filteredList.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
 
             if (CurrentPage == 1) Lawyers.Clear();
 
             foreach (var lawyer in pagedLawyers)
-            {
-                if (!Lawyers.Any(x => x.Id == lawyer.Id))
-                    Lawyers.Add(lawyer);
-            }
+                if (!Lawyers.Any(x => x.Id == lawyer.Id)) Lawyers.Add(lawyer);
 
             HasMorePages = (CurrentPage * PageSize) < filteredList.Count;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"LoadNotesAsync Error: {ex.Message}");
+            Debug.WriteLine($"LoadNotesAsync Error: {ex.Message}");
         }
-        finally
-        {
-            IsBusy = false;
-        }
+        finally { IsBusy = false; }
     }
 
-    partial void OnSelectedCityChanged(string value)
-    {
-        CurrentPage = 1;
-        Lawyers.Clear();
-        LoadNotesAsync().SafeFireAndForget();
-    }
+    [RelayCommand] public async Task LoadNextPageAsync() { if (!HasMorePages || IsBusy) return; CurrentPage++; await LoadNotesAsync(); }
 
+    partial void OnSelectedCityChanged(string value) { CurrentPage = 1; Lawyers.Clear(); LoadNotesAsync().SafeFireAndForget(); }
     partial void OnSearchQueryChanged(string value)
     {
         _searchCts?.Cancel();
@@ -299,126 +302,61 @@ public partial class MainPageVM : ObservableObject
             }
         }, ct);
     }
+    #endregion
+
+    #region Bookmarks
+    private async Task LoadBookmarksAsync()
+    {
+        try
+        {
+            var items = await _lawService.GetBookmarkedLawsAsync();
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                BookmarkedLaws.Clear();
+                foreach (var law in items) BookmarkedLaws.Add(law);
+            });
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"LoadBookmarksAsync Error: {ex.Message}");
+        }
+    }
 
     [RelayCommand]
-    public async Task LoadNextPageAsync()
+    private void ToggleBookmark(LawItem law)
     {
-        if (!HasMorePages || IsBusy) return;
-        CurrentPage++;
-        await LoadNotesAsync();
+        if (law == null) return;
+        law.IsBookmarked = !law.IsBookmarked;
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            if (!law.IsBookmarked)
+            {
+                var item = BookmarkedLaws.FirstOrDefault(x => x.Id == law.Id);
+                if (item != null) BookmarkedLaws.Remove(item);
+            }
+        });
+
+        WeakReferenceMessenger.Default.Send(new BookmarkChangedMessage(law.Id, law.IsBookmarked));
+    }
+
+    [RelayCommand]
+    private async Task OpenArticleAsync(LawItem law)
+    {
+        if (law == null) return;
+        await App.Current.MainPage.DisplayAlert($"تبصره: {law.Title}", law.NotesText, "برگشت", FlowDirection.RightToLeft);
     }
     #endregion
 
-    #region Toggle Panels
-    private async Task CloseAllPanelsAsync()
-    {
-        if (IsLawyersListVisible)
-        {
-            await SlideOutPanel(LawyersListPanelRef);
-            IsLawyersListVisible = false;
-        }
-        if (IsBookmarkVisible)
-        {
-            await SlideOutPanel(BookmarkPanelRef);
-            IsBookmarkVisible = false;
-        }
-        if (IsSettingsVisible)
-        {
-            await SlideOutPanel(SettingsPanelRef);
-            IsSettingsVisible = false;
-        }
-        // هر پنل دیگری هم اضافه شود
-    }
-
+    #region Navigation
     [RelayCommand]
-    public async Task ToggleHomeAsync()
+    public async Task OpenLawyerPopupAsync()
     {
-        await CloseAllPanelsAsync();
+        var deviceId = DeviceHelper.GetDeviceId();
+        var popup = new LawyerSubmitPopup(_userService, _otpService, _licenseService, deviceId);
+        await MopupService.Instance.PushAsync(popup);
     }
 
-    [RelayCommand]
-    public async Task ToggleLawyersListAsync()
-    {
-        if (IsLawyersListVisible)
-            await SlideOutPanel(LawyersListPanelRef);
-        else
-            await SlideInPanel(LawyersListPanelRef);
-
-
-
-        IsLawyersListVisible = !IsLawyersListVisible;
-    }
-
-    [RelayCommand]
-    public async Task ToggleBookmarkPanelAsync()
-    {
-        if (IsBookmarkVisible)
-            await SlideOutPanel(BookmarkPanelRef);
-        else
-            await SlideInPanel(BookmarkPanelRef);
-        if (IsSettingsVisible)
-            await SlideOutPanel(SettingsPanelRef);
-
-        IsBookmarkVisible = !IsBookmarkVisible;
-    }
-
-    [RelayCommand]
-    public async Task ToggleSettingsPanelAsync()
-    {
-        if (IsSettingsVisible)
-            await SlideOutPanel(SettingsPanelRef);
-        else
-            await SlideInPanel(SettingsPanelRef);
-        if (IsBookmarkVisible)
-            await SlideOutPanel(BookmarkPanelRef);
-
-        IsSettingsVisible = !IsSettingsVisible;
-    }
-    #endregion
-
-    #region Animation Helpers
-    // مقادیر Ref باید در Code-behind تنظیم شود (با DI یا BindingContext)
-    public Grid LawyersListPanelRef { get; set; }
-    public Grid BookmarkPanelRef { get; set; }
-    public Grid SettingsPanelRef { get; set; }
-
-    private async Task SlideInPanel(VisualElement panel)
-    {
-        if (panel == null) return;
-
-        // مطمئن می‌شیم که پنل قابل مشاهده باشه
-        panel.IsVisible = true;
-
-        // مقدار اولیه TranslationX رو خارج از صفحه می‌بریم
-        var width = Application.Current.MainPage?.Width > 0
-                    ? Application.Current.MainPage.Width
-                    : panel.Width;
-
-        panel.TranslationX = width;
-
-        // حالا انیمیشن ورود
-        await panel.TranslateTo(0, 0, 400, Easing.CubicOut);
-    }
-
-    private async Task SlideOutPanel(VisualElement panel)
-    {
-        if (panel == null) return;
-
-        var width = Application.Current.MainPage?.Width > 0
-                    ? Application.Current.MainPage.Width
-                    : panel.Width;
-
-        // انیمیشن خروج
-        await panel.TranslateTo(width, 0, 400, Easing.CubicIn);
-
-        // بعد از خروج، نامرئی کنیم
-        panel.IsVisible = false;
-    }
-
-    #endregion
-
-
-    #region Navigation & Popups
     [RelayCommand]
     public async Task ShowDetailsAsync(Lawyer lawyer)
     {
@@ -427,30 +365,9 @@ public partial class MainPageVM : ObservableObject
         await MopupService.Instance.PushAsync(popup);
     }
 
-    [RelayCommand]
-    public async Task OpenLawyerPopupAsync()
-    {
-        var popup = new LawyerSubmitPopup(_userService, _otpService); // ← اینجا هر دو سرویس
-        await MopupService.Instance.PushAsync(popup);
-    }
-
-    [RelayCommand]
-    public async Task LawBankPageAsync()
-    {
-        await Shell.Current.GoToAsync("LawBankPage");
-    }
-
-    [RelayCommand]
-    public async Task OpenAdlIranSiteAsync()
-    {
-        await Launcher.OpenAsync("https://adliran.ir/");
-    }
-
-    [RelayCommand]
-    private async Task HamiVakilAsync()
-    {
-        await Launcher.OpenAsync("https://search-hamivakil.ir/");
-    }
+    [RelayCommand] public async Task LawBankPageAsync() => await Shell.Current.GoToAsync("LawBankPage");
+    [RelayCommand] public async Task OpenAdlIranSiteAsync() => await Launcher.OpenAsync("https://adliran.ir/");
+    [RelayCommand] private async Task HamiVakilAsync() => await Launcher.OpenAsync("https://search-hamivakil.ir/");
     #endregion
 
     #region Helpers
@@ -474,7 +391,16 @@ public partial class MainPageVM : ObservableObject
             LawyerLicenseVisibility = isRegistered;
             LawyerFullName = Preferences.Get("LawyerFullName", string.Empty);
             LawyerLicense = Preferences.Get("LawyerLicense", string.Empty);
+
+            if (IsLawyer) CheckLicenseAsync().SafeFireAndForget();
         }
+    }
+
+    public async Task InitializeAsync()
+    {
+        await InitializeLawyersAsync();
+        await LoadBookmarksAsync();
+        await LoadNotesAsync();
     }
     #endregion
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopup:PopupPage
+    x:Class="Vakilaw.Views.SubscriptionPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+    xmlns:vm="clr-namespace:Vakilaw.ViewModels"
+    BackgroundColor="#80000000">
+
+    <mopup:PopupPage.Content>
+        <Border
+            Padding="20"
+            StrokeShape="12"
+            BackgroundColor="White"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="320">
+
+            <VerticalStackLayout Spacing="15">
+
+                <!-- عنوان -->
+                <Label Text="اشتراک و لایسنس" FontAttributes="Bold" FontSize="20" HorizontalOptions="Center"/>
+
+                <!-- وضعیت Trial -->
+                <StackLayout IsVisible="{Binding IsTrialActive}">
+                    <Label Text="Trial فعال است تا:" FontAttributes="Bold"/>
+                    <Label Text="{Binding TrialEndDate, StringFormat='{}{0:yyyy/MM/dd}'}"/>
+                </StackLayout>
+
+                <!-- وارد کردن کلید لایسنس -->
+                <Entry Placeholder="کلید لایسنس" Text="{Binding LicenseKey}"/>
+
+                <!-- یا انتخاب نوع اشتراک -->
+                <Label Text="یا انتخاب نوع اشتراک:" FontAttributes="Bold"/>
+                <Picker Title="نوع اشتراک" ItemsSource="{Binding SubscriptionOptions}" SelectedItem="{Binding SelectedSubscription}"/>
+
+                <!-- دکمه فعال‌سازی -->
+                <Button Text="فعال‌سازی" Command="{Binding ActivateLicenseCommand}" BackgroundColor="#0078D7" TextColor="White" CornerRadius="8"/>
+
+                <!-- بستن پاپ‌آپ -->
+                <Button Text="انصراف" Command="{Binding ClosePopupCommand}" BackgroundColor="LightGray" CornerRadius="8"/>
+            </VerticalStackLayout>
+        </Border>
+    </mopup:PopupPage.Content>
+</mopup:PopupPage>

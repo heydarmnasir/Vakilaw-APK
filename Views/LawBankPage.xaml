@@ -13,12 +13,11 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <conv:BoolToStarConverter x:Key="BoolToStarConverter" />
-            <Style x:Key="CardFrameStyle" TargetType="Frame">
-                <Setter Property="CornerRadius" Value="12"/>
+            <Style x:Key="CardFrameStyle" TargetType="Border">
+                <Setter Property="StrokeShape" Value="12"/>
                 <Setter Property="Padding" Value="10"/>
                 <Setter Property="Margin" Value="6,8"/>
                 <Setter Property="BackgroundColor" Value="White"/>
-                <Setter Property="HasShadow" Value="False"/>
             </Style>
             <Color x:Key="Accent">#ffffff</Color>
         </ResourceDictionary>

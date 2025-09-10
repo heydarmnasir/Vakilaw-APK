@@ -6,17 +6,17 @@ namespace Vakilaw.Services;
 
 public class LawyerService
 {
-    private readonly string _dbPath;
+    private readonly DatabaseService _databaseService;
 
-    public LawyerService()
+    public LawyerService(DatabaseService databaseService)
     {
-        _dbPath = Path.Combine(FileSystem.AppDataDirectory, "vakilaw.db");
+        _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         InitializeDatabase();
     }
 
     private void InitializeDatabase()
     {
-        using var conn = new SqliteConnection($"Data Source={_dbPath}");
+        using var conn = _databaseService.GetConnection();
         conn.Open();
 
         var tableCmd = conn.CreateCommand();
@@ -38,7 +38,7 @@ public class LawyerService
         var json = await File.ReadAllTextAsync(jsonPath);
         var lawyers = JsonSerializer.Deserialize<List<Lawyer>>(json);
 
-        using var conn = new SqliteConnection($"Data Source={_dbPath}");
+        using var conn = _databaseService.GetConnection();
         await conn.OpenAsync();
 
         foreach (var lawyer in lawyers)
@@ -60,7 +60,7 @@ public class LawyerService
     {
         var list = new List<Lawyer>();
 
-        using var conn = new SqliteConnection($"Data Source={_dbPath}");
+        using var conn = _databaseService.GetConnection();
         await conn.OpenAsync();
 
         var cmd = conn.CreateCommand();
@@ -84,7 +84,7 @@ public class LawyerService
 
     public async Task<Lawyer?> GetLawyerByIdAsync(int id)
     {
-        using var conn = new SqliteConnection($"Data Source={_dbPath}");
+        using var conn = _databaseService.GetConnection();
         await conn.OpenAsync();
 
         var cmd = conn.CreateCommand();

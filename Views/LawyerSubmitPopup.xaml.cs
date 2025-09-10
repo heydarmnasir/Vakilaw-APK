@@ -6,9 +6,9 @@ namespace Vakilaw.Views;
 
 public partial class LawyerSubmitPopup : PopupPage
 {
-    public LawyerSubmitPopup(UserService userService, OtpService otpService)
+    public LawyerSubmitPopup(UserService userService, OtpService otpService, LicenseService licenseService, string deviceId)
     {
         InitializeComponent();
-        BindingContext = new LawyerSubmitVM(userService, otpService);
+        BindingContext = new LawyerSubmitVM(userService, otpService, licenseService, deviceId);
     }
 }

@@ -35,23 +35,29 @@ public static class MauiProgram
         // مسیر دیتابیس
         string dbPath = Path.Combine(FileSystem.AppDataDirectory, "vakilaw.db");
 
-        // ثبت سرویس‌ها
+        // -------------------- سرویس‌ها --------------------
         builder.Services.AddSingleton(s => new DatabaseService(dbPath));
         builder.Services.AddSingleton<LawService>(s => new LawService(s.GetRequiredService<DatabaseService>()));
         builder.Services.AddSingleton<LawImporter>(s => new LawImporter(s.GetRequiredService<LawService>()));
         builder.Services.AddSingleton<UserService>();
         builder.Services.AddSingleton<OtpService>();
-        builder.Services.AddSingleton<LawyerService>();
+        builder.Services.AddSingleton<LicenseService>(s => new LicenseService(s.GetRequiredService<DatabaseService>()));
+        builder.Services.AddSingleton<LawyerService>(s => new LawyerService(s.GetRequiredService<DatabaseService>()));
 
-        // ویومدل‌ها
-        builder.Services.AddSingleton<MainPageVM>();  // Singleton تا داده‌ها حفظ شود
+        // -------------------- ویومدل‌ها --------------------
+        builder.Services.AddSingleton<MainPageVM>(); // Singleton برای حفظ داده‌ها
         builder.Services.AddSingleton<LawBankVM>();
 
-        // صفحات
+        builder.Services.AddTransient<LawyerSubmitVM>();
+        builder.Services.AddTransient<SubscriptionPopupVM>();
+
+        // -------------------- صفحات --------------------
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<LawBankPage>();
+        builder.Services.AddTransient<LawyerSubmitPopup>();
+        builder.Services.AddTransient<SubscriptionPopup>();
 
-        // خود App
+        // -------------------- خود App --------------------
         builder.Services.AddSingleton<App>();
 
         return builder.Build();

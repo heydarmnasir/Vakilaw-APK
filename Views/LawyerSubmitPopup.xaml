@@ -1,54 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <mopups:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                  xmlns:vm="clr-namespace:Vakilaw.ViewModels"
                   xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"
+                  xmlns:conv="clr-namespace:Vakilaw.Converters"
                   x:Class="Vakilaw.Views.LawyerSubmitPopup"
-                  BackgroundColor="Transparent" FlowDirection="RightToLeft">
+                  BackgroundColor="#80000000" FlowDirection="RightToLeft">
 
-    <Grid>
-        <BoxView BackgroundColor="Black" Opacity="0.7"/>
-        <Border Padding="25" StrokeShape="RoundRectangle 10" StrokeThickness="5" BackgroundColor="White"
-               VerticalOptions="Center" HorizontalOptions="Center"
-               WidthRequest="320" HeightRequest="500">
+    <ContentView VerticalOptions="Center" HorizontalOptions="Center">
+        <Border StrokeShape="20" Padding="25" BackgroundColor="#003049" WidthRequest="320">
             <VerticalStackLayout Spacing="15">
 
-                <Label Text="⚖️ ثبت نام وکیل ⚖️" FontAttributes="Bold"
-                       FontSize="20" HorizontalOptions="Center"
-                       TextColor="#2C3E50"/>
+                <Label Text="⚖️ ثبت نام وکیل ⚖️" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
 
-                <!-- فیلد نام -->
-                <Border StrokeShape="RoundRectangle 10" Padding="3" BackgroundColor="#F5F6FA">
-                    <Entry Placeholder="نام و نام خانوادگی" Text="{Binding FullName}" FontFamily="Sahel"
-                           PlaceholderColor="#95A5A6" TextColor="#2C3E50" FontSize="14"/>
-                </Border>
+                <Entry Placeholder="نام و نام خانوادگی" PlaceholderColor="DarkGray"
+                       Text="{Binding FullName}" />
 
-                <!-- فیلد شماره موبایل -->
-                <Border StrokeShape="RoundRectangle 10" Padding="3" BackgroundColor="#F5F6FA">
-                    <Entry Placeholder="شماره موبایل" Keyboard="Telephone" Text="{Binding PhoneNumber}"
-                           PlaceholderColor="#95A5A6" TextColor="#2C3E50" FontFamily="Sahel" FontSize="14"/>
-                </Border>
+                <Entry Placeholder="شماره موبایل" PlaceholderColor="DarkGray"
+                       Keyboard="Telephone"
+                       Text="{Binding PhoneNumber}" />
 
-                <!-- فیلد شماره پروانه وکالت -->
-                <Border StrokeShape="RoundRectangle 10" Padding="3" BackgroundColor="#F5F6FA">
-                    <Entry Placeholder="شماره پروانه وکالت" Keyboard="Numeric" Text="{Binding LicenseNumber}"
-                           PlaceholderColor="#95A5A6" TextColor="#2C3E50" FontFamily="Sahel" FontSize="14"/>
-                </Border>
+                <Entry Placeholder="شماره پروانه" PlaceholderColor="DarkGray"
+                       Keyboard="Numeric"
+                       Text="{Binding LicenseNumber}" />
 
-                <!-- دکمه ارسال OTP -->
-                <Button Text="ارسال کد تایید" TextColor="White" FontFamily="Sahel" FontSize="16" FontAttributes="Bold"
-                        CornerRadius="25" Padding="15,10" BackgroundColor="#3498DB"
-                        Command="{Binding SendOtpCommand}"/>
+                <Button Text="{Binding CanResendOtp, Converter={StaticResource OtpButtonTextConverter}, ConverterParameter={Binding ResendOtpCountdown}}"
+                        Command="{Binding SendOtpCommand}"
+                        IsEnabled="{Binding CanResendOtp}"
+                        BackgroundColor="#007AFF"
+                        TextColor="White"
+                        CornerRadius="10" />
 
-                <!-- فیلد OTP (نمایش بعد از ارسال) -->
-                <Border StrokeShape="RoundRectangle 10" Padding="3" BackgroundColor="#F5F6FA" IsVisible="{Binding IsOtpSent}">
-                    <Entry Placeholder="کد تایید" Keyboard="Numeric" Text="{Binding EnteredOtp}"
-                           PlaceholderColor="#95A5A6" TextColor="#2C3E50" FontFamily="Sahel" FontSize="16"/>
-                </Border>
+                <Entry Placeholder="کد تایید"
+                       Keyboard="Numeric"
+                       Text="{Binding EnteredOtp}" 
+                       IsVisible="{Binding IsOtpSent}" />
 
-                <Button Text="تایید کد" TextColor="White" FontFamily="Sahel" FontSize="16" FontAttributes="Bold"
-                        CornerRadius="25" Padding="15,10" BackgroundColor="#8E44AD"
-                        IsVisible="{Binding IsOtpSent}" Command="{Binding VerifyOtpCommand}"/>
+                <Button Text="تایید کد"
+                        Command="{Binding VerifyOtpCommand}"
+                        IsVisible="{Binding IsOtpSent}"
+                        BackgroundColor="#34C759"
+                        TextColor="White"
+                        CornerRadius="10" />
+
+                <Label Text="{Binding TrialEndDate, StringFormat='تاریخ پایان Trial: {0:yyyy/MM/dd}'}"
+                       IsVisible="{Binding IsTrialActive}"
+                       TextColor="Green"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center" />
+
+                <Button Text="انصراف"
+                        BackgroundColor="#FF3B30"
+                        TextColor="White"
+                        CornerRadius="10"
+                        Command="{Binding ClosePopupCommand}" />
 
             </VerticalStackLayout>
         </Border>
-    </Grid>
+    </ContentView>
 </mopups:PopupPage>
