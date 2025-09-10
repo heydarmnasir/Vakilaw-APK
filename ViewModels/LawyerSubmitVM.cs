@@ -98,6 +98,8 @@ public partial class LawyerSubmitVM : ObservableObject
         }
     }
 
+    private const string LawyerRole = "Lawyer";
+
     [RelayCommand]
     private async Task VerifyOtpAsync()
     {
@@ -114,24 +116,29 @@ public partial class LawyerSubmitVM : ObservableObject
         try
         {
             // ثبت نام کاربر
-            var user = await _userService.RegisterUserAsync(FullName, PhoneNumber, "Lawyer" ,LicenseNumber);
+            var user = await _userService.RegisterUserAsync(FullName, PhoneNumber, LawyerRole, LicenseNumber);
 
             // ذخیره وضعیت کاربر در Preferences           
             Preferences.Set("IsLawyerRegistered", true);
-            Preferences.Set("LawyerFullName", FullName);
-            Preferences.Set("LawyerLicense", LicenseNumber);
-            Preferences.Set("UserRole", "Lawyer");
-            Preferences.Set("UserPhone", PhoneNumber);
+            Preferences.Set("UserId", user.Id);
+            Preferences.Set("LawyerFullName", user.FullName);
+            Preferences.Set("LawyerLicense", user.LicenseNumber);
+            Preferences.Set("UserRole", user.Role);
+            Preferences.Set("UserPhone", user.PhoneNumber);
 
             // ایجاد Trial 14 روزه
             var license = await _licenseService.CreateTrialAsync(_deviceId, PhoneNumber);
             TrialEndDate = license.EndDate;
             IsTrialActive = license.IsActive;
 
+            Preferences.Set("TrialEndDate", license.EndDate.ToString("yyyy-MM-dd"));
+            Preferences.Set("IsTrialActive", license.IsActive);
+
             // ارسال پیام به سایر ViewModel ها
-            WeakReferenceMessenger.Default.Send(new LawyerRegisteredMessage(FullName, LicenseNumber));
+            WeakReferenceMessenger.Default.Send(new LawyerRegisteredMessage(user.FullName, user.LicenseNumber));
 
             // پاک کردن OTP برای امنیت
+            EnteredOtp = string.Empty;
             _currentOtp = null;
 
             await MopupService.Instance.PopAsync();
