@@ -40,7 +40,22 @@ public partial class LawyerSubmitVM : ObservableObject
     // Properties for OTP resend timer
     [ObservableProperty] private bool canResendOtp = true;
     [ObservableProperty] private int resendOtpCountdown;
+
+    // پراپرتی فقط خواندنی برای متن دکمه
+    public string OtpButtonText =>
+        CanResendOtp ? "ارسال کد" : $"ارسال مجدد ({ResendOtpCountdown}s)";
     #endregion
+
+    partial void OnCanResendOtpChanged(bool value)
+    {
+        OnPropertyChanged(nameof(OtpButtonText));
+    }
+
+    partial void OnResendOtpCountdownChanged(int value)
+    {
+        OnPropertyChanged(nameof(OtpButtonText));
+    }
+
 
     #region Commands
     [RelayCommand]
@@ -142,7 +157,7 @@ public partial class LawyerSubmitVM : ObservableObject
             _currentOtp = null;
 
             await MopupService.Instance.PopAsync();
-            await Toast.Make("ثبت نام و فعال‌سازی Trial 14 روزه با موفقیت انجام شد ✅").Show();
+            await Toast.Make("ثبت نام و فعال‌سازی Trial 14 روزه با موفقیت انجام شد ✅",ToastDuration.Long).Show();
         }
         catch (Exception ex)
         {

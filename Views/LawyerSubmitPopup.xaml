@@ -2,8 +2,7 @@
 <mopups:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                   xmlns:vm="clr-namespace:Vakilaw.ViewModels"
-                  xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"
-                  xmlns:conv="clr-namespace:Vakilaw.Converters"
+                  xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"                 
                   x:Class="Vakilaw.Views.LawyerSubmitPopup"
                   BackgroundColor="#80000000" FlowDirection="RightToLeft">
 
@@ -24,7 +23,7 @@
                        Keyboard="Numeric"
                        Text="{Binding LicenseNumber}" />
 
-                <Button Text="{Binding CanResendOtp, Converter={StaticResource OtpButtonTextConverter}, ConverterParameter={Binding ResendOtpCountdown}}"
+                <Button Text="{Binding OtpButtonText}"
                         Command="{Binding SendOtpCommand}"
                         IsEnabled="{Binding CanResendOtp}"
                         BackgroundColor="#007AFF"

@@ -544,7 +544,28 @@
 
         <!-- پنل تنظیمات -->
         <Grid x:Name="SettingsPanel" BackgroundColor="WhiteSmoke" Padding="20" IsVisible="{Binding IsSettingsVisible}">
-            <Label Text="در حال توسعه"/>
+            <!--بکاپ-->
+            <Border                  
+                StrokeShape="RoundRectangle 16"
+                StrokeThickness="1.5"
+                Padding="15"
+                Margin="0,5">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{local:Loc BackupRestoreData}"
+               FontSize="18"                          
+               FontAttributes="Bold"/>
+
+                    <Button Text="{local:Loc CreateBackup}"
+                Command="{Binding CreateBackupCommand}"
+                TextColor="White"
+                CornerRadius="12"/>
+
+                    <Button Text="{local:Loc RestoreBackup}"
+                Command="{Binding RestoreBackupCommand}"          
+                TextColor="White"
+                CornerRadius="12"/>
+                </VerticalStackLayout>
+            </Border>
         </Grid>
     </Grid>
 </ContentPage>

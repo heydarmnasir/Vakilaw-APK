@@ -1,4 +1,5 @@
 ﻿using AsyncAwaitBestPractices;
+using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -6,9 +7,9 @@ using Mopups.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Vakilaw.Models;
+using Vakilaw.Models.Messages;
 using Vakilaw.Services;
 using Vakilaw.Views;
-using Vakilaw.Models.Messages;
 
 namespace Vakilaw.ViewModels;
 
@@ -470,6 +471,83 @@ public partial class MainPageVM : ObservableObject
         await InitializeLawyersAsync();
         await LoadBookmarksAsync();
         await LoadNotesAsync();
+    }
+    #endregion
+
+
+    #region SettingsPanel
+    [RelayCommand]
+    private async Task CreateBackupAsync()
+    {
+        try
+        {
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "vakilaw.db");
+            string fileName = $"vakilawBackup_{DateTime.Now:yyyyMMdd_HHmmss}.db";
+
+            using var sourceStream = File.OpenRead(dbPath);
+
+            var fileResult = await FileSaver.Default.SaveAsync(fileName, sourceStream);
+
+            if (fileResult != null)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    LocalizationService.Instance["BackupSaved"],
+                    LocalizationService.Instance["BackupSavedSuccess"],
+                    LocalizationService.Instance["OK"]);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Application.Current.MainPage.DisplayAlert(
+                LocalizationService.Instance["Error"],
+                ex.Message,
+                LocalizationService.Instance["OK"]);
+        }
+    }
+
+    [RelayCommand]
+    private async Task RestoreBackupAsync()
+    {
+        try
+        {
+            var fileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+        {
+            { DevicePlatform.iOS, new[] { "public.database" } },
+            { DevicePlatform.Android, new[] { "application/octet-stream" } },
+            { DevicePlatform.WinUI, new[] { ".db" } },
+            { DevicePlatform.MacCatalyst, new[] { "public.database" } }
+        });
+
+            var pickOptions = new PickOptions
+            {
+                PickerTitle = LocalizationService.Instance["SelectBackupFile"],
+                FileTypes = fileTypes
+            };
+
+
+            var fileResult = await FilePicker.Default.PickAsync(pickOptions);
+            if (fileResult == null)
+                return;
+
+            // مسیر دیتابیس اپلیکیشن
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "vakilaw.db");
+
+            using var sourceStream = await fileResult.OpenReadAsync();
+            using var destStream = File.Open(dbPath, FileMode.Create, FileAccess.Write);
+            await sourceStream.CopyToAsync(destStream);
+
+            await Application.Current.MainPage.DisplayAlert(
+                LocalizationService.Instance["RestoreSuccessTitle"],
+                LocalizationService.Instance["RestoreSuccessMessage"],
+                LocalizationService.Instance["OK"]);
+        }
+        catch (Exception ex)
+        {
+            await Application.Current.MainPage.DisplayAlert(
+                LocalizationService.Instance["Error"],
+                ex.Message,
+                LocalizationService.Instance["OK"]);
+        }
     }
     #endregion
 }

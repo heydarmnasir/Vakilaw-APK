@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Mopups.Hosting;
 using Plugin.LocalNotification;
+using System.Runtime.InteropServices;
 using Vakilaw.Services;
 using Vakilaw.ViewModels;
 using Vakilaw.Views;
@@ -62,4 +63,29 @@ public static class MauiProgram
 
         return builder.Build();
     }
+
+
+
+//    private static string GetDatabasePath()
+//    {
+//        string dbFileName = "TaskList.db";
+//        string folder;
+
+//        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+//        {
+//            folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+//        }
+//        else
+//        {
+//#if ANDROID
+//                folder = FileSystem.AppDataDirectory;
+//#elif IOS
+//            folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+//#else
+//                folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+//#endif
+//        }
+
+//        return Path.Combine(folder, dbFileName);
+//    }
 }
