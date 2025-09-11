@@ -52,6 +52,11 @@ public partial class MainPageVM : ObservableObject
     [ObservableProperty] private bool isTrialActive;
     [ObservableProperty] private DateTime trialEndDate;
 
+    /// <summary>
+    /// فقط وقتی وکیل ثبت‌نام کرده و اشتراک فعال داره → آیتم‌های ویژه رو فعال کن
+    /// </summary>
+    public bool CanUseLawyerFeatures => IsLawyer && IsLawyerSubscriptionActive;
+
     public MainPageVM(UserService userService, OtpService otpService, LawService lawService, LawyerService lawyerService, LicenseService licenseService)
     {
         _userService = userService;
@@ -107,7 +112,10 @@ public partial class MainPageVM : ObservableObject
         WeakReferenceMessenger.Default.Register<LicenseActivatedMessage>(this, async (r, m) =>
         {
             if (m.IsActivated)
-                IsLawyerSubscriptionActive = true;
+            {
+                await CheckLicenseAsync();
+                OnPropertyChanged(nameof(CanUseLawyerFeatures));
+            }
         });
 
         // بررسی وضعیت اشتراک هنگام لود شدن
@@ -122,20 +130,26 @@ public partial class MainPageVM : ObservableObject
         var deviceId = DeviceHelper.GetDeviceId();
         var license = await _licenseService.GetActiveLicenseAsync(deviceId);
 
-        IsLawyerSubscriptionActive = license != null && license.EndDate > DateTime.Now;
+        bool isValid = license != null && license.EndDate > DateTime.Now;
 
-        if (license != null && license.EndDate > DateTime.Now)
+        IsLawyerSubscriptionActive = isValid;
+        Preferences.Set("IsSubscriptionActive", isValid);
+
+        if (isValid)
         {
-            TrialEndDate = license.EndDate;
-            IsTrialActive = true;
+            TrialEndDate = license!.EndDate;
+            IsTrialActive = license.SubscriptionType == "Trial";
         }
         else
         {
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                await ShowSubscriptionPopupAsync();
+                var popup = new SubscriptionPopup(_licenseService);
+                await MopupService.Instance.PushAsync(popup);
             });
         }
+
+        OnPropertyChanged(nameof(CanUseLawyerFeatures));
     }
 
     private async Task ShowSubscriptionPopupAsync()
@@ -157,8 +171,10 @@ public partial class MainPageVM : ObservableObject
         else
         {
             TrialEndDate = license.EndDate;
-            IsTrialActive = true;
+            IsTrialActive = license.SubscriptionType == "Trial";
         }
+
+        OnPropertyChanged(nameof(CanUseLawyerFeatures));
     }
     #endregion
 
@@ -433,9 +449,19 @@ public partial class MainPageVM : ObservableObject
         }
         else
         {
-            // پاپ‌آپ نمایش اطلاعات کاربری و اشتراک
-            var popup = new LawyerInfoPopup(); // VM خودش لود می‌کند
-            await MopupService.Instance.PushAsync(popup);
+            // بررسی وضعیت اشتراک
+            if (!isLawyerSubscriptionActive)
+            {
+                // پاپ‌آپ خرید/تمدید اشتراک
+                var subscriptionPopup = new SubscriptionPopup(_licenseService);
+                await MopupService.Instance.PushAsync(subscriptionPopup);
+            }
+            else
+            {
+                // پاپ‌آپ نمایش اطلاعات کاربری و اشتراک
+                var popup = new LawyerInfoPopup();
+                await MopupService.Instance.PushAsync(popup);
+            }
         }
     }
 
@@ -474,8 +500,12 @@ public partial class MainPageVM : ObservableObject
             LawyerFullName = Preferences.Get("LawyerFullName", string.Empty);
             LawyerLicense = Preferences.Get("LawyerLicense", string.Empty);
 
+            IsLawyerSubscriptionActive = Preferences.Get("IsSubscriptionActive", false);
+
             if (IsLawyer) CheckLicenseAsync().SafeFireAndForget();
         }
+
+        OnPropertyChanged(nameof(CanUseLawyerFeatures));
     }
 
     public async Task InitializeAsync()

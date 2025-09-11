@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using System.ComponentModel;
 using Vakilaw.Models;
 
 namespace Vakilaw.Services;
@@ -54,7 +55,10 @@ public class LicenseService
         }
 
         var now = DateTime.Now;
-        var trialEnd = now.AddDays(14);
+        //var trialEnd = now.AddDays(14);
+
+        // پایان فقط 10 دقیقه بعد
+        var trialEnd = now.AddMinutes(4);
 
         var trialLicense = new LicenseInfo
         {
@@ -147,9 +151,19 @@ public class LicenseService
     public async Task<bool> IsLicenseValidAsync(string deviceId)
     {
         var license = await GetActiveLicenseAsync(deviceId);
-        if (license == null)
-            return false;
+        var isValid = license != null && license.IsActive && DateTime.Now <= license.EndDate;
 
-        return license.IsActive && DateTime.Now <= license.EndDate;
+        // وضعیت اشتراک در Preferences ذخیره شود
+        Preferences.Set("IsSubscriptionActive", isValid);
+
+        return isValid;
+    }
+
+    public bool CanUseLawyerFeatures()
+    {
+        bool isLawyer = Preferences.Get("IsLawyerRegistered", false);
+        bool isActive = Preferences.Get("IsSubscriptionActive", false);
+
+        return isLawyer && isActive;
     }
 }

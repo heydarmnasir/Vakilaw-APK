@@ -4,8 +4,15 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+    xmlns:converters="clr-namespace:Vakilaw.Converters"
     xmlns:vm="clr-namespace:Vakilaw.ViewModels"
-    BackgroundColor="#80000000">
+    BackgroundColor="#80000000" FlowDirection="RightToLeft">
+
+    <mopup:PopupPage.Resources>
+        <ResourceDictionary>
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        </ResourceDictionary>
+    </mopup:PopupPage.Resources>
 
     <mopup:PopupPage.Content>
         <Border
@@ -27,18 +34,36 @@
                     <Label Text="{Binding TrialEndDate, StringFormat='{}{0:yyyy/MM/dd}'}"/>
                 </StackLayout>
 
-                <!-- وارد کردن کلید لایسنس -->
-                <Entry Placeholder="کلید لایسنس" Text="{Binding LicenseKey}"/>
+                <!-- نمایش خطا -->
+                <Label Text="{Binding ErrorMessage}" 
+                       TextColor="Crimson" 
+                       IsVisible="{Binding HasError}" 
+                       HorizontalOptions="Center"/>
 
-                <!-- یا انتخاب نوع اشتراک -->
-                <Label Text="یا انتخاب نوع اشتراک:" FontAttributes="Bold"/>
-                <Picker Title="نوع اشتراک" ItemsSource="{Binding SubscriptionOptions}" SelectedItem="{Binding SelectedSubscription}"/>
+                <Entry Placeholder="کلید لایسنس"
+                       Text="{Binding LicenseKey}"
+                       IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}"/>
 
-                <!-- دکمه فعال‌سازی -->
-                <Button Text="فعال‌سازی" Command="{Binding ActivateLicenseCommand}" BackgroundColor="#0078D7" TextColor="White" CornerRadius="8"/>
+                <Picker Title="نوع اشتراک"
+                        ItemsSource="{Binding SubscriptionOptions}"
+                        SelectedItem="{Binding SelectedSubscription}"
+                        IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}"/>
 
-                <!-- بستن پاپ‌آپ -->
-                <Button Text="انصراف" Command="{Binding ClosePopupCommand}" BackgroundColor="LightGray" CornerRadius="8"/>
+                <!-- Activity Indicator -->
+                <ActivityIndicator IsRunning="{Binding IsProcessing}" 
+                                   IsVisible="{Binding IsProcessing}" 
+                                   HorizontalOptions="Center"/>
+
+                <Button Text="{Binding ActivateButtonText}"
+                        Command="{Binding ActivateLicenseCommand}"
+                        IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}"
+                        BackgroundColor="#0078D7" TextColor="White" CornerRadius="8"/>
+
+                <Button Text="انصراف"
+                        Command="{Binding ClosePopupCommand}"
+                        IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}"
+                        BackgroundColor="LightGray" CornerRadius="8"/>
+
             </VerticalStackLayout>
         </Border>
     </mopup:PopupPage.Content>

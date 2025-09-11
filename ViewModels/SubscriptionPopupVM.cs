@@ -1,112 +1,144 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using AsyncAwaitBestPractices;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
-using Mopups.Services;
-using Vakilaw.Services;
-using Vakilaw.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using Mopups.Services;
+using System.Collections.ObjectModel;
+using Vakilaw.Models;
 using Vakilaw.Models.Messages;
+using Vakilaw.Services;
 
 public partial class SubscriptionPopupVM : ObservableObject
 {
     private readonly LicenseService _licenseService;
 
     [ObservableProperty] private string licenseKey;
-    [ObservableProperty] private string selectedSubscription; // "3 ماهه", "6 ماهه", "سالانه"
+    [ObservableProperty] private string selectedSubscription;
     [ObservableProperty] private bool isTrialActive;
     [ObservableProperty] private DateTime trialEndDate;
+
+    [ObservableProperty] private bool isProcessing;
+    [ObservableProperty] private string errorMessage;
+
+    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+
+    public string ActivateButtonText => IsProcessing ? "در حال پردازش..." : "فعال‌سازی";
+
+    public ObservableCollection<string> SubscriptionOptions { get; } = new()
+    {
+        "3 ماهه", "6 ماهه", "سالانه"
+    };
 
     public SubscriptionPopupVM(LicenseService licenseService)
     {
         _licenseService = licenseService ?? throw new ArgumentNullException(nameof(licenseService));
-        InitializeTrialState();
+        InitializeTrialStateAsync().SafeFireAndForget();
     }
 
-    private async void InitializeTrialState()
+    private async Task InitializeTrialStateAsync()
     {
-        var deviceId = DeviceHelper.GetDeviceId();
-        var trial = await _licenseService.GetActiveLicenseAsync(deviceId);
-        if (trial != null && trial.SubscriptionType == "Trial" && trial.EndDate > DateTime.Now)
+        try
         {
-            isTrialActive = true;
-            trialEndDate = trial.EndDate;
+            var deviceId = DeviceHelper.GetDeviceId();
+            var trial = await _licenseService.GetActiveLicenseAsync(deviceId);
+            if (trial != null && trial.SubscriptionType == "Trial" && trial.EndDate > DateTime.Now)
+            {
+                IsTrialActive = true;
+                TrialEndDate = trial.EndDate;
+            }
+        }
+        catch
+        {
+            // در صورت خطا، تنها از UI جلوگیری می‌کنیم، نیازی به throw نیست
         }
     }
 
     [RelayCommand]
     private async Task ActivateLicenseAsync()
     {
-        var deviceId = DeviceHelper.GetDeviceId();
+        IsProcessing = true;
+        ErrorMessage = string.Empty;
 
-        // فعال‌سازی با کلید لایسنس
-        if (!string.IsNullOrWhiteSpace(LicenseKey))
+        try
         {
-            var result = await _licenseService.ActivateLicenseAsync(deviceId, LicenseKey);
-            if (result)
+            var deviceId = DeviceHelper.GetDeviceId();
+
+            // فعال‌سازی با کلید لایسنس
+            if (!string.IsNullOrWhiteSpace(LicenseKey))
             {
-                await Toast.Make("لایسنس فعال شد", ToastDuration.Short).Show();
-                WeakReferenceMessenger.Default.Send(new LicenseActivatedMessage(true));
-                await MopupService.Instance.PopAsync();
+                var result = await _licenseService.ActivateLicenseAsync(deviceId, LicenseKey);
+                if (result)
+                {
+                    await Toast.Make("لایسنس فعال شد", ToastDuration.Short).Show();
+                    WeakReferenceMessenger.Default.Send(new LicenseActivatedMessage(true));
+                    await MopupService.Instance.PopAsync();
+                    return;
+                }
+                else
+                {
+                    ErrorMessage = "لایسنس نامعتبر است";
+                    return;
+                }
             }
-            else
+
+            // بررسی انتخاب نوع اشتراک
+            if (string.IsNullOrWhiteSpace(SelectedSubscription))
             {
-                await Toast.Make("لایسنس نامعتبر است", ToastDuration.Short).Show();
+                ErrorMessage = "لطفاً نوع اشتراک را انتخاب کنید";
+                return;
             }
-            return;
+
+            int months = SelectedSubscription switch
+            {
+                "3 ماهه" => 3,
+                "6 ماهه" => 6,
+                "سالانه" => 12,
+                _ => 0
+            };
+
+            if (months == 0)
+            {
+                ErrorMessage = "نوع اشتراک نامعتبر است";
+                return;
+            }
+
+            // بررسی اشتراک فعال قبلی
+            var existing = await _licenseService.GetActiveLicenseAsync(deviceId);
+            if (existing != null && existing.EndDate > DateTime.Now)
+            {
+                ErrorMessage = $"اشتراک قبلی هنوز فعال است تا {existing.EndDate:yyyy/MM/dd}";
+                return;
+            }
+
+            // ایجاد اشتراک جدید
+            var now = DateTime.Now;
+            var license = new LicenseInfo
+            {
+                DeviceId = deviceId,
+                UserPhone = Preferences.Get("UserPhone", ""),
+                StartDate = now,
+                EndDate = now.AddMonths(months),
+                IsActive = true,
+                SubscriptionType = SelectedSubscription
+            };
+
+            await _licenseService.AddLicenseAsync(license);
+            await Toast.Make($"{SelectedSubscription} فعال شد", ToastDuration.Short).Show();
+            WeakReferenceMessenger.Default.Send(new LicenseActivatedMessage(true));
+            await MopupService.Instance.PopAsync();
         }
-
-        // بررسی انتخاب نوع اشتراک
-        if (string.IsNullOrWhiteSpace(SelectedSubscription))
+        finally
         {
-            await Toast.Make("لطفاً نوع اشتراک را انتخاب کنید", ToastDuration.Short).Show();
-            return;
+            IsProcessing = false;
         }
-
-        // نگاشت نوع اشتراک به تعداد ماه‌ها
-        int months = SelectedSubscription switch
-        {
-            "3 ماهه" => 3,
-            "6 ماهه" => 6,
-            "سالانه" => 12,
-            _ => 0
-        };
-
-        if (months == 0)
-        {
-            await Toast.Make("نوع اشتراک نامعتبر است", ToastDuration.Short).Show();
-            return;
-        }
-
-        // بررسی وجود اشتراک فعال قبلی
-        var existing = await _licenseService.GetActiveLicenseAsync(deviceId);
-        if (existing != null && existing.EndDate > DateTime.Now)
-        {
-            await Toast.Make($"اشتراک قبلی هنوز فعال است تا {existing.EndDate:yyyy/MM/dd}", ToastDuration.Short).Show();
-            return;
-        }
-
-        // ایجاد اشتراک جدید
-        var now = DateTime.Now;
-        var license = new LicenseInfo
-        {
-            DeviceId = deviceId,
-            UserPhone = Preferences.Get("UserPhone", ""),
-            StartDate = now,
-            EndDate = now.AddMonths(months),
-            IsActive = true,
-            SubscriptionType = SelectedSubscription
-        };
-
-        await _licenseService.AddLicenseAsync(license);
-        await Toast.Make($"{SelectedSubscription} فعال شد", ToastDuration.Short).Show();
-        WeakReferenceMessenger.Default.Send(new LicenseActivatedMessage(true));
-        await MopupService.Instance.PopAsync();
     }
 
     [RelayCommand]
     private async Task ClosePopupAsync()
     {
-        await Mopups.Services.MopupService.Instance.PopAsync();
+        if (!IsProcessing)
+            await MopupService.Instance.PopAsync();
     }
 }

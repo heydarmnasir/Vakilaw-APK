@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Mopups.Services;
 using Vakilaw.Models.Messages;
 using Vakilaw.Services;
+using Vakilaw.Views;
 
 namespace Vakilaw.ViewModels;
 
@@ -157,12 +158,18 @@ public partial class LawyerSubmitVM : ObservableObject
 
             // ارسال پیام به سایر ViewModel ها
             WeakReferenceMessenger.Default.Send(new LawyerRegisteredMessage(user.FullName, user.LicenseNumber));
+            WeakReferenceMessenger.Default.Send(new LicenseActivatedMessage(true));
 
             // پاک کردن OTP برای امنیت
             EnteredOtp = string.Empty;
             _currentOtp = null;
 
             await MopupService.Instance.PopAsync();
+
+            // ✅ باز کردن بلافاصله پاپ‌آپ اطلاعات کاربری و اشتراک
+            var popup = new LawyerInfoPopup();
+            await MopupService.Instance.PushAsync(popup);
+
             await Toast.Make("ثبت نام و فعال‌سازی Trial 14 روزه با موفقیت انجام شد ✅", ToastDuration.Long).Show();
         }
         catch (Exception ex)

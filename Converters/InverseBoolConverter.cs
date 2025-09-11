@@ -2,13 +2,22 @@
 using System.Globalization;
 using Microsoft.Maui.Controls;
 
-namespace Vakilaw.Converters;
-
-public class InverseBoolConverter : IValueConverter
+namespace Vakilaw.Converters
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        => !(value is bool b) || !b;
+    public class InverseBoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool b)
+                return !b;
+            return true;
+        }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        => throw new NotImplementedException();
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool b)
+                return !b;
+            return true;
+        }
+    }
 }
