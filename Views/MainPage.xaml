@@ -30,8 +30,7 @@
                              Grid.Column="1"
                              HeightRequest="28" WidthRequest="28"
                              HorizontalOptions="End"
-                             Margin="225,0,0,0"
-                             IsEnabled="{Binding CanRegisterLawyer}"
+                             Margin="225,0,0,0"                             
                              Command="{Binding OpenLawyerPopupCommand}"/>
                 <Label Text="وکیل هستید؟" IsVisible="{Binding ShowRegisterLabel}" FontFamily="IRANSansWeb" TextColor="Gold" FontAttributes="Bold" Grid.Column="1" HorizontalOptions="End" Margin="0,10,55,0"/>
             </Grid>

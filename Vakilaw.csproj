@@ -93,6 +93,9 @@
 		<MauiXaml Update="Views\LawyerDetailsPopup.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="Views\LawyerInfoPopup.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Views\LawyerSubmitPopup.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

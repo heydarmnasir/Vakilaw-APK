@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopups:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                  xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"
+                  xmlns:vm="clr-namespace:Vakilaw.ViewModels"
+                  x:Class="Vakilaw.Views.LawyerInfoPopup"
+                  BackgroundColor="#80000000" FlowDirection="RightToLeft">
+    
+    <ContentView VerticalOptions="Center" HorizontalOptions="Center">
+        <Border StrokeShape="20" Padding="25" BackgroundColor="#003049" WidthRequest="320">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="👤 اطلاعات وکیل" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label TextColor="White">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="نام وکیل: " />
+                            <Span Text="{Binding FullName}" FontAttributes="Bold" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label TextColor="White">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="تلفن همراه: " />
+                            <Span Text="{Binding Phone}" FontFamily="IRANSansWeb"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label TextColor="White">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="شماره پروانه: " />
+                            <Span Text="{Binding License}" FontFamily="IRANSansWeb" FontAttributes="Bold"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+          
+                <Label Text="وضعیت اشتراک:" TextColor="Gold" FontAttributes="Bold"/>
+                <Label Text="{Binding SubscriptionStatus}" FontFamily="IRANSansWeb" TextColor="White"/>
+
+                <Button Text="بستن" 
+                        Command="{Binding CloseCommand}" 
+                        BackgroundColor="Crimson" 
+                        TextColor="White"/>
+            </VerticalStackLayout>
+        </Border>
+    </ContentView>
+</mopups:PopupPage>

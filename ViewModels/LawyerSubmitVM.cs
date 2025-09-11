@@ -133,7 +133,7 @@ public partial class LawyerSubmitVM : ObservableObject
             // ثبت نام کاربر
             var user = await _userService.RegisterUserAsync(FullName, PhoneNumber, LawyerRole, LicenseNumber);
 
-            // ذخیره وضعیت کاربر در Preferences           
+            // ذخیره اطلاعات پایه کاربر
             Preferences.Set("IsLawyerRegistered", true);
             Preferences.Set("UserId", user.Id);
             Preferences.Set("LawyerFullName", user.FullName);
@@ -146,7 +146,13 @@ public partial class LawyerSubmitVM : ObservableObject
             TrialEndDate = license.EndDate;
             IsTrialActive = license.IsActive;
 
-            Preferences.Set("TrialEndDate", license.EndDate.ToString("yyyy-MM-dd"));
+            // ✅ ذخیره تاریخ با فرمت استاندارد Round-trip
+            Preferences.Set("SubscriptionPlan", "رایگان (Trial)");
+            Preferences.Set("SubscriptionEndDate", license.EndDate.ToString("o"));
+            Preferences.Set("IsSubscriptionActive", license.IsActive);
+
+            // برای سازگاری با کدهای قدیمی (اختیاری)
+            Preferences.Set("TrialEndDate", license.EndDate.ToString("o"));
             Preferences.Set("IsTrialActive", license.IsActive);
 
             // ارسال پیام به سایر ViewModel ها
@@ -157,7 +163,7 @@ public partial class LawyerSubmitVM : ObservableObject
             _currentOtp = null;
 
             await MopupService.Instance.PopAsync();
-            await Toast.Make("ثبت نام و فعال‌سازی Trial 14 روزه با موفقیت انجام شد ✅",ToastDuration.Long).Show();
+            await Toast.Make("ثبت نام و فعال‌سازی Trial 14 روزه با موفقیت انجام شد ✅", ToastDuration.Long).Show();
         }
         catch (Exception ex)
         {

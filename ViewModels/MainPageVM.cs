@@ -422,9 +422,21 @@ public partial class MainPageVM : ObservableObject
     [RelayCommand]
     public async Task OpenLawyerPopupAsync()
     {
+        var isRegistered = Preferences.Get("IsLawyerRegistered", false);
         var deviceId = DeviceHelper.GetDeviceId();
-        var popup = new LawyerSubmitPopup(_userService, _otpService, _licenseService, deviceId);
-        await MopupService.Instance.PushAsync(popup);
+
+        if (!isRegistered)
+        {
+            // پاپ‌آپ ثبت نام
+            var popup = new LawyerSubmitPopup(_userService, _otpService, _licenseService, deviceId);
+            await MopupService.Instance.PushAsync(popup);
+        }
+        else
+        {
+            // پاپ‌آپ نمایش اطلاعات کاربری و اشتراک
+            var popup = new LawyerInfoPopup(); // VM خودش لود می‌کند
+            await MopupService.Instance.PushAsync(popup);
+        }
     }
 
     [RelayCommand]

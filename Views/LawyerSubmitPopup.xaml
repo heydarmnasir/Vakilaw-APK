@@ -49,7 +49,7 @@
                        HorizontalOptions="Center" />
 
                 <Button Text="انصراف"
-                        BackgroundColor="#FF3B30"
+                        BackgroundColor="Crimson"
                         TextColor="White"
                         CornerRadius="10"
                         Command="{Binding ClosePopupCommand}" />
