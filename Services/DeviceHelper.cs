@@ -1,6 +1,4 @@
-﻿using Microsoft.Maui.Storage;
-
-namespace Vakilaw.Services;
+﻿namespace Vakilaw.Services;
 public static class DeviceHelper
 {
     public static string GetDeviceId()

@@ -178,6 +178,87 @@ public partial class MainPageVM : ObservableObject
     }
     #endregion
 
+    #region Navigation
+    [RelayCommand]
+    public async Task OpenLawyerPopupAsync()
+    {
+        var isRegistered = Preferences.Get("IsLawyerRegistered", false);
+        var deviceId = DeviceHelper.GetDeviceId();
+
+        if (!isRegistered)
+        {
+            // پاپ‌آپ ثبت نام
+            var popup = new LawyerSubmitPopup(_userService, _otpService, _licenseService, deviceId);
+            await MopupService.Instance.PushAsync(popup);
+        }
+        else
+        {
+            // بررسی وضعیت اشتراک
+            if (!isLawyerSubscriptionActive)
+            {
+                // پاپ‌آپ خرید/تمدید اشتراک
+                var subscriptionPopup = new SubscriptionPopup(_licenseService);
+                await MopupService.Instance.PushAsync(subscriptionPopup);
+            }
+            else
+            {
+                // پاپ‌آپ نمایش اطلاعات کاربری و اشتراک
+                var popup = new LawyerInfoPopup();
+                await MopupService.Instance.PushAsync(popup);
+            }
+        }
+    }
+
+    [RelayCommand]
+    public async Task ShowDetailsAsync(Lawyer lawyer)
+    {
+        if (lawyer == null) return;
+        var popup = new LawyerDetailsPopup(lawyer.FullName, lawyer.PhoneNumber, lawyer.Address);
+        await MopupService.Instance.PushAsync(popup);
+    }
+
+    [RelayCommand] public async Task LawBankPageAsync() => await Shell.Current.GoToAsync("LawBankPage");
+    [RelayCommand] public async Task OpenAdlIranSiteAsync() => await Launcher.OpenAsync("https://adliran.ir/");
+    [RelayCommand] private async Task HamiVakilAsync() => await Launcher.OpenAsync("https://search-hamivakil.ir/");
+    #endregion
+
+    #region Helpers
+    private void LoadUserState()
+    {
+        var role = Preferences.Get("UserRole", "Unknown");
+        var isRegistered = Preferences.Get("IsLawyerRegistered", false);
+
+        if (role == "Unknown")
+        {
+            IsLawyer = false;
+            CanRegisterLawyer = true;
+            ShowRegisterLabel = true;
+            LawyerLicenseVisibility = false;
+        }
+        else
+        {
+            IsLawyer = role == "Lawyer" && isRegistered;
+            CanRegisterLawyer = !isRegistered;
+            ShowRegisterLabel = !isRegistered;
+            LawyerLicenseVisibility = isRegistered;
+            LawyerFullName = Preferences.Get("LawyerFullName", string.Empty);
+            LawyerLicense = Preferences.Get("LawyerLicense", string.Empty);
+
+            IsLawyerSubscriptionActive = Preferences.Get("IsSubscriptionActive", false);
+
+            if (IsLawyer) CheckLicenseAsync().SafeFireAndForget();
+        }
+
+        OnPropertyChanged(nameof(CanUseLawyerFeatures));
+    }
+
+    public async Task InitializeAsync()
+    {
+        await InitializeLawyersAsync();
+        await LoadBookmarksAsync();
+        await LoadNotesAsync();
+    }
+    #endregion
 
     #region Toggle Panels
     [RelayCommand]
@@ -433,89 +514,6 @@ public partial class MainPageVM : ObservableObject
         await App.Current.MainPage.DisplayAlert($"تبصره: {law.Title}", law.NotesText, "برگشت", FlowDirection.RightToLeft);
     }
     #endregion
-
-    #region Navigation
-    [RelayCommand]
-    public async Task OpenLawyerPopupAsync()
-    {
-        var isRegistered = Preferences.Get("IsLawyerRegistered", false);
-        var deviceId = DeviceHelper.GetDeviceId();
-
-        if (!isRegistered)
-        {
-            // پاپ‌آپ ثبت نام
-            var popup = new LawyerSubmitPopup(_userService, _otpService, _licenseService, deviceId);
-            await MopupService.Instance.PushAsync(popup);
-        }
-        else
-        {
-            // بررسی وضعیت اشتراک
-            if (!isLawyerSubscriptionActive)
-            {
-                // پاپ‌آپ خرید/تمدید اشتراک
-                var subscriptionPopup = new SubscriptionPopup(_licenseService);
-                await MopupService.Instance.PushAsync(subscriptionPopup);
-            }
-            else
-            {
-                // پاپ‌آپ نمایش اطلاعات کاربری و اشتراک
-                var popup = new LawyerInfoPopup();
-                await MopupService.Instance.PushAsync(popup);
-            }
-        }
-    }
-
-    [RelayCommand]
-    public async Task ShowDetailsAsync(Lawyer lawyer)
-    {
-        if (lawyer == null) return;
-        var popup = new LawyerDetailsPopup(lawyer.FullName, lawyer.PhoneNumber, lawyer.Address);
-        await MopupService.Instance.PushAsync(popup);
-    }
-
-    [RelayCommand] public async Task LawBankPageAsync() => await Shell.Current.GoToAsync("LawBankPage");
-    [RelayCommand] public async Task OpenAdlIranSiteAsync() => await Launcher.OpenAsync("https://adliran.ir/");
-    [RelayCommand] private async Task HamiVakilAsync() => await Launcher.OpenAsync("https://search-hamivakil.ir/");
-    #endregion
-
-    #region Helpers
-    private void LoadUserState()
-    {
-        var role = Preferences.Get("UserRole", "Unknown");
-        var isRegistered = Preferences.Get("IsLawyerRegistered", false);
-
-        if (role == "Unknown")
-        {
-            IsLawyer = false;
-            CanRegisterLawyer = true;
-            ShowRegisterLabel = true;
-            LawyerLicenseVisibility = false;
-        }
-        else
-        {
-            IsLawyer = role == "Lawyer" && isRegistered;
-            CanRegisterLawyer = !isRegistered;
-            ShowRegisterLabel = !isRegistered;
-            LawyerLicenseVisibility = isRegistered;
-            LawyerFullName = Preferences.Get("LawyerFullName", string.Empty);
-            LawyerLicense = Preferences.Get("LawyerLicense", string.Empty);
-
-            IsLawyerSubscriptionActive = Preferences.Get("IsSubscriptionActive", false);
-
-            if (IsLawyer) CheckLicenseAsync().SafeFireAndForget();
-        }
-
-        OnPropertyChanged(nameof(CanUseLawyerFeatures));
-    }
-
-    public async Task InitializeAsync()
-    {
-        await InitializeLawyersAsync();
-        await LoadBookmarksAsync();
-        await LoadNotesAsync();
-    }
-    #endregion
-
 
     #region SettingsPanel
     [RelayCommand]
