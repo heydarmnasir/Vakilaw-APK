@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopup:PopupPage
+    x:Class="Vakilaw.Views.ActiveLicenseTutorialPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+    xmlns:converters="clr-namespace:Vakilaw.Converters"
+    BackgroundColor="#80000000" FlowDirection="RightToLeft">
+
+    <Border
+     Padding="20"
+     StrokeShape="12"
+     BackgroundColor="GhostWhite"
+     HorizontalOptions="Center"
+     VerticalOptions="Center"
+     WidthRequest="340">
+
+        <VerticalStackLayout Spacing="15">
+
+            <!-- عنوان -->
+            <Label Text="وکلای ارجمند" FontFamily="Sahel" FontAttributes="Bold" FontSize="14" HorizontalOptions="Start" TextColor="Black"/>
+
+            <Label Text="با سلام و احترام،
+مایلیم صمیمانه‌ترین تشکر خود را از شما بزرگواران ابراز کنیم که با اعتماد ارزشمندتان، اپلیکیشن حقوقی ما را برای تسهیل و ارتقای فعالیت حرفه‌ای خود برگزیده‌اید.
+مایه‌ی افتخار و مسئولیت ماست که در مسیر ارائه‌ی خدمات حقوقی، همراه شما فرهیختگان عرصه‌ی قانون هستیم.
+از اعتمادتان سپاسگزاریم و امیدواریم این همکاری، آغازی باشد بر مسیری پربار و مؤثر در خدمت به عدالت." FontFamily="IRANSansWeb" FontAttributes="None" FontSize="12" HorizontalTextAlignment="Justify" TextColor="Black" Margin="0,-10,0,0"/>
+            <Label Text="حیدر محمدی نصیر – توسعه دهنده" FontFamily="Sahel" FontSize="12" TextColor="Black" FontAttributes="Bold" Margin="0,-15,0,0"/>
+            <Label Text="راهنمای فعالسازی اشتراک:" Background="Gold" HorizontalOptions="Start" TextColor="Black" FontAttributes="Bold"/>
+            <Label Text="1-پلن موردنظر را انتخاب کنید (1 ماهه - 3 ماهه - سالانه)" FontFamily="IRANSansWeb" FontSize="12" TextColor="Black"/>
+            <Label Text="2-مبلغ مندرج شده در پلن را به شمارت کارت توسعه دهنده واریز نمایید. شماره کارت توسعه دهنده:" FontFamily="IRANSansWeb" FontSize="12" Margin="0,-10,0,0" TextColor="Black"/>
+            <HorizontalStackLayout>
+                <Label x:Name="CardNumber" FontFamily="IRANSansWeb" FontSize="13" FontAttributes="Bold" Margin="0,-10,0,0" TextColor="Black"/>
+                <Button x:Name="CopyCardNumber" Text="📋 کپی شماره کارت" Margin="-70,-42,0,0"            
+                BackgroundColor="Transparent" FontFamily="Sahel"
+                TextColor="#003049" FontAttributes="Bold"
+                CornerRadius="8"
+                FontSize="12" Clicked="CopyCardNumber_Clicked"/>
+            </HorizontalStackLayout>
+            <VerticalStackLayout>
+                <Label Text="3-فیش واریزی و کلید دستگاه خود را برای توسعه دهنده ارسال کنید." TextColor="Black" FontSize="13" Margin="0,-10,0,0" FontFamily="IRANSansWeb"/>
+                <!-- دکمه ارسال پیامک -->
+                <Button Text="ارتباط با توسعه دهنده" FontAttributes="Bold"
+                BackgroundColor="#003049"
+                TextColor="White"
+                CornerRadius="15"
+                HeightRequest="45"
+                Clicked="SendMessageToLawyer"/>
+            </VerticalStackLayout>
+            <Label Text="پلن های اشتراکی:" HorizontalOptions="Start" TextColor="Black" FontFamily="IRANSansWeb" FontAttributes="Bold"/>
+            <Grid ColumnDefinitions="1.4*,1.4*,1.5*">
+                <Border Grid.Column="0" StrokeShape="5" StrokeThickness="2">
+                    <VerticalStackLayout Padding="5">
+                        <Label Text="🥉 1 ماهه" TextColor="Black" FontFamily="IRANSansWeb" FontAttributes="Bold"/>
+                        <Label Text="399/000 تومان" FontFamily="IRANSansWeb" FontSize="12" FontAttributes="Bold" TextColor="ForestGreen"/>
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="1" StrokeShape="5" StrokeThickness="2">
+                    <VerticalStackLayout Padding="5">
+                        <Label Text="🥈 3 ماهه" TextColor="Black" FontFamily="IRANSansWeb" FontAttributes="Bold"/>
+                        <Label Text="1/199/000 تومان" TextDecorations="Strikethrough" FontFamily="IRANSansWeb" FontSize="11" FontAttributes="Bold" TextColor="Crimson"/>
+                        <Label Text="899/000 تومان" FontFamily="IRANSansWeb" FontSize="12" FontAttributes="Bold" TextColor="ForestGreen"/>
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="2" StrokeShape="5" StrokeThickness="2">
+                    <VerticalStackLayout Padding="5">
+                        <Label Text="🥇 سالانه" TextColor="Black" FontFamily="IRANSansWeb" FontAttributes="Bold"/>
+                        <Label Text="1/999/000 تومان" FontFamily="IRANSansWeb" FontSize="12" FontAttributes="Bold" TextColor="ForestGreen"/>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </VerticalStackLayout>
+    </Border>
+</mopup:PopupPage>

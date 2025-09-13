@@ -87,6 +87,9 @@
 		<MauiXaml Update="AppShell_Lawyer.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="Views\ActiveLicenseTutorialPopup.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Views\LawBankPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

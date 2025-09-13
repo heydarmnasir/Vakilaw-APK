@@ -143,7 +143,7 @@ public partial class LawyerSubmitVM : ObservableObject
             Preferences.Set("UserPhone", user.PhoneNumber);
 
             // ایجاد Trial 14 روزه
-            var license = await _licenseService.CreateTrialAsync(_deviceId, PhoneNumber);
+            var license = await _licenseService.CreateOrGetTrialAsync(_deviceId, PhoneNumber);
             TrialEndDate = license.EndDate;
             IsTrialActive = license.IsActive;
 

@@ -5,7 +5,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
     xmlns:converters="clr-namespace:Vakilaw.Converters"
-    xmlns:vm="clr-namespace:Vakilaw.ViewModels"
     BackgroundColor="#80000000" FlowDirection="RightToLeft">
 
     <mopup:PopupPage.Resources>
@@ -18,33 +17,65 @@
         <Border
             Padding="20"
             StrokeShape="12"
-            BackgroundColor="White"
+            BackgroundColor="#1b263b"
             HorizontalOptions="Center"
             VerticalOptions="Center"
-            WidthRequest="320">
+            WidthRequest="340">
 
             <VerticalStackLayout Spacing="15">
 
                 <!-- عنوان -->
-                <Label Text="اشتراک و لایسنس" FontAttributes="Bold" FontSize="20" HorizontalOptions="Center"/>
-
+                <Label Text="اعتبار لایسنس شما به پایان رسیده است" FontAttributes="Bold" FontSize="16" HorizontalOptions="Center" TextColor="Red"/>
+                <Border StrokeThickness="2" StrokeShape="5" Stroke="White">
+                    <HorizontalStackLayout>
+                        <Label Text="راهنمایی فعالسازی لایسنس:" FontAttributes="Bold" FontSize="14" HorizontalOptions="Center" TextColor="White" Padding="10,5,35,0"/>
+                        <Button Text="راهنمایی" Command="{Binding ActiveLicenseTutorialCommand}" BackgroundColor="Transparent" TextColor="Gold" FontSize="16" FontAttributes="Bold" Margin="0,-12,0,0" Padding="5,10,0,0"/>
+                    </HorizontalStackLayout>
+                </Border>
+               
+              
                 <!-- وضعیت Trial -->
                 <StackLayout IsVisible="{Binding IsTrialActive}">
-                    <Label Text="Trial فعال است تا:" FontAttributes="Bold"/>
-                    <Label Text="{Binding TrialEndDate, StringFormat='{}{0:yyyy/MM/dd}'}"/>
+                    <Label Text="Trial فعال است تا:" FontAttributes="Bold" TextColor="White"/>
+                    <Label Text="{Binding TrialEndDate, StringFormat='{}{0:yyyy/MM/dd}'}" TextColor="Lime"/>
                 </StackLayout>
 
-                <!-- نمایش خطا -->
+                <!-- نمایش DeviceId -->
+                <Border BackgroundColor="#1a1a1a" Padding="10" StrokeShape="8">
+                    <VerticalStackLayout>
+                        <Label Text="کلید دستگاه شما:" FontAttributes="Bold" TextColor="Gold"/>
+                        <Label Text="{Binding DeviceId}" HorizontalTextAlignment="Center" FontSize="12" TextColor="White" LineBreakMode="CharacterWrap"/>
+                        <Button Text="📋 کپی"  Margin="5"
+                                Command="{Binding CopyDeviceIdCommand}" 
+                                BackgroundColor="#444" 
+                                TextColor="White"
+                                CornerRadius="8"
+                                FontSize="12"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- نمایش خطا / پیام -->
                 <Label Text="{Binding ErrorMessage}" 
-                       TextColor="Crimson" 
-                       IsVisible="{Binding HasError}" 
-                       HorizontalOptions="Center"/>
+                       TextColor="Red" 
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                       HorizontalOptions="Center"
+                       FontAttributes="Bold"/>
 
-                <Entry Placeholder="کلید لایسنس"
-                       Text="{Binding LicenseKey}"
-                       IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}"/>
+                <Border StrokeShape="5" StrokeThickness="3" Stroke="GhostWhite">
+                    <!-- ورودی لایسنس -->
+                    <Editor Placeholder="کلید لایسنس را اینجا وارد کنید"
+                    HeightRequest="100"
+                    AutoSize="TextChanges"
+                    Text="{Binding LicenseKey}"
+                    MaxLength="2000"
+                    IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}"
+                    BackgroundColor="White"
+                    TextColor="Black"/>
+                </Border>
+               
 
-                <Picker Title="نوع اشتراک"
+                <!-- Picker اشتراک (فقط برای راهنما) -->
+                <Picker Title="نوع اشتراک برای خرید (راهنما)"
                         ItemsSource="{Binding SubscriptionOptions}"
                         SelectedItem="{Binding SelectedSubscription}"
                         IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}"/>
@@ -54,10 +85,11 @@
                                    IsVisible="{Binding IsProcessing}" 
                                    HorizontalOptions="Center"/>
 
-                <Button Text="{Binding ActivateButtonText}"
+                <!-- دکمه فعالسازی -->
+                <Button Text="فعالسازی"
                         Command="{Binding ActivateLicenseCommand}"
                         IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}"
-                        BackgroundColor="#0078D7" TextColor="White" CornerRadius="8"/>
+                        BackgroundColor="ForestGreen" TextColor="White" CornerRadius="8"/>
 
                 <Button Text="انصراف"
                         Command="{Binding ClosePopupCommand}"

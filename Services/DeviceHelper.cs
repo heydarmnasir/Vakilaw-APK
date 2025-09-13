@@ -1,15 +1,22 @@
-﻿namespace Vakilaw.Services;
-public static class DeviceHelper
+﻿namespace Vakilaw.Services
 {
-    public static string GetDeviceId()
+    public static class DeviceHelper
     {
-        return Preferences.Get("DeviceId", null) ?? GenerateDeviceId();
-    }
+        public static string GetDeviceId()
+        {
+            var id = Preferences.Get("DeviceId", string.Empty);
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                id = GenerateDeviceId();
+            }
+            return id;
+        }
 
-    private static string GenerateDeviceId()
-    {
-        var id = Guid.NewGuid().ToString();
-        Preferences.Set("DeviceId", id);
-        return id;
+        private static string GenerateDeviceId()
+        {
+            var id = Guid.NewGuid().ToString("N"); // بدون خط تیره، فشرده‌تر
+            Preferences.Set("DeviceId", id);
+            return id;
+        }
     }
 }
