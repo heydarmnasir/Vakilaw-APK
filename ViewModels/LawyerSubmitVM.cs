@@ -3,6 +3,7 @@ using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using IPE.SmsIrClient;
 using Mopups.Services;
 using Vakilaw.Models.Messages;
 using Vakilaw.Services;
@@ -171,6 +172,9 @@ public partial class LawyerSubmitVM : ObservableObject
             await MopupService.Instance.PushAsync(popup);
 
             await Toast.Make("ثبت نام و فعال‌سازی Trial 14 روزه با موفقیت انجام شد ✅", ToastDuration.Long).Show();
+
+            SmsIr smsIr = new SmsIr("nAhAuhG1zeatLYl8giJtgTgTc9L1788EQbckz7iGd1uYUz28");
+            var bulkSendResult = smsIr.BulkSendAsync(30007732011420, $"وکیل گرامی {user.FullName}\nثبت نام شما در اپلیکیشن حقوقی وکیلاو را تبریک عرض میکنم\nجهت راهنمایی و یا ارسال درخواست، به شماره زیر:\n+989023349043 پیغام بدهید \n سربلند و پیروز باشید", new string[] { user.PhoneNumber });
         }
         catch (Exception ex)
         {
