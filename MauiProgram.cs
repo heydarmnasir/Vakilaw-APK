@@ -46,6 +46,9 @@ public static class MauiProgram
         new LicenseService(sp.GetRequiredService<DatabaseService>(), "<PUBLIC_KEY_BASE64_HERE>"));
         builder.Services.AddSingleton<LawyerService>(s => new LawyerService(s.GetRequiredService<DatabaseService>()));
 
+        builder.Services.AddSingleton<ClientService>();
+        builder.Services.AddSingleton<CaseService>();
+
         // -------------------- ویومدل‌ها --------------------
         builder.Services.AddSingleton<MainPageVM>(); // Singleton برای حفظ داده‌ها
         builder.Services.AddSingleton<LawBankVM>();
@@ -53,11 +56,16 @@ public static class MauiProgram
         builder.Services.AddTransient<LawyerSubmitVM>();
         builder.Services.AddTransient<SubscriptionPopupVM>();
 
+
+        builder.Services.AddTransient<ClientsAndCasesViewModel>();
+     
         // -------------------- صفحات --------------------
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<LawBankPage>();
         builder.Services.AddTransient<LawyerSubmitPopup>();
         builder.Services.AddTransient<SubscriptionPopup>();
+
+        builder.Services.AddTransient<ClientsAndCasesPage>();    
 
         // -------------------- خود App --------------------
         builder.Services.AddSingleton<App>();

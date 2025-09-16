@@ -64,6 +64,29 @@ public class DatabaseService
             IsActive INTEGER NOT NULL,
             SubscriptionType TEXT
         );
+
+        CREATE TABLE IF NOT EXISTS Clients (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            FullName TEXT NOT NULL,
+            NationalCode TEXT,
+            PhoneNumber TEXT,
+            Address TEXT,
+            Description TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS Cases (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Title TEXT NOT NULL,
+            CaseNumber TEXT,
+            CourtName TEXT,
+            JudgeName TEXT,
+            StartDate TEXT,
+            EndDate TEXT,
+            Status TEXT,
+            Description TEXT,
+            ClientId INTEGER NOT NULL,
+            FOREIGN KEY (ClientId) REFERENCES Clients(Id) ON DELETE CASCADE
+        );
     ";
         await cmd.ExecuteNonQueryAsync();
     }

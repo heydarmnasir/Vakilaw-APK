@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopup:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                 xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+                 x:Class="Vakilaw.Views.AddClientPopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
+
+    <mopup:PopupPage.Content>
+        <Border
+        Padding="20"
+        StrokeShape="12"
+        BackgroundColor="#1b263b"
+        HorizontalOptions="Center"
+        VerticalOptions="Center"
+        WidthRequest="340">
+            <VerticalStackLayout Padding="20" Spacing="15">
+        <Label Text="➕ افزودن موکل جدید"
+               FontAttributes="Bold"
+               FontSize="Medium"
+               HorizontalOptions="Center" />
+
+                <Entry Placeholder="نام و نام خانوادگی" PlaceholderColor="DarkGray" Text="{Binding FullName}" />
+                <Entry Placeholder="کد ملی" PlaceholderColor="DarkGray" Keyboard="Numeric" Text="{Binding NationalCode}" />
+                <Entry Placeholder="شماره تماس" PlaceholderColor="DarkGray" Keyboard="Telephone" Text="{Binding PhoneNumber}" />
+                <Entry Placeholder="آدرس" PlaceholderColor="DarkGray" Text="{Binding Address}" />
+                <Border StrokeShape="5" StrokeThickness="3" Stroke="GhostWhite">
+                <Editor Placeholder="توضیحات ..." PlaceholderColor="DarkGray" Text="{Binding Description}" HeightRequest="100"
+                AutoSize="TextChanges" MaxLength="2000" BackgroundColor="WhiteSmoke"
+                TextColor="Black"/>
+                </Border>
+                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <Button Text="ثبت موکل" Command="{Binding SaveCommand}" FontFamily="IRANSansWeb" FontAttributes="Bold" BackgroundColor="ForestGreen" TextColor="White"/>
+                    <Button Text="انصراف" Command="{Binding CancelCommand}" FontFamily="IRANSansWeb" FontAttributes="Bold" BackgroundColor="Crimson" TextColor="White"/>
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+        </Border>
+    </mopup:PopupPage.Content>
+</mopup:PopupPage>

@@ -1,0 +1,109 @@
+<ContentPage x:Name="RootPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Vakilaw.Converters"
+             x:Class="Vakilaw.Views.ClientsAndCasesPage"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:vm="clr-namespace:Vakilaw.ViewModels"
+             Title="موکل‌ها و پرونده‌ها" FlowDirection="RightToLeft" BackgroundImageSource="bg_lawyerslist6.jpg">
+
+    <Grid RowDefinitions="Auto, *" Padding="10">
+
+        <!-- تب‌ها -->
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,0,0,10">
+            <Button Grid.Column="0"
+                    Text="👥 موکل‌ها" FontFamily="IRANSansWeb" FontAttributes="Bold"
+                    Command="{Binding ShowClientsCommand}"
+                    BackgroundColor="{Binding IsClientsVisible, Converter={StaticResource BoolToColorConverter}}" />
+            <Button Grid.Column="1"
+                    Text="📂 پرونده‌ها" FontFamily="IRANSansWeb" FontAttributes="Bold"
+                    Command="{Binding ShowCasesCommand}"
+                    BackgroundColor="{Binding IsCasesVisible, Converter={StaticResource BoolToColorConverter}}" />
+        </Grid>
+
+        <!-- لیست موکل‌ها -->
+        <StackLayout Grid.Row="1" IsVisible="{Binding IsClientsVisible}" Spacing="10">
+            <!-- جستجو -->
+            <Entry Placeholder="🔍 جستجوی موکل (نام یا شماره موبایل)" PlaceholderColor="DarkGray" FontAttributes="Bold"
+                   Text="{Binding ClientSearchText, Mode=TwoWay}"
+                   ClearButtonVisibility="WhileEditing" />
+
+            <Button Text="➕ افزودن موکل" Command="{Binding ShowAddClientPopupCommand}" BackgroundColor="Gold" FontAttributes="Bold" FontFamily="IRANSansWeb"/>
+
+            <CollectionView ItemsSource="{Binding ClientsWithCases}" SelectionMode="Single">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="10" Margin="5" StrokeShape="12" Stroke="LightGray">
+                            <Grid ColumnDefinitions="*,*,Auto">
+                                <Label Grid.Column="0" Text="{Binding Client.FullName}" FontFamily="IRANSansWeb" FontSize="13" FontAttributes="Bold" />
+                                <Label Grid.Column="1" Text="{Binding Client.PhoneNumber}" FontFamily="IRANSansWeb" FontAttributes="Bold" />
+                                <Button Grid.Column="2"
+                                        Text="مشاهده جزئیات" BackgroundColor="#5e548e" TextColor="White" FontAttributes="Bold" FontSize="12"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ClientWithCasesViewModel}}, Path=ShowClientDetailsCommand}"
+                                        CommandParameter="{Binding Client}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+
+        <!-- لیست پرونده‌ها -->
+        <StackLayout Grid.Row="1" IsVisible="{Binding IsCasesVisible}" Spacing="10">
+            <!-- جستجو -->
+            <Entry Placeholder="🔍 جستجوی پرونده (عنوان، شماره پرونده یا نام موکل)" PlaceholderColor="DarkGray" FontAttributes="Bold"
+                   Text="{Binding ClientSearchText, Mode=TwoWay}"
+                   ClearButtonVisibility="WhileEditing" />
+
+            <Button Text="➕ افزودن پرونده" TextColor="White"
+                    Command="{Binding ShowAddCasePopupCommand}"
+                    FontAttributes="Bold"
+                    FontFamily="IRANSansWeb"
+                    IsEnabled="{Binding SelectedClient, Converter={StaticResource NullToBoolConverter}}" />
+
+            <CollectionView ItemsSource="{Binding ClientsWithCases}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <toolkit:Expander IsExpanded="{Binding IsExpanded}">
+                            <toolkit:Expander.Header>
+                                <Grid Padding="10" ColumnDefinitions="*,Auto,Auto">
+                                    <Border Padding="10" Margin="5" StrokeShape="12" Stroke="LightGray">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Label Grid.Column="0" Text="{Binding Client.FullName}" 
+                                                   TextColor="White" FontAttributes="Bold" VerticalOptions="Center"/>
+                                            <Label Grid.Column="1" Text="{Binding Client.PhoneNumber}" FontFamily="IRANSansWeb"
+                                                   TextColor="White" FontAttributes="Bold" VerticalOptions="Center"/>
+                                        </Grid>
+                                    </Border>
+                                    <Button Text="{Binding IsExpanded, Converter={StaticResource BoolToPlusMinusConverter}}"
+                                            Command="{Binding ToggleExpandCommand}"
+                                            BackgroundColor="Transparent" TextColor="White" FontSize="30"
+                                            FontAttributes="Bold"/>
+                                </Grid>
+                            </toolkit:Expander.Header>
+
+                            <toolkit:Expander.Content>
+                                <StackLayout Padding="10" Spacing="8">
+                                    <Label Text="پرونده‌ها:" FontFamily="Sahel" FontAttributes="Bold" />
+                                    <CollectionView ItemsSource="{Binding Cases}"
+                                                    SelectionMode="Single"
+                                                    SelectedItem="{Binding DataContext.SelectedCase, Source={x:Reference Name=RootPage}, Mode=TwoWay}">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Padding="8" ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+                                                    <Label Text="{Binding Title}" VerticalOptions="Center" Padding="10" TextColor="#003049" FontFamily="Sahel" FontAttributes="Bold" ZIndex="1"/>
+                                                    <Button Text="جزئیات" FontFamily="IRANSansWeb" FontAttributes="Bold" BackgroundColor="#edede9" TextColor="Black"
+                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ClientWithCasesViewModel}}, Path=ShowCaseDetailsCommand}"
+                                                            CommandParameter="{Binding .}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </StackLayout>
+                            </toolkit:Expander.Content>
+                        </toolkit:Expander>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+    </Grid>
+</ContentPage>

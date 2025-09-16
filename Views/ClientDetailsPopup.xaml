@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopup:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                 xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+                 x:Class="Vakilaw.Views.ClientDetailsPopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
+
+    <ContentView VerticalOptions="Center" HorizontalOptions="Center">
+        <Border Padding="20"
+        StrokeShape="12"
+        BackgroundColor="#1b263b"
+        HorizontalOptions="Center"
+        VerticalOptions="Center"
+        WidthRequest="340">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="{Binding FullName}" TextColor="Gold" FontAttributes="Bold" FontSize="16" FontFamily="IRANSansWeb"/>
+                <Label Text="کد ملی:" FontAttributes="Bold"/>
+                <Label Text="{Binding NationalCode}" FontFamily="IRANSansWeb"/>
+                <Label Text="آدرس:" FontAttributes="Bold" />
+                <Label Text="{Binding Address}" FontFamily="IRANSansWeb"/>
+                <Label Text="توضیحات:" FontAttributes="Bold" />
+                <Label Text="{Binding Description}" FontFamily="IRANSansWeb"/>
+                
+                <Button Text="بستن" Command="{Binding CloseCommand}" HorizontalOptions="Center" FontFamily="Sahel" FontAttributes="Bold" BackgroundColor="Crimson" TextColor="White" Margin="225,0,0,0"/>
+            </VerticalStackLayout>
+        </Border>
+    </ContentView>
+</mopup:PopupPage>

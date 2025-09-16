@@ -84,8 +84,11 @@
                 </Border>
 
                 <!-- مدیریت موکل‌ها -->
-                <Border StrokeShape="12" IsEnabled="{Binding CanUseLawyerFeatures}" Padding="15" BackgroundColor="#003049">
+                <Border StrokeShape="12" Padding="15" BackgroundColor="#003049"> <!--IsEnabled="{Binding CanUseLawyerFeatures}"-->
                     <Grid ColumnDefinitions="Auto,*">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ClientsAndCasesPageCommand}"/>
+                        </Grid.GestureRecognizers>
                         <Image Source="clients.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
                         <Label Text="مدیریت موکل‌ ها و پرونده ها" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
                     </Grid>

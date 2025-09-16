@@ -1,0 +1,14 @@
+using Mopups.Pages;
+using Vakilaw.Models;
+using Vakilaw.ViewModels;
+
+namespace Vakilaw.Views;
+
+public partial class CaseDetailsPopup : PopupPage
+{
+	public CaseDetailsPopup(Case caseItem)
+	{
+		InitializeComponent();
+        BindingContext = new CaseDetailsPopupViewModel(caseItem);
+    }
+}

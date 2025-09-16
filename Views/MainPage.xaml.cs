@@ -20,6 +20,6 @@ namespace Vakilaw.Views
             {
                 LocalizationService.Instance.UpdateFlowDirection(this);
             };
-        }
+        }    
     }  
 }

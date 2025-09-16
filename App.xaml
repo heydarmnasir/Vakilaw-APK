@@ -11,6 +11,8 @@
                                          FalseColor="LightGray"/>
             <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
             <converters:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
+            <converters:BoolToPlusMinusConverter x:Key="BoolToPlusMinusConverter"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />

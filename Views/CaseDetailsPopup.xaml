@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopup:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                 xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+                 x:Class="Vakilaw.Views.CaseDetailsPopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
+
+    <ContentView VerticalOptions="Center" HorizontalOptions="Center">
+    <Border Padding="20" Margin="20"
+    StrokeShape="12"
+    BackgroundColor="#1b263b"
+    HorizontalOptions="Center"
+    VerticalOptions="Center"
+    WidthRequest="340">
+        <VerticalStackLayout Spacing="10">
+            <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="18" TextColor="Gold"/>
+            <Label Text="شماره پرونده:" FontAttributes="Bold"/>
+            <Label Text="{Binding CaseNumber}" FontFamily="IRANSansWeb" TextColor="Gold"/>
+            <Label Text="دادگاه و شعبه رسیدگی:" FontAttributes="Bold" />
+            <Label Text="{Binding CourtName}" TextColor="Gold"/>
+            <Label Text="قاضی:" FontAttributes="Bold" />
+            <Label Text="{Binding JudgeName}" TextColor="Gold"/>
+            <Label Text="وضعیت:" FontAttributes="Bold" />
+            <Label Text="{Binding Status}" TextColor="Gold"/>
+            <Label Text="توضیحات:" FontAttributes="Bold" />
+            <Label Text="{Binding Description}" TextColor="Gold"/>
+
+            <Button Text="بستن" Command="{Binding CloseCommand}" HorizontalOptions="Center" FontFamily="Sahel" FontAttributes="Bold" BackgroundColor="Crimson" TextColor="White" Margin="225,0,0,0"/>
+        </VerticalStackLayout>
+    </Border>
+    </ContentView>
+</mopup:PopupPage>

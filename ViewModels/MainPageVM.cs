@@ -218,6 +218,8 @@ public partial class MainPageVM : ObservableObject
     }
 
     [RelayCommand] public async Task LawBankPageAsync() => await Shell.Current.GoToAsync("LawBankPage");
+    [RelayCommand] public async Task ClientsAndCasesPageAsync() => await Shell.Current.GoToAsync("ClientsAndCasesPage");
+
     [RelayCommand] public async Task OpenAdlIranSiteAsync() => await Launcher.OpenAsync("https://adliran.ir/");
     [RelayCommand] private async Task HamiVakilAsync() => await Launcher.OpenAsync("https://search-hamivakil.ir/");
     #endregion

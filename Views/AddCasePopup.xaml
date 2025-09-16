@@ -1,0 +1,44 @@
+<mopup:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                 xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+                 x:Class="Vakilaw.Views.AddCasePopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
+
+    <mopup:PopupPage.Content>
+        <Border
+     Padding="20"
+     StrokeShape="12"
+     BackgroundColor="#1b263b"
+     HorizontalOptions="Center"
+     VerticalOptions="Center"
+     WidthRequest="340">
+            <VerticalStackLayout Padding="20" Spacing="15">
+        <Label Text="➕ افزودن پرونده جدید"
+               FontAttributes="Bold"
+               FontSize="Medium"
+               HorizontalOptions="Center" />
+                <Label TextColor="White">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="نام موکل: " FontFamily="IRANSansWeb"/>
+                            <Span Text="{Binding ClientName}" FontFamily="IRANSansWeb" FontAttributes="Bold" TextColor="Gold"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Entry Placeholder="عنوان پرونده" PlaceholderColor="DarkGray" Text="{Binding Title}" />
+                <Entry Placeholder="شماره پرونده" PlaceholderColor="DarkGray" Keyboard="Numeric" Text="{Binding CaseNumber}" />
+                <Entry Placeholder="نام دادگاه و شعبه رسیدگی" PlaceholderColor="DarkGray" Text="{Binding CourtName}" />
+                <Entry Placeholder="نام قاضی" PlaceholderColor="DarkGray" Text="{Binding JudgeName}" />
+                <DatePicker Date="{Binding StartDate}" />
+                <DatePicker Date="{Binding EndDate}" />
+                <Entry Placeholder="وضعیت پرونده" PlaceholderColor="DarkGray" Text="{Binding Status}" />
+                <Border StrokeShape="5" StrokeThickness="3" Stroke="GhostWhite">
+                    <Editor Placeholder="توضیحات ..." PlaceholderColor="DarkGray" Text="{Binding Description}" AutoSize="TextChanges" MaxLength="2000" BackgroundColor="WhiteSmoke" TextColor="Black" HeightRequest="100"/>
+                </Border>
+                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <Button Text="ثبت پرونده" Command="{Binding SaveCommand}" FontFamily="IRANSansWeb" FontAttributes="Bold" BackgroundColor="ForestGreen" TextColor="White"/>
+                    <Button Text="انصراف" Command="{Binding CancelCommand}" FontFamily="IRANSansWeb" FontAttributes="Bold" BackgroundColor="Crimson" TextColor="White"/>
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+        </Border>
+    </mopup:PopupPage.Content>
+</mopup:PopupPage>
