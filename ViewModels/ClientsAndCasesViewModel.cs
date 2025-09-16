@@ -13,18 +13,33 @@ namespace Vakilaw.ViewModels
         [ObservableProperty] private bool isClientsVisible = true;
         [ObservableProperty] private bool isCasesVisible = false;
 
+        [ObservableProperty]
+        private string countsLabel;
+
         [RelayCommand]
-        private void ShowClients()
+        private async Task ShowClients()
         {
             IsClientsVisible = true;
             IsCasesVisible = false;
+
+            // بروزرسانی متن Label
+            CountsLabel = $"تعداد موکل‌ها: {await _clientService.GetClientsCount()}";
         }
 
         [RelayCommand]
-        private void ShowCases()
+        private async Task ShowCases()
         {
             IsClientsVisible = false;
             IsCasesVisible = true;
+
+            // بروزرسانی متن Label
+            CountsLabel = $"تعداد پرونده‌ها: {await _caseService.GetCasesCount()}";
+        }
+
+        private async Task LoadCountsAsync()
+        {
+            var count = await _clientService.GetClientsCount();
+            CountsLabel = $"تعداد موکل‌ها: {count}";
         }
 
         private readonly ClientService _clientService;
@@ -37,6 +52,9 @@ namespace Vakilaw.ViewModels
         {
             _clientService = clientService;
             _caseService = caseService;
+
+            // بارگذاری async شمارش‌ها
+            _ = LoadCountsAsync();
 
             // بارگذاری اولیه
             SearchClients();
@@ -61,7 +79,19 @@ namespace Vakilaw.ViewModels
         [ObservableProperty] private string clientSearchText;
         [ObservableProperty] private string caseSearchText;
 
-        #region Client
+        //public int ClientsCount { get; set; }
+        //public int CasesCount { get; set; }
+
+        //public async Task LoadCounts()
+        //{
+        //    ClientsCount = await _clientService.GetClientsCount();
+        //    CasesCount = await _caseService.GetCasesCount();
+        //    OnPropertyChanged(nameof(ClientsCount));
+        //    OnPropertyChanged(nameof(CasesCount));
+        //}
+
+        #region Client      
+
         [ObservableProperty]
         private ObservableCollection<Client> clients = new();
 
@@ -179,8 +209,8 @@ namespace Vakilaw.ViewModels
         [ObservableProperty] private string caseNumber;
         [ObservableProperty] private string courtName;
         [ObservableProperty] private string judgeName;
-        [ObservableProperty] private DateTime startDate = DateTime.Now;
-        [ObservableProperty] private DateTime? endDate;
+        [ObservableProperty] private string startDate;
+        [ObservableProperty] private string? endDate;
         [ObservableProperty] private string status;
         [ObservableProperty] private string caseDescription;
 
@@ -218,8 +248,7 @@ namespace Vakilaw.ViewModels
             SearchClients();
 
             // ریست کردن فرم
-            Title = CaseNumber = CourtName = JudgeName = Status = CaseDescription = string.Empty;
-            StartDate = DateTime.Now;
+            Title = CaseNumber = CourtName = JudgeName = Status = CaseDescription = string.Empty;         
             EndDate = null;
 
             // اضافه کردن به ClientsWithCases

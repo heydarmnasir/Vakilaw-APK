@@ -131,4 +131,16 @@ public class ClientService
 
         return clients;
     }
+
+    public async Task<int> GetClientsCount()
+    {
+        await using var connection = _dbService.GetConnection();
+        await connection.OpenAsync();
+
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = "SELECT COUNT(*) FROM Clients";
+
+        var result = await cmd.ExecuteScalarAsync();
+        return Convert.ToInt32(result);
+    }
 }

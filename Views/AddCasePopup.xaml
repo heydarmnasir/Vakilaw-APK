@@ -1,5 +1,6 @@
 <mopup:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                 xmlns:local="clr-namespace:Vakilaw.MarkupExtensions"
                  xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
                  x:Class="Vakilaw.Views.AddCasePopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
 
@@ -24,16 +25,34 @@
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
-                <Entry Placeholder="عنوان پرونده" PlaceholderColor="DarkGray" Text="{Binding Title}" />
-                <Entry Placeholder="شماره پرونده" PlaceholderColor="DarkGray" Keyboard="Numeric" Text="{Binding CaseNumber}" />
-                <Entry Placeholder="نام دادگاه و شعبه رسیدگی" PlaceholderColor="DarkGray" Text="{Binding CourtName}" />
-                <Entry Placeholder="نام قاضی" PlaceholderColor="DarkGray" Text="{Binding JudgeName}" />
-                <DatePicker Date="{Binding StartDate}" />
-                <DatePicker Date="{Binding EndDate}" />
-                <Entry Placeholder="وضعیت پرونده" PlaceholderColor="DarkGray" Text="{Binding Status}" />
+                <Entry FontFamily="IRANSansWeb" Placeholder="عنوان پرونده" PlaceholderColor="DarkGray" Text="{Binding Title}" />
+                <Entry FontFamily="IRANSansWeb" Placeholder="شماره پرونده" PlaceholderColor="DarkGray" Keyboard="Numeric" Text="{Binding CaseNumber}" />
+                <Entry FontFamily="IRANSansWeb" Placeholder="نام دادگاه و شعبه رسیدگی" PlaceholderColor="DarkGray" Text="{Binding CourtName}" />
+                <Entry FontFamily="IRANSansWeb" Placeholder="نام قاضی" PlaceholderColor="DarkGray" Text="{Binding JudgeName}" />
+
+                <Entry
+                Text="{Binding StartDate}" FontFamily="IRANSansWeb"
+                Placeholder="{local:Loc CasePlaceHolderStartDate}" PlaceholderColor="DarkGray"/>
+
+                <Picker Title="انتخاب وضعیت پرونده" FontFamily="IRANSansWeb"
+                        SelectedItem="{Binding Status, Mode=TwoWay}"
+                        TitleColor="DarkGray">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>درحال رسیدگی</x:String>
+                            <x:String>مختومه</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+
+                <Entry
+                Text="{Binding EndDate}" IsEnabled="{Binding EndDateIsEnabled}" FontFamily="IRANSansWeb"
+                Placeholder="{local:Loc CasePlaceHolderEndDate}" PlaceholderColor="DarkGray"/>
+
                 <Border StrokeShape="5" StrokeThickness="3" Stroke="GhostWhite">
-                    <Editor Placeholder="توضیحات ..." PlaceholderColor="DarkGray" Text="{Binding Description}" AutoSize="TextChanges" MaxLength="2000" BackgroundColor="WhiteSmoke" TextColor="Black" HeightRequest="100"/>
+                    <Editor FontFamily="IRANSansWeb" Placeholder="توضیحات ..." PlaceholderColor="DarkGray" Text="{Binding Description}" AutoSize="TextChanges" MaxLength="2000" BackgroundColor="WhiteSmoke" TextColor="Black" HeightRequest="100"/>
                 </Border>
+                          
                 <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
                     <Button Text="ثبت پرونده" Command="{Binding SaveCommand}" FontFamily="IRANSansWeb" FontAttributes="Bold" BackgroundColor="ForestGreen" TextColor="White"/>
                     <Button Text="انصراف" Command="{Binding CancelCommand}" FontFamily="IRANSansWeb" FontAttributes="Bold" BackgroundColor="Crimson" TextColor="White"/>

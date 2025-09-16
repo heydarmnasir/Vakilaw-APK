@@ -369,4 +369,13 @@
   <data name="LawyerCity" xml:space="preserve">
     <value>City</value>
   </data>
+  <data name="ClientsCountLabel" xml:space="preserve">
+    <value>Clients Count:</value>
+  </data>
+  <data name="CasePlaceHolderStartDate" xml:space="preserve">
+    <value>Start Date (Example: 1404/06/25)</value>
+  </data>
+  <data name="CasePlaceHolderEndDate" xml:space="preserve">
+    <value>Closing date: (example: 09/25/1404)</value>
+  </data>
 </root>

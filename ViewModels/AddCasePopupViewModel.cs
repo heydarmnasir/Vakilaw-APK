@@ -12,13 +12,20 @@ public partial class AddCasePopupViewModel : ObservableObject
     private readonly Client _client;
 
     [ObservableProperty] private string clientName;
-
+   
     public AddCasePopupViewModel(AddCasePopup popup, Client client)
     {
         _popup = popup;      
         _client = client;
-        ClientName = client.FullName;
-        StartDate = DateTime.Now;
+        ClientName = client.FullName;        
+    }
+
+    [ObservableProperty] private bool endDateIsEnabled = false;
+
+    partial void OnStatusChanged(string value)
+    {
+        // اگر وضعیت "مختومه" شد، EndDate فعال شود
+        EndDateIsEnabled = value == "مختومه";
     }
 
     // برای ذخیره در DB نیاز داریم
@@ -28,8 +35,8 @@ public partial class AddCasePopupViewModel : ObservableObject
     [ObservableProperty] private string caseNumber;
     [ObservableProperty] private string courtName;
     [ObservableProperty] private string judgeName;
-    [ObservableProperty] private DateTime startDate;
-    [ObservableProperty] private DateTime? endDate;
+    [ObservableProperty] private string startDate;
+    [ObservableProperty] private string? endDate;
     [ObservableProperty] private string status;
     [ObservableProperty] private string description;
 
@@ -61,5 +68,5 @@ public partial class AddCasePopupViewModel : ObservableObject
     private async Task Cancel()
     {
         await MopupService.Instance.PopAsync();
-    }
+    }   
 }

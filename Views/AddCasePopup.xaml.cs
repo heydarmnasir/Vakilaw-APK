@@ -1,5 +1,6 @@
 using Mopups.Pages;
 using Vakilaw.Models;
+using Vakilaw.Services;
 using Vakilaw.ViewModels;
 
 namespace Vakilaw.Views;
@@ -12,6 +13,12 @@ public partial class AddCasePopup : PopupPage
     {
         InitializeComponent();
         BindingContext = new AddCasePopupViewModel(this, client);
+
+        LocalizationService.Instance.UpdateFlowDirection(this);
+        LocalizationService.Instance.LanguageChanged += () =>
+        {
+            LocalizationService.Instance.UpdateFlowDirection(this);
+        };
     }
 
     public void RaiseCaseCreated(Case newCase)

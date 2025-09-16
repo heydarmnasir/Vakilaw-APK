@@ -27,8 +27,8 @@ public class CaseService
         cmd.Parameters.AddWithValue("$caseNumber", caseItem.CaseNumber ?? "");
         cmd.Parameters.AddWithValue("$courtName", caseItem.CourtName ?? "");
         cmd.Parameters.AddWithValue("$judgeName", caseItem.JudgeName ?? "");
-        cmd.Parameters.AddWithValue("$startDate", caseItem.StartDate.ToString("yyyy-MM-dd"));
-        cmd.Parameters.AddWithValue("$endDate", caseItem.EndDate?.ToString("yyyy-MM-dd") ?? "");
+        cmd.Parameters.AddWithValue("$startDate", caseItem.StartDate ?? "");
+        cmd.Parameters.AddWithValue("$endDate", caseItem.EndDate ?? "");
         cmd.Parameters.AddWithValue("$status", caseItem.Status ?? "");
         cmd.Parameters.AddWithValue("$description", caseItem.Description ?? "");
         cmd.Parameters.AddWithValue("$clientId", caseItem.ClientId);
@@ -57,8 +57,8 @@ public class CaseService
                 CaseNumber = reader.GetString(2),
                 CourtName = reader.GetString(3),
                 JudgeName = reader.GetString(4),
-                StartDate = DateTime.Parse(reader.GetString(5)),
-                EndDate = string.IsNullOrEmpty(reader.GetString(6)) ? null : DateTime.Parse(reader.GetString(6)),
+                StartDate = reader.GetString(5),
+                EndDate = string.IsNullOrEmpty(reader.GetString(6)) ? null : reader.GetString(6),
                 Status = reader.GetString(7),
                 Description = reader.GetString(8),
                 ClientId = reader.GetInt32(9)
@@ -87,8 +87,8 @@ public class CaseService
                 CaseNumber = reader.GetString(2),
                 CourtName = reader.GetString(3),
                 JudgeName = reader.GetString(4),
-                StartDate = DateTime.Parse(reader.GetString(5)),
-                EndDate = string.IsNullOrEmpty(reader.GetString(6)) ? null : DateTime.Parse(reader.GetString(6)),
+                StartDate = reader.GetString(5),
+                EndDate = string.IsNullOrEmpty(reader.GetString(6)) ? null : reader.GetString(6),
                 Status = reader.GetString(7),
                 Description = reader.GetString(8),
                 ClientId = reader.GetInt32(9)
@@ -121,8 +121,8 @@ public class CaseService
         cmd.Parameters.AddWithValue("$caseNumber", caseItem.CaseNumber ?? "");
         cmd.Parameters.AddWithValue("$courtName", caseItem.CourtName ?? "");
         cmd.Parameters.AddWithValue("$judgeName", caseItem.JudgeName ?? "");
-        cmd.Parameters.AddWithValue("$startDate", caseItem.StartDate.ToString("yyyy-MM-dd"));
-        cmd.Parameters.AddWithValue("$endDate", caseItem.EndDate?.ToString("yyyy-MM-dd") ?? "");
+        cmd.Parameters.AddWithValue("$startDate", caseItem.StartDate ?? "");
+        cmd.Parameters.AddWithValue("$endDate", caseItem.EndDate ?? "");
         cmd.Parameters.AddWithValue("$status", caseItem.Status ?? "");
         cmd.Parameters.AddWithValue("$description", caseItem.Description ?? "");
         cmd.Parameters.AddWithValue("$clientId", caseItem.ClientId);
@@ -185,8 +185,8 @@ public class CaseService
                 CaseNumber = reader.IsDBNull(2) ? null : reader.GetString(2),
                 CourtName = reader.IsDBNull(3) ? null : reader.GetString(3),
                 JudgeName = reader.IsDBNull(4) ? null : reader.GetString(4),
-                StartDate = reader.IsDBNull(5) ? DateTime.MinValue : DateTime.Parse(reader.GetString(5)),
-                EndDate = reader.IsDBNull(6) ? DateTime.MinValue : DateTime.Parse(reader.GetString(6)),
+                StartDate = reader.IsDBNull(5) ? null : reader.GetString(5),
+                EndDate = reader.IsDBNull(6) ? null : reader.GetString(6),
                 Status = reader.IsDBNull(7) ? null : reader.GetString(7),
                 Description = reader.IsDBNull(8) ? null : reader.GetString(8),
                 ClientId = reader.GetInt32(9),
@@ -201,5 +201,17 @@ public class CaseService
         }
 
         return cases;
+    }
+
+    public async Task<int> GetCasesCount()
+    {
+        await using var connection = _dbService.GetConnection();
+        await connection.OpenAsync();
+
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = "SELECT COUNT(*) FROM Cases";
+
+        var result = await cmd.ExecuteScalarAsync();
+        return Convert.ToInt32(result);
     }
 }

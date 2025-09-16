@@ -1,5 +1,6 @@
 <ContentPage x:Name="RootPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Vakilaw.MarkupExtensions"
              xmlns:converters="clr-namespace:Vakilaw.Converters"
              x:Class="Vakilaw.Views.ClientsAndCasesPage"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -19,8 +20,8 @@
                     Command="{Binding ShowCasesCommand}"
                     BackgroundColor="{Binding IsCasesVisible, Converter={StaticResource BoolToColorConverter}}" />
         </Grid>
-
-        <!-- لیست موکل‌ها -->
+           
+            <!-- لیست موکل‌ها -->
         <StackLayout Grid.Row="1" IsVisible="{Binding IsClientsVisible}" Spacing="10">
             <!-- جستجو -->
             <Entry Placeholder="🔍 جستجوی موکل (نام یا شماره موبایل)" PlaceholderColor="DarkGray" FontAttributes="Bold"
@@ -28,8 +29,7 @@
                    ClearButtonVisibility="WhileEditing" />
 
             <Button Text="➕ افزودن موکل" Command="{Binding ShowAddClientPopupCommand}" BackgroundColor="Gold" FontAttributes="Bold" FontFamily="IRANSansWeb"/>
-
-            <CollectionView ItemsSource="{Binding ClientsWithCases}" SelectionMode="Single">
+            <CollectionView ItemsSource="{Binding ClientsWithCases}" SelectionMode="Single" MaximumHeightRequest="540">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Padding="10" Margin="5" StrokeShape="12" Stroke="LightGray">
@@ -50,7 +50,7 @@
         <!-- لیست پرونده‌ها -->
         <StackLayout Grid.Row="1" IsVisible="{Binding IsCasesVisible}" Spacing="10">
             <!-- جستجو -->
-            <Entry Placeholder="🔍 جستجوی پرونده (عنوان، شماره پرونده یا نام موکل)" PlaceholderColor="DarkGray" FontAttributes="Bold"
+            <Entry Placeholder="🔍 جستجوی پرونده (نام موکل)" PlaceholderColor="DarkGray" FontAttributes="Bold"
                    Text="{Binding ClientSearchText, Mode=TwoWay}"
                    ClearButtonVisibility="WhileEditing" />
 
@@ -60,7 +60,7 @@
                     FontFamily="IRANSansWeb"
                     IsEnabled="{Binding SelectedClient, Converter={StaticResource NullToBoolConverter}}" />
 
-            <CollectionView ItemsSource="{Binding ClientsWithCases}" SelectionMode="None">
+            <CollectionView ItemsSource="{Binding ClientsWithCases}" SelectionMode="None" MaximumHeightRequest="520">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <toolkit:Expander IsExpanded="{Binding IsExpanded}">
@@ -105,5 +105,22 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </StackLayout>
+          
+        <!-- فوتر ثابت -->
+        <HorizontalStackLayout Grid.Row="1"
+                         Padding="10"
+                         Spacing="0"
+                         HorizontalOptions="Start"
+                         VerticalOptions="End">
+
+            <!--<Label FontFamily="IRANSansWeb"
+               FontSize="14" FontAttributes="Bold"
+               TextColor="White"
+               HorizontalOptions="Center" Margin="5,0" IsVisible="{Binding CountLabel}"
+               Text="{local:Loc ClientsCountLabel}"/>-->
+            <Label FontFamily="IRANSansWeb" FontSize="14" FontAttributes="Bold" TextColor="Gold"              
+               HorizontalOptions="Center"
+               Text="{Binding CountsLabel}"/>
+        </HorizontalStackLayout>
     </Grid>
 </ContentPage>

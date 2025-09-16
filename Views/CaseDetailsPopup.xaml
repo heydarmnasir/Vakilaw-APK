@@ -19,8 +19,12 @@
             <Label Text="{Binding CourtName}" TextColor="Gold"/>
             <Label Text="قاضی:" FontAttributes="Bold" />
             <Label Text="{Binding JudgeName}" TextColor="Gold"/>
+            <Label Text="تاریخ ثبت:" FontAttributes="Bold" />
+            <Label Text="{Binding StartDate}" TextColor="Gold"/>
             <Label Text="وضعیت:" FontAttributes="Bold" />
             <Label Text="{Binding Status}" TextColor="Gold"/>
+            <Label Text="تاریخ اختتام:" FontAttributes="Bold" />
+            <Label Text="{Binding EndDate}" TextColor="Gold"/>
             <Label Text="توضیحات:" FontAttributes="Bold" />
             <Label Text="{Binding Description}" TextColor="Gold"/>
 

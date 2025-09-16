@@ -369,4 +369,13 @@
   <data name="LawyerCity" xml:space="preserve">
     <value>مدينة</value>
   </data>
+  <data name="ClientsCountLabel" xml:space="preserve">
+    <value>عدد الموکلین:</value>
+  </data>
+  <data name="CasePlaceHolderStartDate" xml:space="preserve">
+    <value>تاریخ التسجیل(مثال:  1404/06/25)</value>
+  </data>
+  <data name="CasePlaceHolderEndDate" xml:space="preserve">
+    <value>تاريخ الإغلاق: (مثال: 25/09/1404)</value>
+  </data>
 </root>
