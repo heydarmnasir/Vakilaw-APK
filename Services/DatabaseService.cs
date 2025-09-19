@@ -87,6 +87,17 @@ public class DatabaseService
             ClientId INTEGER NOT NULL,
             FOREIGN KEY (ClientId) REFERENCES Clients(Id) ON DELETE CASCADE
         );
+
+        CREATE TABLE IF NOT EXISTS CaseAttachments (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            CaseId INTEGER NOT NULL,
+            FileName TEXT NOT NULL,
+            FilePath TEXT NOT NULL,
+            FileType TEXT,
+            FOREIGN KEY (CaseId) REFERENCES Cases(Id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_clients_fullname ON Clients (FullName);
     ";
         await cmd.ExecuteNonQueryAsync();
     }

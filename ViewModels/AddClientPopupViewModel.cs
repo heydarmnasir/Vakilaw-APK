@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mopups.Services;
 using Vakilaw.Models;
@@ -27,6 +29,29 @@ public partial class AddClientPopupViewModel : ObservableObject
     [RelayCommand]
     private async Task Save()
     {
+        if (string.IsNullOrWhiteSpace(FullName) ||
+           string.IsNullOrWhiteSpace(NationalCode) ||
+           string.IsNullOrWhiteSpace(PhoneNumber))         
+        {
+            await Toast.Make("لطفاً فیلدهای ضروری را پر کنید!", ToastDuration.Short).Show();
+            return;
+        }
+
+        var nationalcodeLength = NationalCode.Trim().Length;
+        var phonenumberLength = PhoneNumber.Trim().Length;
+        
+        if (nationalcodeLength > 10 || nationalcodeLength < 10)
+        {
+            await Toast.Make("کد ملی نامعتبر است!", ToastDuration.Short).Show();
+            return;
+        }
+
+        if (phonenumberLength > 11 || phonenumberLength < 11)
+        {
+            await Toast.Make("تلفن همراه نامعتبر است!", ToastDuration.Short).Show();
+            return;
+        }
+
         // 1️⃣ ایجاد موکل جدید
         var newClient = new Client
         {
@@ -40,8 +65,10 @@ public partial class AddClientPopupViewModel : ObservableObject
         // 2️⃣ اضافه کردن مستقیم به سرویس / دیتابیس
         await _clientService.AddClient(newClient);
 
+        await _clientService.GetClientsCount();
         // 3️⃣ اطلاع دادن به صفحه اصلی (wrapper اضافه شود)
         _popup.RaiseClientCreated(newClient);
+
 
         // 4️⃣ بستن پاپ‌آپ
         await MopupService.Instance.PopAsync();

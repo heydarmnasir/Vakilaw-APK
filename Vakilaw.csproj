@@ -105,6 +105,12 @@
 		<MauiXaml Update="Views\ClientsAndCasesPage.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="Views\EditCasePopup.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\EditClientPopup.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Views\LawBankPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

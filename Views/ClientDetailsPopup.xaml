@@ -15,12 +15,18 @@
                 <Label Text="{Binding FullName}" TextColor="Gold" FontAttributes="Bold" FontSize="16" FontFamily="IRANSansWeb"/>
                 <Label Text="کد ملی:" FontAttributes="Bold"/>
                 <Label Text="{Binding NationalCode}" FontFamily="IRANSansWeb"/>
+                <Label Text="تلفن همراه:" FontAttributes="Bold"/>
+                <Label Text="{Binding PhoneNumber}" FontFamily="IRANSansWeb"/>
                 <Label Text="آدرس:" FontAttributes="Bold" />
                 <Label Text="{Binding Address}" FontFamily="IRANSansWeb"/>
                 <Label Text="توضیحات:" FontAttributes="Bold" />
                 <Label Text="{Binding Description}" FontFamily="IRANSansWeb"/>
-                
-                <Button Text="بستن" Command="{Binding CloseCommand}" HorizontalOptions="Center" FontFamily="Sahel" FontAttributes="Bold" BackgroundColor="Crimson" TextColor="White" Margin="225,0,0,0"/>
+
+
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+                    <Button Text="✏️ ویرایش" Command="{Binding EditCommand}" BackgroundColor="DodgerBlue" FontFamily="IRANSansWeb" FontAttributes="Bold" TextColor="White"/>
+                    <Button Text="بستن" Command="{Binding CloseCommand}" BackgroundColor="Crimson" FontFamily="IRANSansWeb" FontAttributes="Bold" TextColor="White"/>
+                </HorizontalStackLayout>
             </VerticalStackLayout>
         </Border>
     </ContentView>

@@ -18,8 +18,20 @@ namespace Vakilaw.Models
         public string Status { get; set; } // وضعیت (جاری، مختومه، در حال بررسی و …)
         public string Description { get; set; } // توضیحات اضافی
 
+        // ✨ پراپرتی جدید برای فایل‌های پیوست
+        public List<CaseAttachment> CaseAttachments { get; set; } = new();
+
         // Foreign Key
         public int ClientId { get; set; }
         public Client Client { get; set; }
+    }
+
+    public class CaseAttachment
+    {
+        public int Id { get; set; }
+        public int CaseId { get; set; } // کلید خارجی به پرونده
+        public string FileName { get; set; } // مثلا name.pdf
+        public string FilePath { get; set; } // مسیر ذخیره روی دیسک
+        public string FileType { get; set; } // عکس، pdf و …
     }
 }

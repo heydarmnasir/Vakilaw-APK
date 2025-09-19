@@ -19,7 +19,8 @@ public class ClientService
         var cmd = connection.CreateCommand();
         cmd.CommandText = @"
             INSERT INTO Clients (FullName, NationalCode, PhoneNumber, Address, Description)
-            VALUES ($fullName, $nationalCode, $phoneNumber, $address, $description);";
+            VALUES ($fullName, $nationalCode, $phoneNumber, $address, $description);
+            SELECT last_insert_rowid();";
 
         cmd.Parameters.AddWithValue("$fullName", client.FullName);
         cmd.Parameters.AddWithValue("$nationalCode", client.NationalCode ?? "");
@@ -27,7 +28,7 @@ public class ClientService
         cmd.Parameters.AddWithValue("$address", client.Address ?? "");
         cmd.Parameters.AddWithValue("$description", client.Description ?? "");
 
-        cmd.ExecuteNonQuery();
+        client.Id = (int)(long)await cmd.ExecuteScalarAsync();
     }
 
     public List<Client> GetClients()
@@ -65,21 +66,17 @@ public class ClientService
         var cmd = connection.CreateCommand();
         cmd.CommandText = @"
             UPDATE Clients
-            SET FullName=$fullName,
-                NationalCode=$nationalCode,
-                PhoneNumber=$phoneNumber,
+            SET PhoneNumber=$phoneNumber,
                 Address=$address,
                 Description=$description
             WHERE Id=$id;";
-
-        cmd.Parameters.AddWithValue("$fullName", client.FullName);
-        cmd.Parameters.AddWithValue("$nationalCode", client.NationalCode ?? "");
+      
         cmd.Parameters.AddWithValue("$phoneNumber", client.PhoneNumber ?? "");
         cmd.Parameters.AddWithValue("$address", client.Address ?? "");
         cmd.Parameters.AddWithValue("$description", client.Description ?? "");
         cmd.Parameters.AddWithValue("$id", client.Id);
 
-        cmd.ExecuteNonQuery();
+        await cmd.ExecuteNonQueryAsync();
     }
 
     public async Task DeleteClient(int clientId)
@@ -91,7 +88,7 @@ public class ClientService
         cmd.CommandText = "DELETE FROM Clients WHERE Id=$id";
         cmd.Parameters.AddWithValue("$id", clientId);
 
-        cmd.ExecuteNonQuery();
+        await cmd.ExecuteNonQueryAsync();
     }
 
     public List<Client> SearchClients(string keyword)

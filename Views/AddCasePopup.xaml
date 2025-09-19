@@ -2,62 +2,103 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                  xmlns:local="clr-namespace:Vakilaw.MarkupExtensions"
                  xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+                 xmlns:vm="clr-namespace:Vakilaw.ViewModels"
                  x:Class="Vakilaw.Views.AddCasePopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
 
     <mopup:PopupPage.Content>
         <Border
-     Padding="20"
-     StrokeShape="12"
-     BackgroundColor="#1b263b"
-     HorizontalOptions="Center"
-     VerticalOptions="Center"
-     WidthRequest="340">
-            <VerticalStackLayout Padding="20" Spacing="15">
-        <Label Text="➕ افزودن پرونده جدید"
-               FontAttributes="Bold"
-               FontSize="Medium"
-               HorizontalOptions="Center" />
-                <Label TextColor="White">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Text="نام موکل: " FontFamily="IRANSansWeb"/>
-                            <Span Text="{Binding ClientName}" FontFamily="IRANSansWeb" FontAttributes="Bold" TextColor="Gold"/>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-                <Entry FontFamily="IRANSansWeb" Placeholder="عنوان پرونده" PlaceholderColor="DarkGray" Text="{Binding Title}" />
-                <Entry FontFamily="IRANSansWeb" Placeholder="شماره پرونده" PlaceholderColor="DarkGray" Keyboard="Numeric" Text="{Binding CaseNumber}" />
-                <Entry FontFamily="IRANSansWeb" Placeholder="نام دادگاه و شعبه رسیدگی" PlaceholderColor="DarkGray" Text="{Binding CourtName}" />
-                <Entry FontFamily="IRANSansWeb" Placeholder="نام قاضی" PlaceholderColor="DarkGray" Text="{Binding JudgeName}" />
+            Padding="10"
+            StrokeShape="12"
+            BackgroundColor="#1b263b"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="340"
+            MaximumHeightRequest="600">
+            <!-- محدود کردن حداکثر ارتفاع -->
 
-                <Entry
-                Text="{Binding StartDate}" FontFamily="IRANSansWeb"
-                Placeholder="{local:Loc CasePlaceHolderStartDate}" PlaceholderColor="DarkGray"/>
+            <!-- ScrollView اضافه شد -->
+            <ScrollView>
+                <VerticalStackLayout Padding="20" Spacing="15">
+                    <Label Text="➕ افزودن پرونده جدید"
+                           FontAttributes="Bold"
+                           FontSize="Medium"
+                           HorizontalOptions="Center" />
 
-                <Picker Title="انتخاب وضعیت پرونده" FontFamily="IRANSansWeb"
-                        SelectedItem="{Binding Status, Mode=TwoWay}"
-                        TitleColor="DarkGray">
-                    <Picker.ItemsSource>
-                        <x:Array Type="{x:Type x:String}">
-                            <x:String>درحال رسیدگی</x:String>
-                            <x:String>مختومه</x:String>
-                        </x:Array>
-                    </Picker.ItemsSource>
-                </Picker>
+                    <Label TextColor="White">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="نام موکل: " FontFamily="IRANSansWeb"/>
+                                <Span Text="{Binding ClientName}" FontFamily="IRANSansWeb" FontAttributes="Bold" TextColor="Gold"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
 
-                <Entry
-                Text="{Binding EndDate}" IsEnabled="{Binding EndDateIsEnabled}" FontFamily="IRANSansWeb"
-                Placeholder="{local:Loc CasePlaceHolderEndDate}" PlaceholderColor="DarkGray"/>
+                    <Entry FontFamily="IRANSansWeb" Placeholder="عنوان پرونده" PlaceholderColor="DarkGray" Text="{Binding Title}" />
+                    <Entry FontFamily="IRANSansWeb" Placeholder="شماره پرونده" PlaceholderColor="DarkGray" Keyboard="Numeric" Text="{Binding CaseNumber}" />
+                    <Entry FontFamily="IRANSansWeb" Placeholder="نام دادگاه و شعبه رسیدگی" PlaceholderColor="DarkGray" Text="{Binding CourtName}" />
+                    <Entry FontFamily="IRANSansWeb" Placeholder="نام قاضی" PlaceholderColor="DarkGray" Text="{Binding JudgeName}" />
 
-                <Border StrokeShape="5" StrokeThickness="3" Stroke="GhostWhite">
-                    <Editor FontFamily="IRANSansWeb" Placeholder="توضیحات ..." PlaceholderColor="DarkGray" Text="{Binding Description}" AutoSize="TextChanges" MaxLength="2000" BackgroundColor="WhiteSmoke" TextColor="Black" HeightRequest="100"/>
-                </Border>
-                          
-                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-                    <Button Text="ثبت پرونده" Command="{Binding SaveCommand}" FontFamily="IRANSansWeb" FontAttributes="Bold" BackgroundColor="ForestGreen" TextColor="White"/>
-                    <Button Text="انصراف" Command="{Binding CancelCommand}" FontFamily="IRANSansWeb" FontAttributes="Bold" BackgroundColor="Crimson" TextColor="White"/>
-        </HorizontalStackLayout>
-    </VerticalStackLayout>
+                    <Entry Text="{Binding StartDate}" FontFamily="IRANSansWeb"
+                           Placeholder="{local:Loc CasePlaceHolderStartDate}" PlaceholderColor="DarkGray"/>
+
+                    <Picker Title="انتخاب وضعیت پرونده" FontFamily="IRANSansWeb"
+                            SelectedItem="{Binding Status, Mode=TwoWay}"
+                            TitleColor="DarkGray">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>درحال رسیدگی</x:String>
+                                <x:String>مختومه</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+
+                    <Entry Text="{Binding EndDate}" IsEnabled="{Binding EndDateIsEnabled}" FontFamily="IRANSansWeb"
+                           Placeholder="{local:Loc CasePlaceHolderEndDate}" PlaceholderColor="DarkGray"/>
+
+                    <Border StrokeShape="5" StrokeThickness="3" Stroke="GhostWhite">
+                        <Editor FontFamily="IRANSansWeb" Placeholder="توضیحات ..." PlaceholderColor="DarkGray"
+                                Text="{Binding Description}" AutoSize="TextChanges" MaxLength="2000"
+                                BackgroundColor="WhiteSmoke" TextColor="Black" HeightRequest="100"/>
+                    </Border>
+
+                    <!-- انتخاب پیوست‌ها -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="پیوست ها:" FontAttributes="Bold" TextColor="White"/>
+                        <Button Text="📎 افزودن فایل" 
+                                Command="{Binding AddAttachmentCommand}"
+                                FontFamily="IRANSansWeb"
+                                BackgroundColor="DodgerBlue" 
+                                TextColor="White"
+                                FontAttributes="Bold"/>
+
+                        <CollectionView ItemsSource="{Binding Attachments}" MaximumHeightRequest="120" VerticalScrollBarVisibility="Always">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Padding="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <!-- دکمه حذف سمت چپ -->
+                                            <ColumnDefinition Width="*"/>
+                                            <!-- نام فایل میانه -->
+                                        </Grid.ColumnDefinitions>
+                                        <Button Text="❌" Grid.Column="0"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AddCasePopupViewModel}}, Path=RemoveAttachmentCommand}" 
+                                                CommandParameter="{Binding .}" 
+                                                BackgroundColor="Transparent" TextColor="Red"/>
+                                        <Label Text="{Binding FileName}" TextColor="Gold" VerticalOptions="Center" Grid.Column="1"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Button Text="ثبت پرونده" Command="{Binding SaveCommand}" FontFamily="IRANSansWeb" FontAttributes="Bold" BackgroundColor="ForestGreen" TextColor="White"/>
+                        <Button Text="انصراف" Command="{Binding CancelCommand}" FontFamily="IRANSansWeb" FontAttributes="Bold" BackgroundColor="Crimson" TextColor="White"/>
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </ScrollView>
         </Border>
     </mopup:PopupPage.Content>
 </mopup:PopupPage>

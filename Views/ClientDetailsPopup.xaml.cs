@@ -6,9 +6,9 @@ namespace Vakilaw.Views;
 
 public partial class ClientDetailsPopup : PopupPage
 {
-	public ClientDetailsPopup(Client client)
+	public ClientDetailsPopup(Client client, ClientService clientService)
 	{
 		InitializeComponent();
-        BindingContext = new ClientDetailsPopupViewModel(client);
+        BindingContext = new ClientDetailsPopupViewModel(client, clientService);
     }
 }
