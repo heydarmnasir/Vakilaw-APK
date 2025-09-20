@@ -63,18 +63,26 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="12.2.0" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-		<PackageReference Include="IPE.SmsIR" Version="1.2.7" />
-		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.8" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.100" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
-		<PackageReference Include="Mopups" Version="1.3.4" />
-		<PackageReference Include="Plugin.LocalNotification" Version="12.0.2" />
-		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.2" />
+	  <AndroidAsset Include="Platforms\iOS\Resources\Fonts\IRANSansWeb.ttf" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="12.2.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="IPE.SmsIR" Version="1.2.7" />
+		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.110" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.9" />
+		<PackageReference Include="Mopups" Version="1.3.4" />
+		<PackageReference Include="Plugin.LocalNotification" Version="12.0.2" />
+		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.2" />
+		<PackageReference Include="System.Text.Json" Version="9.0.9" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Views\DocumentsPage.xaml.cs">
+		  <DependentUpon>DocumentsPage.xaml</DependentUpon>
+		</Compile>
 		<Compile Update="Views\Popups\LawyerSubmitPopup.xaml.cs">
 			<DependentUpon>LawyerSubmitPopup.xaml</DependentUpon>
 		</Compile>
@@ -86,6 +94,9 @@
 	<ItemGroup>
 		<MauiXaml Update="AppShell_Lawyer.xaml">
 			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\DocumentsPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\Popups\ActiveLicenseTutorialPopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>

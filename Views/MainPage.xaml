@@ -95,8 +95,11 @@
                 </Border>
 
                 <!-- مدیریت قراردادها -->
-                <Border StrokeShape="12" IsEnabled="{Binding CanUseLawyerFeatures}" Padding="15" BackgroundColor="#003049">
+                <Border StrokeShape="12" Padding="15" BackgroundColor="#003049">  <!--IsEnabled="{Binding CanUseLawyerFeatures}"-->               
                     <Grid ColumnDefinitions="Auto,*">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding DocumentsPageCommand}"/>
+                        </Grid.GestureRecognizers>
                         <Image Source="contracts.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
                         <Label Text="مدیریت قراردادها، لوایح و دادخواست ها" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
                     </Grid>

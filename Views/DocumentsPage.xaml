@@ -1,0 +1,115 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"            
+             xmlns:local="clr-namespace:Vakilaw.MarkupExtensions"
+             xmlns:vm="clr-namespace:Vakilaw.ViewModels"
+             xmlns:models="clr-namespace:Vakilaw.Models"
+             xmlns:converters="clr-namespace:Vakilaw.Converters"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"           
+             x:Class="Vakilaw.Views.DocumentsPage"
+             Title="برگشت به صفحه اصلی" BackgroundColor="#F8F9FA" FlowDirection="RightToLeft">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:TabToColorConverter x:Key="TabToColorConverter" 
+                                   SelectedColor="Crimson" 
+                                   DefaultColor="Transparent"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+        <Border StrokeShape="5" HorizontalOptions="Center">
+            <!-- 📌 منوی سمت راست -->
+        <HorizontalStackLayout Grid.Row="0"
+                     BackgroundColor="#003566"
+                     Padding="10"
+                     Spacing="20"
+                     VerticalOptions="Fill">
+                <Grid ColumnDefinitions="Auto,* ,Auto">
+                    
+                    <Button Text="✍️ تنظیم قرارداد" Grid.Column="0"
+                    Command="{Binding ShowContractsCommand}" 
+                    BackgroundColor="{Binding SelectedTab, Converter={StaticResource TabToColorConverter}, ConverterParameter=Contract}"
+                    FontSize="14" FontFamily="Sahel" FontAttributes="Bold"
+                    TextColor="White"/>
+
+                    <Button Text="📑 تنظیم لایحه" Grid.Column="1"
+                            Command="{Binding ShowPleadingsCommand}" 
+                            BackgroundColor="{Binding SelectedTab, Converter={StaticResource TabToColorConverter}, ConverterParameter=Pleading}"
+                            FontSize="14" FontFamily="Sahel" FontAttributes="Bold"
+                            TextColor="White"/>
+
+                    <Button Text="⚖️ دادخواست" Grid.Column="2"
+                            Command="{Binding ShowPetitionsCommand}" 
+                            BackgroundColor="{Binding SelectedTab, Converter={StaticResource TabToColorConverter}, ConverterParameter=Petition}"
+                            FontSize="14" FontFamily="Sahel" FontAttributes="Bold"
+                            TextColor="White"/>
+                </Grid>
+            </HorizontalStackLayout>
+        </Border>
+        <Border Grid.Row="1" StrokeShape="5" HorizontalOptions="Fill">
+            <!-- 📌 بالای صفحه: سرچ -->
+            <StackLayout Grid.Row="1"
+                     Padding="5"                                    
+                     HorizontalOptions="Fill"
+                     VerticalOptions="Fill">
+                <Entry Placeholder="🔍 جستجو..." TextColor="Black" FontFamily="IRANSansWeb"
+                   HorizontalOptions="Fill"
+                   Text="{Binding SearchText}"/>
+            </StackLayout>
+        </Border>
+        <Border Grid.Row="2" BackgroundColor="GhostWhite" StrokeShape="10">
+            <!-- 📌 محتوای اصلی -->
+        <Grid Grid.Row="2" Padding="5" HeightRequest="590">
+            <ScrollView>
+            <!-- 📌 پنل تنظیم قرارداد -->
+            <Grid x:Name="ContractsPanel"
+             BackgroundColor="#003566"
+             Padding="20"
+             IsVisible="{Binding IsContractsVisible}">
+            <StackLayout>
+                <Label Text="قرارداد وکالت"
+                FontSize="20" FontFamily="IRANSansWeb"
+                FontAttributes="Bold" />
+                <Editor Text="{Binding ContractContent}" HorizontalTextAlignment="Justify" VerticalTextAlignment="Justify"
+                FontSize="14" FontFamily="IRANSansWeb" AutoSize="TextChanges"/>                        
+            </StackLayout>
+            </Grid>
+            </ScrollView>
+
+                <!-- 📌 پنل ثبت لوایح -->
+            <Grid x:Name="PleadingsPanel"
+                  BackgroundColor="WhiteSmoke"
+                  Padding="20"
+                  IsVisible="{Binding IsPleadingsVisible}">
+               
+                <StackLayout>
+                    <Label Text="مدیریت لوایح"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   Margin="0,0,0,10"/>
+                    <!-- اینجا فرم ثبت لایحه و لیست لوایح میاد -->
+                </StackLayout>
+            </Grid>
+          
+            <!-- 📌 پنل دادخواست‌ها -->
+                <Grid x:Name="PetitionsPanel"
+                  BackgroundColor="WhiteSmoke"
+                  Padding="20"
+                  IsVisible="{Binding IsPetitionsVisible}">
+
+                    <StackLayout>
+                        <Label Text="مدیریت دادخواست‌ها"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   Margin="0,0,0,10"/>
+                        <!-- اینجا فرم ثبت دادخواست و لیست دادخواست‌ها میاد -->
+                    </StackLayout>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <Button Grid.Row="3" Text="استخراج فایل PDF" Margin="0,10" HeightRequest="10" BackgroundColor="Crimson" TextColor="White" FontAttributes="Bold" FontFamily="IRANSansWeb"
+        Command="{Binding PrintContractCommand}"/>
+    </Grid>
+</ContentPage>

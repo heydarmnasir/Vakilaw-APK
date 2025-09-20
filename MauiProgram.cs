@@ -6,6 +6,14 @@ using System.Runtime.InteropServices;
 using Vakilaw.Services;
 using Vakilaw.ViewModels;
 using Vakilaw.Views;
+using Vakilaw.Views.Popups;
+#if ANDROID
+using Vakilaw.Platforms.Android;
+#endif
+#if IOS
+using Vakilaw.Platforms.iOS;
+#endif
+
 
 namespace Vakilaw;
 
@@ -58,43 +66,27 @@ public static class MauiProgram
 
 
         builder.Services.AddTransient<ClientsAndCasesViewModel>();
-     
+        builder.Services.AddTransient<DocumentsViewModel>();
+
         // -------------------- صفحات --------------------
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<LawBankPage>();
         builder.Services.AddTransient<LawyerSubmitPopup>();
         builder.Services.AddTransient<SubscriptionPopup>();
 
-        builder.Services.AddTransient<ClientsAndCasesPage>();    
+        builder.Services.AddTransient<ClientsAndCasesPage>();
+        builder.Services.AddTransient<DocumentsPage>();
+
+#if ANDROID
+        builder.Services.AddSingleton<IPrinterService, Vakilaw.Platforms.Android.PrinterService>();
+#endif
+#if IOS
+        builder.Services.AddSingleton<IPrinterService, Vakilaw.Platforms.iOS.PrinterService>();
+#endif
 
         // -------------------- خود App --------------------
         builder.Services.AddSingleton<App>();
 
         return builder.Build();
     }
-
-
-
-//    private static string GetDatabasePath()
-//    {
-//        string dbFileName = "TaskList.db";
-//        string folder;
-
-//        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-//        {
-//            folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-//        }
-//        else
-//        {
-//#if ANDROID
-//                folder = FileSystem.AppDataDirectory;
-//#elif IOS
-//            folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-//#else
-//                folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-//#endif
-//        }
-
-//        return Path.Combine(folder, dbFileName);
-//    }
 }

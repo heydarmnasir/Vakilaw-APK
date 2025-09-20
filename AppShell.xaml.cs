@@ -9,6 +9,7 @@ namespace Vakilaw
             InitializeComponent();
             Routing.RegisterRoute("LawBankPage", typeof(LawBankPage));
             Routing.RegisterRoute("ClientsAndCasesPage", typeof(ClientsAndCasesPage));
+            Routing.RegisterRoute("DocumentsPage", typeof(DocumentsPage));
         }
     }
 }
