@@ -2,7 +2,7 @@
 using Vakilaw.Models;
 using Vakilaw.ViewModels;
 
-namespace Vakilaw.Views;
+namespace Vakilaw.Views.Popups;
 
 public partial class EditCasePopup : PopupPage
 {

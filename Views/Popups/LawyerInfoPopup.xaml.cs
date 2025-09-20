@@ -1,7 +1,7 @@
 using Mopups.Pages;
 using Vakilaw.ViewModels;
 
-namespace Vakilaw.Views;
+namespace Vakilaw.Views.Popups;
 
 public partial class LawyerInfoPopup : PopupPage
 {

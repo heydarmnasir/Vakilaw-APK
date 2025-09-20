@@ -2,7 +2,7 @@ using Mopups.Pages;
 using Vakilaw.Models;
 using Vakilaw.ViewModels;
 
-namespace Vakilaw.Views;
+namespace Vakilaw.Views.Popups;
 
 public partial class ClientDetailsPopup : PopupPage
 {

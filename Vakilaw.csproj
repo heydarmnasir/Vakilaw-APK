@@ -75,7 +75,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Update="Views\LawyerSubmitPopup.xaml.cs">
+		<Compile Update="Views\Popups\LawyerSubmitPopup.xaml.cs">
 			<DependentUpon>LawyerSubmitPopup.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\MainPage.xaml.cs">
@@ -87,43 +87,43 @@
 		<MauiXaml Update="AppShell_Lawyer.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\ActiveLicenseTutorialPopup.xaml">
+		<MauiXaml Update="Views\Popups\ActiveLicenseTutorialPopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\AddCasePopup.xaml">
+		<MauiXaml Update="Views\Popups\AddCasePopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\AddClientPopup.xaml">
+		<MauiXaml Update="Views\Popups\AddClientPopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\CaseDetailsPopup.xaml">
+		<MauiXaml Update="Views\Popups\CaseDetailsPopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\ClientDetailsPopup.xaml">
+		<MauiXaml Update="Views\Popups\ClientDetailsPopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\ClientsAndCasesPage.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\EditCasePopup.xaml">
+		<MauiXaml Update="Views\Popups\EditCasePopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\EditClientPopup.xaml">
+		<MauiXaml Update="Views\Popups\EditClientPopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\LawBankPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\LawyerDetailsPopup.xaml">
+		<MauiXaml Update="Views\Popups\LawyerDetailsPopup.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\LawyerInfoPopup.xaml">
+		<MauiXaml Update="Views\Popups\LawyerInfoPopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\LawyerSubmitPopup.xaml">
+		<MauiXaml Update="Views\Popups\LawyerSubmitPopup.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\SubscriptionPopup.xaml">
+		<MauiXaml Update="Views\Popups\SubscriptionPopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 	</ItemGroup>

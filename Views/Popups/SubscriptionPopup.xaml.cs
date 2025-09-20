@@ -2,7 +2,7 @@ using Mopups.Pages;
 using Vakilaw.ViewModels;
 using Vakilaw.Services;
 
-namespace Vakilaw.Views;
+namespace Vakilaw.Views.Popups;
 
 public partial class SubscriptionPopup : PopupPage
 {

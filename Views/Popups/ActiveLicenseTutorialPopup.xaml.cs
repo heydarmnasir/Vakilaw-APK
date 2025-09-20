@@ -2,7 +2,7 @@
 using CommunityToolkit.Maui.Core;
 using Mopups.Pages;
 
-namespace Vakilaw.Views;
+namespace Vakilaw.Views.Popups;
 
 public partial class ActiveLicenseTutorialPopup : PopupPage
 {

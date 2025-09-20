@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Mopups.Services;
 using System.Collections.ObjectModel;
 using Vakilaw.Models;
-using Vakilaw.Views;
+using Vakilaw.Views.Popups;
 
 namespace Vakilaw.ViewModels;
 

@@ -3,7 +3,7 @@ using Vakilaw.Models;
 using Vakilaw.Services;
 using Vakilaw.ViewModels;
 
-namespace Vakilaw.Views;
+namespace Vakilaw.Views.Popups;
 
 public partial class AddCasePopup : PopupPage
 {

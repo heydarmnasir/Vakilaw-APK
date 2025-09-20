@@ -3,7 +3,7 @@
                  xmlns:local="clr-namespace:Vakilaw.MarkupExtensions"
                  xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
                  xmlns:vm="clr-namespace:Vakilaw.ViewModels"
-                 x:Class="Vakilaw.Views.AddCasePopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
+                 x:Class="Vakilaw.Views.Popups.AddCasePopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
 
     <mopup:PopupPage.Content>
         <Border

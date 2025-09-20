@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mopups.Services;
 using Vakilaw.Models;
-using Vakilaw.Views;
+using Vakilaw.Views.Popups;
 
 namespace Vakilaw.ViewModels;
 

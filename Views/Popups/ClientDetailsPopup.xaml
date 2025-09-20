@@ -2,7 +2,7 @@
 <mopup:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                  xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
-                 x:Class="Vakilaw.Views.ClientDetailsPopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
+                 x:Class="Vakilaw.Views.Popups.ClientDetailsPopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
 
     <ContentView VerticalOptions="Center" HorizontalOptions="Center">
         <Border Padding="20"

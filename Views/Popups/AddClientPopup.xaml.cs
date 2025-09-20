@@ -1,7 +1,7 @@
 ﻿using Mopups.Pages;
 using Vakilaw.Models;
 
-namespace Vakilaw.Views;
+namespace Vakilaw.Views.Popups;
 
 public partial class AddClientPopup : PopupPage
 {

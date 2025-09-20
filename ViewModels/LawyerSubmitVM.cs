@@ -7,7 +7,7 @@ using IPE.SmsIrClient;
 using Mopups.Services;
 using Vakilaw.Models.Messages;
 using Vakilaw.Services;
-using Vakilaw.Views;
+using Vakilaw.Views.Popups;
 
 namespace Vakilaw.ViewModels;
 

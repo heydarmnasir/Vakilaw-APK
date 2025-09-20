@@ -3,7 +3,7 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                  xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
                  xmlns:vm="clr-namespace:Vakilaw.ViewModels"
-                 x:Class="Vakilaw.Views.EditCasePopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
+                 x:Class="Vakilaw.Views.Popups.EditCasePopup" BackgroundColor="#80000000" FlowDirection="RightToLeft">
 
 
     <ContentView VerticalOptions="Center" HorizontalOptions="Center">

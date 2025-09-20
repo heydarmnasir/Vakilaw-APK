@@ -2,7 +2,7 @@
 using Vakilaw.Services;
 using Vakilaw.ViewModels;
 
-namespace Vakilaw.Views;
+namespace Vakilaw.Views.Popups;
 
 public partial class LawyerSubmitPopup : PopupPage
 {

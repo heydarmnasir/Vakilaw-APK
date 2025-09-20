@@ -3,7 +3,7 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                   xmlns:vm="clr-namespace:Vakilaw.ViewModels"
                   xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"                 
-                  x:Class="Vakilaw.Views.LawyerSubmitPopup"
+                  x:Class="Vakilaw.Views.Popups.LawyerSubmitPopup"
                   BackgroundColor="#80000000" FlowDirection="RightToLeft">
 
     <ContentView VerticalOptions="Center" HorizontalOptions="Center">

@@ -8,7 +8,7 @@ using Mopups.Services;
 using System.Collections.ObjectModel;
 using Vakilaw.Models.Messages;
 using Vakilaw.Services;
-using Vakilaw.Views;
+using Vakilaw.Views.Popups;
 
 public partial class SubscriptionPopupVM : ObservableObject
 {

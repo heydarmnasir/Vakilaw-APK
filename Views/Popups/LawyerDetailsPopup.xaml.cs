@@ -3,7 +3,7 @@ using CommunityToolkit.Maui.Core;
 using Mopups.Pages;
 using Mopups.Services;
 
-namespace Vakilaw.Views;
+namespace Vakilaw.Views.Popups;
 
 public partial class LawyerDetailsPopup : PopupPage
 {

@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Mopups.Services;
 using Vakilaw.Models;
 using Vakilaw.Services; // فرض می‌کنیم ClientService اینجا هست
-using Vakilaw.Views; 
+using Vakilaw.Views.Popups; 
 
 namespace Vakilaw.ViewModels;
 
