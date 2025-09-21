@@ -1,11 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Diagnostics;
+﻿using Android.Content;
 using Android.Print;
 using Android.Webkit;
-using Android.Content;
 using Microsoft.Maui.ApplicationModel;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Vakilaw.Services;
+using static Android.Graphics.Paint;
+using static Android.Print.PrintAttributes;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Vakilaw.Platforms.Android
 {
@@ -31,8 +34,8 @@ namespace Vakilaw.Platforms.Android
                 settings.LoadWithOverviewMode = true;
                 settings.UseWideViewPort = true;
 
-                // تولید HTML راست‌چین با فونت فارسی
-                string html = GeneratePrintableHtml(text);
+                // 🔹 تولید HTML راست‌چین با فونت فارسی و عنوان داینامیک
+                string html = GeneratePrintableHtml(text, jobName);
 
                 // WebViewClient سفارشی
                 webView.SetWebViewClient(new PrintWebViewClient(activity, jobName, (success, ex) =>
@@ -59,7 +62,8 @@ namespace Vakilaw.Platforms.Android
             return tcs.Task;
         }
 
-        private string GeneratePrintableHtml(string content)
+        // 🔹 متد HTML با عنوان داینامیک
+        private string GeneratePrintableHtml(string content, string title)
         {
             return $@"
 <!doctype html>
@@ -73,37 +77,32 @@ namespace Vakilaw.Platforms.Android
     src: url('file:///android_asset/Fonts/IRANSansWeb.ttf') format('truetype');
   }}
 
-  html, body {{
-    margin: 0;
+  html, body {{margin: 0;
     padding: 0;
+    height: 100%;
     direction: rtl;
     text-align: right;
     font-family: 'IRANSansWeb', serif;
     font-size: 14pt;
     line-height: 1.45;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-  }}
+}}
 
-  h2 {{
-    text-align: center;
-    margin: 0;           /* حذف فاصله اضافی بالا و پایین */
-    padding: 2px 0;      /* کمترین فاصله بین تیتر و متن */
-    font-size: 16pt;
-    line-height: 1.2;
-  }}
-
-  .page {{
-    box-sizing: border-box;
-    padding: 8px 16px 16px 16px; /* حاشیه بالای کمتر (8px) و بقیه 16px */
+  .page {{box - sizing: border-box;
+    padding: 0px 16px 16px 16px; /* بالای صفحه 0px شد */
+    margin: 0;
     width: 100%;
     page-break-after: auto;
-  }}
+}}
+
+h2 {{text - align: center;
+    margin: 0;
+    padding: 4px 0 2px 0; /* خیلی نزدیک به بالا */
+    font-size: 16pt;
+    line-height: 1.2;
+}}
 
   .contract-text {{
-    margin-top: 4px;       /* فاصله خیلی کم بین تیتر و متن */
+    margin-top: 4px;
     text-align: right;
     line-height: 1.45;
     word-wrap: break-word;
@@ -121,7 +120,7 @@ namespace Vakilaw.Platforms.Android
 </head>
 <body>
   <div class='page'>
-    <h2>📝 قرارداد حقوقی</h2>
+    <h2>{title}</h2>
     <div class='contract-text'>
       {content.Replace("\n", "<br/>")}
     </div>
@@ -129,7 +128,6 @@ namespace Vakilaw.Platforms.Android
 </body>
 </html>";
         }
-
 
         private class PrintWebViewClient : WebViewClient
         {
@@ -153,7 +151,10 @@ namespace Vakilaw.Platforms.Android
                     await Task.Delay(300); // صبر برای لود کامل CSS و فونت
 
                     var printManager = (PrintManager)_activity.GetSystemService(Context.PrintService);
-                    var printAdapter = view.CreatePrintDocumentAdapter();
+
+                    // 🔹 اینجا نام سند پرینت رو هم داینامیک می‌کنیم
+                    var printAdapter = view.CreatePrintDocumentAdapter(_jobName);
+
                     printManager.Print(_jobName, printAdapter, null);
 
                     Debug.WriteLine("Print job started.");

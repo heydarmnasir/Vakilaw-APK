@@ -101,7 +101,7 @@
                             <TapGestureRecognizer Command="{Binding DocumentsPageCommand}"/>
                         </Grid.GestureRecognizers>
                         <Image Source="contracts.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
-                        <Label Text="مدیریت قراردادها، لوایح و دادخواست ها" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
+                        <Label Text="مدیریت قراردادها و لایحه ها" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
                     </Grid>
                 </Border>
 

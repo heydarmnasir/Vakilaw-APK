@@ -17,9 +17,9 @@ public partial class DocumentsPage : ContentPage
 
         if (ContractsPanel.IsVisible)
             await ContractsPanel.FadeTo(1, 400, Easing.CubicIn);
-        if (PleadingsPanel.IsVisible)
-            await PleadingsPanel.FadeTo(1, 400, Easing.CubicIn);
-        if (PetitionsPanel.IsVisible)
-            await PetitionsPanel.FadeTo(1, 400, Easing.CubicIn);
+        if (BillsPanel.IsVisible)
+            await BillsPanel.FadeTo(1, 400, Easing.CubicIn);
+        if (WelcomePanel.IsVisible)
+            await WelcomePanel.FadeTo(1, 400, Easing.CubicIn);
     }
 }
