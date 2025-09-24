@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Vakilaw.Views.SMSPanelPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Vakilaw.ViewModels"
+    xmlns:conv="clr-namespace:Vakilaw.Converters"
+    BackgroundColor="#e9ecef"
+    Title="ارسال پیامک"
+    FlowDirection="RightToLeft">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Converter برای IsVisible -->
+            <conv:NullToBoolConverter x:Key="NullToBoolConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="16">
+
+            <!-- کارت ارسال تکی -->
+            <Border StrokeShape="RoundRectangle 12" Padding="12" BackgroundColor="#343a40">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ارسال پیامک تکی" FontFamily="IRANSansWeb"
+                           FontSize="18" FontAttributes="Bold"
+                           TextColor="GhostWhite" HorizontalOptions="Center"/>
+
+                    <Label Text="انتخاب موکل:" FontFamily="IRANSansWeb" FontAttributes="Bold" FontSize="14" TextColor="GhostWhite"/>
+
+                    <Picker Title="انتخاب موکل"
+                            ItemsSource="{Binding Clients}"
+                            ItemDisplayBinding="{Binding FullName}"
+                            SelectedItem="{Binding SelectedClient}" 
+                            FontFamily="IRANSansWeb"/>
+
+                    <Label Text="{Binding SelectedClient.PhoneNumber}" 
+                           FontFamily="IRANSansWeb"
+                           FontSize="13" FontAttributes="Bold"
+                           TextColor="GhostWhite"
+                           IsVisible="{Binding SelectedClient, Converter={StaticResource NullToBoolConverter}}" />
+
+                    <Border StrokeShape="5">
+                        <Editor Text="{Binding SingleMessage}"
+                                AutoSize="TextChanges"
+                                HeightRequest="100"
+                                FontFamily="IRANSansWeb"
+                                Placeholder="متن پیام خود را بنویسید ..."
+                                TextColor="Black"
+                                BackgroundColor="White"/>
+                    </Border>
+                    <Button Text="📤 ارسال پیامک" FontAttributes="Bold"
+                            Command="{Binding SendSingleSmsCommand}"
+                            BackgroundColor="Gold"
+                            TextColor="Black"
+                            FontFamily="IRANSansWeb"
+                            HorizontalOptions="End"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- کارت ارسال گروهی -->
+            <Border StrokeShape="RoundRectangle 12" Padding="12" BackgroundColor="#2b2d42">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ارسال پیامک گروهی"
+                           FontFamily="IRANSansWeb" FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="Gold" HorizontalOptions="Center"/>
+
+                    <!-- جستجو + انتخاب همه -->
+                    <VerticalStackLayout Spacing="8" VerticalOptions="Center">
+                        <Entry Placeholder="🔍 جستجو نام موکل یا تلفن همراه..." PlaceholderColor="DarkGray" FontFamily="IRANSansWeb" HorizontalOptions="Fill"
+                               Text="{Binding GroupSearchText, Mode=TwoWay}"/>
+                        <HorizontalStackLayout Spacing="4">
+                            <CheckBox IsChecked="{Binding IsAllSelected}"/>
+                            <Label Text="انتخاب همه" VerticalTextAlignment="Center" FontFamily="IRANSansWeb"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- لیست موکل‌ها -->
+                    <Border BackgroundColor="White" Padding="6" StrokeShape="RoundRectangle 6" HeightRequest="200">
+                        <CollectionView ItemsSource="{Binding FilteredClients}" SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <HorizontalStackLayout Spacing="10" Padding="4">
+                                        <CheckBox Color="Black" IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalOptions="Center"/>
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="{Binding FullName}" TextColor="Black" FontFamily="IRANSansWeb" FontSize="14"/>
+                                            <Label Text="{Binding PhoneNumber}" TextColor="Black" FontFamily="IRANSansWeb" FontSize="12"/>
+                                        </VerticalStackLayout>
+                                    </HorizontalStackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </Border>
+
+                        <Border StrokeShape="5">
+                        <Editor Text="{Binding GroupMessage}" AutoSize="TextChanges"
+                            HeightRequest="100"
+                            FontFamily="IRANSansWeb"
+                            Placeholder="متن پیام خود را بنویسید ..."
+                            BackgroundColor="White"
+                            TextColor="Black"/>
+                        </Border>
+                        <Button Text="📤 ارسال گروهی" FontAttributes="Bold"
+                            Command="{Binding SendGroupSmsCommand}"
+                            BackgroundColor="Gold"
+                            TextColor="Black"
+                            FontFamily="IRANSansWeb"
+                            HorizontalOptions="End"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- تاریخچه پیام‌ها -->
+            <Label Text="تاریخچه پیام‌ها" FontFamily="IRANSansWeb"
+                  FontAttributes="Bold" FontSize="16" TextColor="Black"/>
+
+            <CollectionView ItemsSource="{Binding SmsHistory}" HeightRequest="220" SelectionMode="None" Margin="0,0,0,12">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BackgroundColor="White" Padding="10" StrokeShape="RoundRectangle 8" Margin="0,5">
+                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                                    <VerticalStackLayout>
+                                       <Label Grid.Column="0" Text="{Binding ClientName}" FontFamily="IRANSansWeb" FontSize="12" TextColor="Black" FontAttributes="Bold"/>
+                                <Label Grid.Column="1" Text="{Binding PhoneNumber}" FontFamily="IRANSansWeb" FontSize="12" TextColor="Black" FontAttributes="Bold"/>
+                                    </VerticalStackLayout>
+                                    <HorizontalStackLayout Grid.Column="2" Spacing="15"  Margin="0,15,0,-15">
+                                        <Label Text="{Binding DateShamsi}" FontFamily="IRANSansWeb" FontSize="12" TextColor="Black"/>
+                                <Label Text="{Binding StatusText}" FontFamily="IRANSansWeb" FontSize="12" TextColor="Green" FontAttributes="Bold"/>
+                                <Button Text="👁" Margin="-10,-20,0,0" BackgroundColor="Transparent" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SmsPanelVM}}, Path=ShowSmsDetailsCommand}" CommandParameter="{Binding Id}" FontSize="20" FontFamily="IRANSansWeb"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+
+        <!-- Popup نیمه‌شفاف -->
+        <Grid IsVisible="{Binding IsSingleDetailsVisible}" BackgroundColor="#AA000000">
+            <Border Padding="16" StrokeShape="RoundRectangle 12" BackgroundColor="White"
+            HorizontalOptions="Center" VerticalOptions="Center"
+            WidthRequest="300">
+                <Grid RowDefinitions="Auto,*" RowSpacing="20">
+                    <!-- ScrollView متن -->
+                    <ScrollView Grid.Row="0" VerticalScrollBarVisibility="Always" MaximumHeightRequest="250">
+                        <Label Text="{Binding SingleDetailsText}" 
+                            TextColor="Black"
+                            FontFamily="IRANSansWeb"
+                            LineBreakMode="WordWrap"/>
+                    </ScrollView>
+
+                    <!-- دکمه بستن همیشه پایین -->
+                    <Button Grid.Row="1" Text="بستن" Command="{Binding CloseSingleDetailsCommand}" 
+                        BackgroundColor="Gold" FontFamily="IRANSansWeb" TextColor="Black"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Popup گروهی مشابه -->
+        <Grid IsVisible="{Binding IsGroupDetailsVisible}" BackgroundColor="#AA000000">
+            <Border Padding="16" StrokeShape="12" BackgroundColor="White"
+               HorizontalOptions="Center" VerticalOptions="Center"
+               WidthRequest="300" HeightRequest="200">
+                <VerticalStackLayout Spacing="10">
+                    <ScrollView>
+                        <Label Text="{Binding GroupDetailsText}" TextColor="Black" FontFamily="IRANSansWeb"/>
+                    </ScrollView>
+                    <Button Text="بستن" Command="{Binding CloseGroupDetailsCommand}" BackgroundColor="Gold" TextColor="Black"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -97,6 +97,25 @@ public class DatabaseService
             FOREIGN KEY (CaseId) REFERENCES Cases(Id) ON DELETE CASCADE
         );
 
+        CREATE TABLE IF NOT EXISTS SmsHistory (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ClientName TEXT NOT NULL,
+            PhoneNumber TEXT NOT NULL,
+            Message TEXT NOT NULL,
+            SetDate TEXT NOT NULL,
+            StatusText TEXT NOT NULL,
+            IsGroup INTEGER NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS Transactions (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Title TEXT NOT NULL,
+            Amount REAL NOT NULL,
+            IsIncome INTEGER NOT NULL,
+            Date TEXT NOT NULL,
+            Description TEXT
+        );
+
         CREATE INDEX IF NOT EXISTS idx_clients_fullname ON Clients (FullName);
     ";
         await cmd.ExecuteNonQueryAsync();

@@ -48,8 +48,9 @@ public static class MauiProgram
         builder.Services.AddSingleton(s => new DatabaseService(dbPath));
         builder.Services.AddSingleton<LawService>(s => new LawService(s.GetRequiredService<DatabaseService>()));
         builder.Services.AddSingleton<LawImporter>(s => new LawImporter(s.GetRequiredService<LawService>()));
-        builder.Services.AddSingleton<UserService>();
-        builder.Services.AddSingleton<OtpService>();
+        builder.Services.AddSingleton<UserService>();       
+        builder.Services.AddSingleton<SmsService>();      
+        builder.Services.AddSingleton<TransactionService>();
         builder.Services.AddSingleton(sp =>
         new LicenseService(sp.GetRequiredService<DatabaseService>(), "<PUBLIC_KEY_BASE64_HERE>"));
         builder.Services.AddSingleton<LawyerService>(s => new LawyerService(s.GetRequiredService<DatabaseService>()));
@@ -67,6 +68,8 @@ public static class MauiProgram
 
         builder.Services.AddTransient<ClientsAndCasesViewModel>();
         builder.Services.AddTransient<DocumentsViewModel>();
+        builder.Services.AddTransient<SmsPanelVM>();      
+        builder.Services.AddTransient<TransactionsVM>();
 
         // -------------------- صفحات --------------------
         builder.Services.AddTransient<MainPage>();
@@ -76,6 +79,8 @@ public static class MauiProgram
 
         builder.Services.AddTransient<ClientsAndCasesPage>();
         builder.Services.AddTransient<DocumentsPage>();
+        builder.Services.AddTransient<SMSPanelPage>();
+        builder.Services.AddTransient<TransactionsPage>();
 
 #if ANDROID
         builder.Services.AddSingleton<IPrinterService, Vakilaw.Platforms.Android.PrinterService>();

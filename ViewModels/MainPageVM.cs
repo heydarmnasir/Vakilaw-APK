@@ -1,4 +1,6 @@
 ﻿using AsyncAwaitBestPractices;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -16,7 +18,7 @@ namespace Vakilaw.ViewModels;
 public partial class MainPageVM : ObservableObject
 {
     private readonly UserService _userService;
-    private readonly OtpService _otpService;
+    private readonly SmsService _otpService;
     private readonly LawService _lawService;
     private readonly LawyerService _lawyerService;
     private readonly LicenseService _licenseService;
@@ -57,7 +59,7 @@ public partial class MainPageVM : ObservableObject
     /// </summary>
     public bool CanUseLawyerFeatures => IsLawyer && IsLawyerSubscriptionActive;
 
-    public MainPageVM(UserService userService, OtpService otpService, LawService lawService, LawyerService lawyerService, LicenseService licenseService)
+    public MainPageVM(UserService userService, SmsService otpService, LawService lawService, LawyerService lawyerService, LicenseService licenseService)
     {
         _userService = userService;
         _otpService = otpService;
@@ -220,6 +222,9 @@ public partial class MainPageVM : ObservableObject
     [RelayCommand] public async Task LawBankPageAsync() => await Shell.Current.GoToAsync("LawBankPage");
     [RelayCommand] public async Task ClientsAndCasesPageAsync() => await Shell.Current.GoToAsync("ClientsAndCasesPage");
     [RelayCommand] public async Task DocumentsPageAsync() => await Shell.Current.GoToAsync("DocumentsPage");
+    [RelayCommand] public async Task SMSPanelPageAsync() => await Shell.Current.GoToAsync("SMSPanelPage");
+    //[RelayCommand] public async Task SMSPanelPageAsync() => await Toast.Make("برای فعال سازی این بخش با توسعه دهنده در ارتباط باشید", ToastDuration.Long).Show(); /*await Shell.Current.GoToAsync("SMSPanelPage");*/
+    [RelayCommand] public async Task TransactionsPageAsync() => await Shell.Current.GoToAsync("TransactionsPage");
 
     [RelayCommand] public async Task OpenAdlIranSiteAsync() => await Launcher.OpenAsync("https://adliran.ir/");
     [RelayCommand] private async Task HamiVakilAsync() => await Launcher.OpenAsync("https://search-hamivakil.ir/");

@@ -106,16 +106,25 @@
                 </Border>
 
                 <!-- پیامک -->
-                <Border StrokeShape="12" IsEnabled="{Binding CanUseLawyerFeatures}" Padding="15" BackgroundColor="#003049">
+                <Border StrokeShape="12" Padding="15" BackgroundColor="#003049"> <!--IsEnabled="{Binding CanUseLawyerFeatures}"-->
                     <Grid ColumnDefinitions="Auto,*">
-                        <Image Source="sms.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
-                        <Label Text="ارسال پیامک تکی و گروهی" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SMSPanelPageCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <HorizontalStackLayout>
+                            <Image Source="sms.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
+                            <Label Text="پنل پیامکی" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
+                            <Label Text="(نیازمند فعالسازی)" TextColor="Gold" FontAttributes="Bold" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
+                        </HorizontalStackLayout>
                     </Grid>
                 </Border>
 
                 <!-- مدیریت مالی -->
-                <Border StrokeShape="12" IsEnabled="{Binding CanUseLawyerFeatures}" Padding="15" BackgroundColor="#003049">
+                <Border StrokeShape="12" Padding="15" BackgroundColor="#003049"> <!--IsEnabled="{Binding CanUseLawyerFeatures}"-->
                     <Grid ColumnDefinitions="Auto,*">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TransactionsPageCommand}"/>
+                        </Grid.GestureRecognizers>
                         <Image Source="financial_management.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center"/>
                         <Label Text="مدیریت مالی و حسابداری" FontSize="16" VerticalOptions="Center" Grid.Column="1" Margin="10,0,0,0"/>
                     </Grid>
